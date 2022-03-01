@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>SpectrogramWindow</class>
+ <widget class="QWidget" name="SpectrogramWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>804</width>
+    <height>595</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout" stretch="1,60,0,0">
+   <item>
+    <layout class="QHBoxLayout" name="spectrogramSettingsHorizontalLayout">
+     <item>
+      <widget class="QPushButton" name="detectButton">
+       <property name="text">
+        <string>Detect</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="classifyButton">
+       <property name="text">
+        <string>Classify</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="windowSizeLabel">
+       <property name="text">
+        <string>window size</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QSlider" name="winowSizeSlider">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="overlapLabel">
+       <property name="text">
+        <string>overlap</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QSlider" name="overlapSlider">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="nfftLabel">
+       <property name="text">
+        <string>nftt</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QSlider" name="nfttSlider">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QVBoxLayout" name="spectrogramVerticalLayout">
+     <item>
+      <layout class="QVBoxLayout" name="spectrogramWidget"/>
+     </item>
+     <item>
+      <widget class="QScrollBar" name="spectrogramScrollBar">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="deleteLayout">
+     <item>
+      <spacer name="deleteSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="filterButton">
+       <property name="text">
+        <string>Filter</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="deleteAllButton">
+       <property name="text">
+        <string>Delete All</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="deleteButton">
+       <property name="text">
+        <string>Delete Selected</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QGridLayout" name="tableGridLayout">
+     <item row="0" column="0">
+      <widget class="QTableWidget" name="squeakTable"/>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>SettingsWidget</class>
+ <widget class="QWidget" name="SettingsWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>738</width>
+    <height>693</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Settings</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QTabWidget" name="settingsCatrgories">
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
+     <widget class="QWidget" name="denoisingTab">
+      <attribute name="title">
+       <string>Denoising</string>
+      </attribute>
+     </widget>
+     <widget class="QWidget" name="detectionTab">
+      <attribute name="title">
+       <string>Detection</string>
+      </attribute>
+     </widget>
+     <widget class="QWidget" name="filteringTab">
+      <attribute name="title">
+       <string>Detection Filtering</string>
+      </attribute>
+     </widget>
+     <widget class="QWidget" name="classificationTab">
+      <attribute name="title">
+       <string>Classification</string>
+      </attribute>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

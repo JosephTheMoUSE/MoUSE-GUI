@@ -1,0 +1,8 @@
+appdirs
+deepdish
+PySide6==6.1.0
+# matplotlib @ git+https://github.com/matplotlib/matplotlib.git
+torchaudio
+pandas==1.1
+opencv-python
+librosa
