@@ -7,7 +7,9 @@ def set_no_filter_preview(model: MainModel):
     no_filter_model = model.settings_model.no_filter_model
     t_start = model.settings_model.preview_start
     t_end = model.settings_model.preview_end
-    model.settings_model.denoising_spectrogram_data = clip_spectrogram(
-        spec=spec, t_start=t_start, t_end=t_end)
-    no_filter_model.preview_model.preview_data = clip_spectrogram(
-        spec=spec, t_start=t_start, t_end=t_end)
+    model.settings_model.denoising_spectrogram_data = clip_spectrogram(spec=spec,
+                                                                       t_start=t_start,
+                                                                       t_end=t_end)
+    no_filter_model.preview_model.preview_data = clip_spectrogram(spec=spec,
+                                                                  t_start=t_start,
+                                                                  t_end=t_end)

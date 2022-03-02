@@ -41,8 +41,7 @@ def add_key_value_metadata(model: MainModel, key_value: tuple, value_type: str):
             lambda x: x
             if type(x) == str and len(x) == 0 else int(float_convert(str(x))),
         "Real":
-            lambda x: x
-            if type(x) == str and len(x) == 0 else float_convert(str(x))
+            lambda x: x if type(x) == str and len(x) == 0 else float_convert(str(x)),
     }
 
     if len(key_value[0]) == 0:
@@ -54,9 +53,11 @@ def add_key_value_metadata(model: MainModel, key_value: tuple, value_type: str):
         return
 
     try:
-        key_value_casted = (key_value[0],
-                            type_map[value_type](key_value[1]),
-                            value_type)
+        key_value_casted = (
+            key_value[0],
+            type_map[value_type](key_value[1]),
+            value_type,
+        )
     except ValueError:
         warn_user(model, f"Cannot interpret {key_value[1]} as {value_type}")
         return
@@ -84,14 +85,11 @@ def update_key_value_metadata(model: MainModel,
                 float_convert(str(x))),
         "Real":
             lambda x: x
-            if type(x) in [str, np.str_] and len(x) == 0 else float_convert(
-                str(x))
+            if type(x) in [str, np.str_] and len(x) == 0 else float_convert(str(x)),
     }
 
     try:
-        key_value_casted = (key,
-                            type_map[value_type[1]](value_type[0]),
-                            value_type[1])
+        key_value_casted = (key, type_map[value_type[1]](value_type[0]), value_type[1])
     except ValueError:
         warn_user(model, f"Cannot interpret {value_type[0]} as {value_type[1]}")
         value_type = model.project_model.project_metadata[key]
@@ -111,7 +109,7 @@ def load_audio_files(model: MainModel, files: Union[str, list], folder=False):
             Path(root, name)
             for (root, dirs, file_names) in os.walk(files)
             for name in file_names
-            if name.endswith(('.wav', '.mp3'))
+            if name.endswith((".wav", ".mp3"))
         ]
     else:
         audio_files = [Path(file) for file in files]
@@ -119,8 +117,7 @@ def load_audio_files(model: MainModel, files: Union[str, list], folder=False):
     model.project_model.audio_files = audio_files
 
 
-def _generate_spectrogram(model: MainModel,
-                          signal_data: Optional[torch.Tensor]):
+def _generate_spectrogram(model: MainModel, signal_data: Optional[torch.Tensor]):
     spectrogram_model = model.spectrogram_model
     if spectrogram_model.spectrogram_calculator is None:
         spectrogram_calculator = torchaudio.transforms.Spectrogram(
@@ -141,7 +138,8 @@ def _generate_spectrogram(model: MainModel,
             n_fft=spectrogram_model.n_fft,
             win_length=spectrogram_model.win_length,
             hop_length=spectrogram_model.hop_length,
-            power=spectrogram_model.power)
+            power=spectrogram_model.power,
+        )
     else:
         spectrogram_data = None
     spectrogram_model.spectrogram_data = spectrogram_data
@@ -158,8 +156,9 @@ def update_signal_data(model: MainModel, audio_files: List[Path]):
                 # TODO(#71): resample audio files to lowest sample rate
                 warn_user(
                     model,
-                    'Files have different sample rate which may'
-                    ' lead to unexpected behavior! 😠')
+                    "Files have different sample rate which may"
+                    " lead to unexpected behavior! 😠",
+                )
         else:
             cur_sample_rate = sample_rate
         signal_data.append(waveform.squeeze())
@@ -199,26 +198,29 @@ def _set_current_spectrogram_chunk(model: MainModel, start_time: float):
     time_mask = _get_time_mask(
         model,
         start_time,
-        start_time + spectrogram_model.spectrogram_display_size / 1000)
+        start_time + spectrogram_model.spectrogram_display_size / 1000,
+    )
     spectrogram_model.time_mask = time_mask
     current_spectrogram_chunk_data = sound_util.SpectrogramData(
         spec=spectrogram_model.spectrogram_data.spec[:, time_mask],
         times=spectrogram_model.spectrogram_data.times[time_mask],
-        freqs=spectrogram_model.spectrogram_data.freqs)
-    spectrogram_model.current_spectrogram_chunk_data = \
-        current_spectrogram_chunk_data
+        freqs=spectrogram_model.spectrogram_data.freqs,
+    )
+    spectrogram_model.current_spectrogram_chunk_data = current_spectrogram_chunk_data
 
 
 def set_visible_annotations(model: MainModel):
     spectrogram_model = model.spectrogram_model
     visible_annotations = []
-    display_start_time, display_end_time = \
-        spectrogram_model.current_spectrogram_chunk_data.times[[0, -1]]
+    (
+        display_start_time,
+        display_end_time,
+    ) = spectrogram_model.current_spectrogram_chunk_data.times[[0, -1]]
     for annotation in spectrogram_model.annotations:
-        if (display_start_time <= annotation.time_start < display_end_time) or \
-            (display_start_time <= annotation.time_end < display_end_time) or \
+        if ((display_start_time <= annotation.time_start < display_end_time) or
+            (display_start_time <= annotation.time_end < display_end_time) or
             (annotation.time_start <= display_start_time and
-             display_end_time <= annotation.time_end):
+             display_end_time <= annotation.time_end)):
             visible_annotations.append(annotation)
     spectrogram_model.visible_annotations = visible_annotations
 
@@ -238,21 +240,21 @@ def load_annotations(model: MainModel, filename: Path):
         constants.COL_END_TIME,
         constants.COL_LOW_FREQ,
         constants.COL_HIGH_FREQ,
-        constants.COL_USV_LABEL
+        constants.COL_USV_LABEL,
     }
 
-    annotations_df = pd.read_csv(filename,
-                                 sep=None,
-                                 engine='python',
-                                 comment='#')
+    annotations_df = pd.read_csv(filename, sep=None, engine="python", comment="#")
     if constants.COL_USV_LABEL not in annotations_df.columns:
-        annotations_df.rename(columns={'NOTE': constants.COL_USV_LABEL},
-                              inplace=True)
+        annotations_df.rename(columns={"NOTE": constants.COL_USV_LABEL}, inplace=True)
 
     if not required_colums.issubset(annotations_df.columns):
-        warn_user(model,
-                  ("Loaded annotations file should have following collumns: ",
-                   f"{required_colums}"))
+        warn_user(
+            model,
+            (
+                "Loaded annotations file should have following collumns: ",
+                f"{required_colums}",
+            ),
+        )
         return
 
     column_names = [
@@ -264,32 +266,30 @@ def load_annotations(model: MainModel, filename: Path):
         constants.COL_END_TIME,
         constants.COL_LOW_FREQ,
         constants.COL_HIGH_FREQ,
-        constants.COL_USV_LABEL
+        constants.COL_USV_LABEL,
     ] + column_names
 
     model.spectrogram_model.update_annotations_column_names(column_names)
     annotations = []
     for _, entry in annotations_df.iterrows():
-        table_data = {
-            column_name: entry[column_name] for column_name in column_names
-        }
+        table_data = {column_name: entry[column_name] for column_name in column_names}
         table_data = defaultdict(lambda: "", table_data)
 
         annotations.append(
-            Annotation(time_start=entry[constants.COL_BEGIN_TIME],
-                       time_end=entry[constants.COL_END_TIME],
-                       freq_start=entry[constants.COL_LOW_FREQ],
-                       freq_end=entry[constants.COL_HIGH_FREQ],
-                       label=entry[constants.COL_USV_LABEL],
-                       table_data=table_data))
+            Annotation(
+                time_start=entry[constants.COL_BEGIN_TIME],
+                time_end=entry[constants.COL_END_TIME],
+                freq_start=entry[constants.COL_LOW_FREQ],
+                freq_end=entry[constants.COL_HIGH_FREQ],
+                label=entry[constants.COL_USV_LABEL],
+                table_data=table_data,
+            ))
 
     model.spectrogram_model.update_annotations(annotations)
     set_visible_annotations(model)
 
 
-def _handle_change_in_check_state(model: MainModel,
-                                  new_check_state: bool,
-                                  row_id: int):
+def _handle_change_in_check_state(model: MainModel, new_check_state: bool, row_id: int):
     if new_check_state:
         model.spectrogram_model.checked_annotations_counter += 1
         model.spectrogram_model.annotations[row_id].checked = True
@@ -308,19 +308,19 @@ def change_annotation_data(model: MainModel, row_id, col_id, new_item):
             constants.COL_BEGIN_TIME,
             constants.COL_END_TIME,
             constants.COL_LOW_FREQ,
-            constants.COL_HIGH_FREQ
+            constants.COL_HIGH_FREQ,
     ]:
         try:
             new_value = np.float64(new_value)
         except ValueError:
-            warn_user(model, 'Changed value should be a real number.')
+            warn_user(model, "Changed value should be a real number.")
             model.spectrogram_model.signal_annotation_field_change(
                 annotations[row_id].table_data[column], row_id, col_id)
             return
 
     if column == constants.COL_BEGIN_TIME:
-        new_check_state = True if new_item.checkState(
-        ) == QtCore.Qt.CheckState.Checked else False
+        new_check_state = (True if new_item.checkState() == QtCore.Qt.CheckState.Checked
+                           else False)
         if annotations[row_id].checked != new_check_state:
             _handle_change_in_check_state(model, new_check_state, row_id)
             return
@@ -329,7 +329,7 @@ def change_annotation_data(model: MainModel, row_id, col_id, new_item):
             return
 
         if new_value >= annotations[row_id].time_end:
-            warn_user(model, 'Begin Time should be smaller than End Time.')
+            warn_user(model, "Begin Time should be smaller than End Time.")
             model.spectrogram_model.signal_annotation_field_change(
                 annotations[row_id].table_data[column], row_id, col_id)
             return
@@ -340,7 +340,7 @@ def change_annotation_data(model: MainModel, row_id, col_id, new_item):
             return
 
         if new_value <= annotations[row_id].time_start:
-            warn_user(model, 'End Time should be greater than Begin Time.')
+            warn_user(model, "End Time should be greater than Begin Time.")
             model.spectrogram_model.signal_annotation_field_change(
                 annotations[row_id].table_data[column], row_id, col_id)
             return
@@ -351,7 +351,7 @@ def change_annotation_data(model: MainModel, row_id, col_id, new_item):
             return
 
         if new_value >= annotations[row_id].freq_end:
-            warn_user(model, 'Low Freq should be smaller than High Freq.')
+            warn_user(model, "Low Freq should be smaller than High Freq.")
             model.spectrogram_model.signal_annotation_field_change(
                 annotations[row_id].table_data[column], row_id, col_id)
             return
@@ -362,7 +362,7 @@ def change_annotation_data(model: MainModel, row_id, col_id, new_item):
             return
 
         if new_value <= annotations[row_id].freq_start:
-            warn_user(model, 'High Freq should be grater than Low Freq.')
+            warn_user(model, "High Freq should be grater than Low Freq.")
             model.spectrogram_model.signal_annotation_field_change(
                 annotations[row_id].table_data[column], row_id, col_id)
             return
@@ -380,21 +380,21 @@ def change_annotation_data(model: MainModel, row_id, col_id, new_item):
     model.spectrogram_model.signal_visible_annotations()
 
 
-def update_annotation(model: MainModel,
-                      annotation,
-                      time_pixel_start,
-                      freq_pixel_start,
-                      time_pixel_end,
-                      freq_pixel_end):
+def update_annotation(
+    model: MainModel,
+    annotation,
+    time_pixel_start,
+    freq_pixel_start,
+    time_pixel_end,
+    freq_pixel_end,
+):
     offset = model.spectrogram_model.time_mask.nonzero()[0][0]
     time_pixel_start += offset
     time_pixel_end += offset
 
     spectrogram_data = model.spectrogram_model.spectrogram_data
-    time_start, time_end = spectrogram_data.times[[time_pixel_start,
-                                                   time_pixel_end]]
-    freq_start, freq_end = spectrogram_data.freqs[[freq_pixel_start,
-                                                   freq_pixel_end]]
+    time_start, time_end = spectrogram_data.times[[time_pixel_start, time_pixel_end]]
+    freq_start, freq_end = spectrogram_data.freqs[[freq_pixel_start, freq_pixel_end]]
 
     annotation.time_start = time_start
     annotation.time_end = time_end
@@ -413,26 +413,26 @@ def add_new_annotation(model: MainModel,
     time_pixel_end += offset
 
     spectrogram_data = model.spectrogram_model.spectrogram_data
-    time_start, time_end = spectrogram_data.times[[time_pixel_start,
-                                                   time_pixel_end]]
-    freq_start, freq_end = spectrogram_data.freqs[[freq_pixel_start,
-                                                   freq_pixel_end]]
+    time_start, time_end = spectrogram_data.times[[time_pixel_start, time_pixel_end]]
+    freq_start, freq_end = spectrogram_data.freqs[[freq_pixel_start, freq_pixel_end]]
     table_data = {
         constants.COL_BEGIN_TIME: time_start,
         constants.COL_END_TIME: time_end,
         constants.COL_LOW_FREQ: freq_start,
         constants.COL_HIGH_FREQ: freq_end,
-        constants.COL_USV_LABEL: 'Unknown',
-        constants.COL_DETECTION_METHOD: 'Manual',
+        constants.COL_USV_LABEL: "Unknown",
+        constants.COL_DETECTION_METHOD: "Manual",
     }
     table_data = defaultdict(lambda: "", table_data)
 
-    annotation = Annotation(time_start=time_start,
-                            time_end=time_end,
-                            freq_start=freq_start,
-                            freq_end=freq_end,
-                            label='Unknown',
-                            table_data=table_data)
+    annotation = Annotation(
+        time_start=time_start,
+        time_end=time_end,
+        freq_start=freq_start,
+        freq_end=freq_end,
+        label="Unknown",
+        table_data=table_data,
+    )
     model.spectrogram_model.update_visible_annotations([annotation])
     model.spectrogram_model.update_annotations([annotation])
 
@@ -459,26 +459,25 @@ def export_annotations(model: MainModel, filename: Path):
         constants.COL_END_TIME,
         constants.COL_LOW_FREQ,
         constants.COL_HIGH_FREQ,
-        constants.COL_USV_LABEL
+        constants.COL_USV_LABEL,
     ]
 
     # Set proper columns order
     columns_order += list(default_dict_key_set - set(columns_order))
     annotations_df = annotations_df.reindex(columns=columns_order)
 
-    with open(filename, 'w') as f:
-        f.write(f'# Project name: {project_model.project_name}\n')
-        f.write(f'# Experiment date: {project_model.experiment_date}\n')
-        f.write(f'# Note: {project_model.experiment_note}\n')
+    with open(filename, "w") as f:
+        f.write(f"# Project name: {project_model.project_name}\n")
+        f.write(f"# Experiment date: {project_model.experiment_date}\n")
+        f.write(f"# Note: {project_model.experiment_note}\n")
         for k, v in project_model.project_metadata.items():
             if v[1] == "Text":
                 f.write(f'# {k}: "{v[0]}"\n')
             else:
-                f.write(f'# {k}: {v[0]}\n')
-        f.write(
-            ('# Audio files: '
-             f'{",".join([str(audio) for audio in project_model.audio_files])}'
-             '\n'))
+                f.write(f"# {k}: {v[0]}\n")
+        f.write(("# Audio files: "
+                 f'{",".join([str(audio) for audio in project_model.audio_files])}'
+                 "\n"))
         annotations_df.to_csv(f, index=False)
     print(f"Saved annotations to {filename}")
 

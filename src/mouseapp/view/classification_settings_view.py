@@ -4,12 +4,11 @@ from PySide6 import QtWidgets, QtCore
 
 from mouseapp.controller.settings_controllers import classification_controller
 from mouseapp.model.main_models import MainModel
-from mouseapp.view.generated.settings.ui_classification_settings import \
-    Ui_ClassificationSettingsWidget
+from mouseapp.view.generated.settings.ui_classification_settings import (
+    Ui_ClassificationSettingsWidget,)
 
 
-class ClassificationSettingsWindow(QtWidgets.QWidget,
-                                   Ui_ClassificationSettingsWidget):
+class ClassificationSettingsWindow(QtWidgets.QWidget, Ui_ClassificationSettingsWidget):
     """Classification settings window class."""
 
     def __init__(self, model: MainModel):
@@ -23,8 +22,7 @@ class ClassificationSettingsWindow(QtWidgets.QWidget,
         # Connect inputs
         self.frequencyThresholdEdit.editingFinished.connect(
             lambda: classification_controller.set_frequency_threshold(
-                model=self.model,
-                threshold_txt=self.frequencyThresholdEdit.text()))
+                model=self.model, threshold_txt=self.frequencyThresholdEdit.text()))
         self.lowLabelNameEdit.editingFinished.connect(
             lambda: classification_controller.set_low_freq_label(
                 model=self.model, label=self.lowLabelNameEdit.text()))

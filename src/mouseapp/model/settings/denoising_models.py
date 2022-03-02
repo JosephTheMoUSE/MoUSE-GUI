@@ -43,9 +43,9 @@ class BilateralModel(SerializableModel):
         self.set_default_values()
 
     def __repr__(self):
-        return (f'Bilateral:d={self.d},'
-                f'sigma_color={self.sigma_color},'
-                f'sigma_space={self.sigma_space};')
+        return (f"Bilateral:d={self.d},"
+                f"sigma_color={self.sigma_color},"
+                f"sigma_space={self.sigma_space};")
 
     def set_default_values(self):
         for key, val in self._default_values.items():
@@ -121,7 +121,7 @@ class SDTSModel(SerializableModel):
         self.set_default_values()
 
     def __repr__(self):
-        return f'SDTS:noise_decrease={self.noise_decrease},m={self.m};'
+        return f"SDTS:noise_decrease={self.noise_decrease},m={self.m};"
 
     def set_default_values(self):
         for key, val in self._default_values.items():
@@ -195,7 +195,7 @@ class NoiseGateModel(SerializableModel):
             "_noise_end": 1.0,
             "_noise_spectrogram_data": None,
             "_noise_audio_file": None,
-            "_use_main_spectrogram": True
+            "_use_main_spectrogram": True,
         }
         self._n_grad_freq: int = 0
         self._n_grad_time: int = 0
@@ -209,18 +209,16 @@ class NoiseGateModel(SerializableModel):
         self.set_default_values()
 
     def __repr__(self):
-        noise_audio = 'same' \
-            if self.noise_audio_file is None and self.use_main_spectrogram \
-            else self.noise_audio_file
+        noise_audio = ("same" if self.noise_audio_file is None and
+                       self.use_main_spectrogram else self.noise_audio_file)
 
-        return (
-            f'Noise-gate:gradient_pixels_number_frequency={self.n_grad_freq},'
-            f'gradient_pixels_number_time={self.n_grad_time},'
-            f'number_std_cutoff={self.n_std_thresh},'
-            f'noise_decrease={self.noise_decrease},'
-            f'noise_audio_file={noise_audio},'
-            f'noise_start={self.noise_start},'
-            f'noise_end={self.noise_end};')
+        return (f"Noise-gate:gradient_pixels_number_frequency={self.n_grad_freq},"
+                f"gradient_pixels_number_time={self.n_grad_time},"
+                f"number_std_cutoff={self.n_std_thresh},"
+                f"noise_decrease={self.noise_decrease},"
+                f"noise_audio_file={noise_audio},"
+                f"noise_start={self.noise_start},"
+                f"noise_end={self.noise_end};")
 
     def set_default_values(self):
         for key, val in self._default_values.items():

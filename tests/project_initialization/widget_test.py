@@ -1,8 +1,7 @@
 from copy import copy
 
 from mouseapp.view.main_view import MainWindow
-from mouseapp.view.project_init_view import BasicMetadata, \
-    InitializeProjectWindow
+from mouseapp.view.project_init_view import BasicMetadata, InitializeProjectWindow
 from tests.model_fixtures import *  # noqa F401 F403
 
 

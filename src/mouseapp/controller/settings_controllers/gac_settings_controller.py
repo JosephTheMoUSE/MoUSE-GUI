@@ -7,17 +7,14 @@ import torch
 from PySide6.QtCore import QMutex
 from mouse import segmentation
 from mouse.utils.sound_util import clip_spectrogram, SpectrogramData
-from mouseapp.controller.settings_controllers.utils import \
-    set_denoising_for_detection
-from mouseapp.controller.utils import (warn_user,
-                                       run_background_task,
-                                       float_convert)
+from mouseapp.controller.settings_controllers.utils import set_denoising_for_detection
+from mouseapp.controller.utils import warn_user, run_background_task, float_convert
 from mouseapp.model.main_models import MainModel
 from mouseapp.model.utils import BackgroundTask
 
 
 def set_baloon(model: MainModel, value: str):
-    text_to_number = {"positive": 1., "none": 0, "negative": -1}
+    text_to_number = {"positive": 1.0, "none": 0, "negative": -1}
     model.settings_model.gac_model.balloon = text_to_number[value.lower()]
 
 
@@ -80,15 +77,12 @@ def set_gac_preview(model: MainModel):
         t_start = model.settings_model.preview_start
         t_end = model.settings_model.preview_end
         clipped_spec = clip_spectrogram(spec=spec, t_start=t_start, t_end=t_end)
-        original_spec = clip_spectrogram(spec=spec,
-                                         t_start=t_start,
-                                         t_end=t_end)
+        original_spec = clip_spectrogram(spec=spec, t_start=t_start, t_end=t_end)
         set_denoising_for_detection(model, [clipped_spec, original_spec])
         model.settings_model.detection_spectrogram_data = original_spec
 
-        clipped_spec.spec = torch.Tensor(
-            gac_model.get_kwargs()["preprocessing_fn"](
-                clipped_spec.spec.numpy()))
+        clipped_spec.spec = torch.Tensor(gac_model.get_kwargs()["preprocessing_fn"](
+            clipped_spec.spec.numpy()))
 
         init_level_set = gac_model.get_kwargs()["level_set_fn"](
             clipped_spec.spec.numpy())
@@ -100,14 +94,10 @@ def set_gac_preview(model: MainModel):
         calculation_mutex.unlock()
 
     if inital_mutex.tryLock():
-        run_background_task(main_model=model,
-                            task=set_preview,
-                            can_be_stopped=False)
+        run_background_task(main_model=model, task=set_preview, can_be_stopped=False)
 
 
-def _run_preview_GAC(model: MainModel,
-                     calculation_mutex: QMutex,
-                     callback: Callable):
+def _run_preview_GAC(model: MainModel, calculation_mutex: QMutex, callback: Callable):
     try:
         preview_model = model.settings_model.gac_model.preview_model
 
@@ -117,13 +107,11 @@ def _run_preview_GAC(model: MainModel,
         print("GAC detection starts with kwargs:", kwargs)
         spec = model.settings_model.detection_spectrogram_data
 
-        preview_model.last_gac_step = \
-            time.time() - preview_model.time_between_gac_steps
+        preview_model.last_gac_step = time.time() - preview_model.time_between_gac_steps
 
         def _iter_callback(level_set):
             delta_time = time.time() - preview_model.last_gac_step
-            sleep_time = max(0,
-                             preview_model.time_between_gac_steps - delta_time)
+            sleep_time = max(0, preview_model.time_between_gac_steps - delta_time)
             time.sleep(sleep_time)
             level_set_spec = SpectrogramData(spec=torch.Tensor(level_set),
                                              times=spec.times,
@@ -145,22 +133,23 @@ def _run_preview_GAC(model: MainModel,
 
 
 def run_preview_GAC(model: MainModel):
-    calculation_mutex = model.settings_model.gac_model. \
-        preview_model.calculation_mutex
+    calculation_mutex = model.settings_model.gac_model.preview_model.calculation_mutex
 
     if calculation_mutex.tryLock():
 
         def _callback():
-            receiver = model.settings_model.gac_model.preview_model. \
-                calculation_task.worker
+            receiver = (
+                model.settings_model.gac_model.preview_model.calculation_task.worker)
             mouseapp.controller.utils.process_qt_events(receiver=receiver)
 
-        task = run_background_task(main_model=model,
-                                   task=_run_preview_GAC,
-                                   can_be_stopped=True,
-                                   model=model,
-                                   calculation_mutex=calculation_mutex,
-                                   callback=_callback)
+        task = run_background_task(
+            main_model=model,
+            task=_run_preview_GAC,
+            can_be_stopped=True,
+            model=model,
+            calculation_mutex=calculation_mutex,
+            callback=_callback,
+        )
         model.settings_model.gac_model.preview_model.calculation_task = task
 
 
@@ -174,5 +163,5 @@ def stop_gac(model: MainModel):
 
 
 def emit_detections(model: MainModel):
-    model.settings_model.gac_model.preview_model.detections = \
-        model.settings_model.gac_model.preview_model.detections
+    model.settings_model.gac_model.preview_model.detections = (
+        model.settings_model.gac_model.preview_model.detections)

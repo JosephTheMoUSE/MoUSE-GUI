@@ -14,9 +14,9 @@ import mouseapp.controller.classification_controller
 from mouseapp.model import constants
 from mouseapp.view.widgets import TaskProgressbar
 
-os.environ['QT_API'] = 'pyside6'
-if platform == 'darwin':
-    os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'  # macOS bugfix
+os.environ["QT_API"] = "pyside6"
+if platform == "darwin":
+    os.environ["KMP_DUPLICATE_LIB_OK"] = "True"  # macOS bugfix
 
 import numpy as np
 from PySide6 import QtCore
@@ -27,7 +27,7 @@ from mouseapp.view.settings_view import SettingsWindow
 from mouseapp.controller import (  # yapf: disable
     persistency_controller,
     main_controller,
-    detection_controller  # yapf: disable
+    detection_controller,  # yapf: disable
 )
 from mouseapp import context_manager
 from mouseapp.model.main_models import MainModel
@@ -87,8 +87,7 @@ class SpectrogramTab(QtWidgets.QWidget, Ui_SpectrogramWindow):
                 column_names_and_annotations))
         self.model.spectrogram_model.slider_step_size_changed.connect(
             self._update_slider_params)
-        self.model.spectrogram_model.spectrogram_data_changed.connect(
-            self._reset_view)
+        self.model.spectrogram_model.spectrogram_data_changed.connect(self._reset_view)
         self.model.spectrogram_model.spectrogram_chunk_data_changed.connect(
             self._draw_spectrogram)
         self.model.spectrogram_model.visible_annotations_changed.connect(
@@ -108,11 +107,11 @@ class SpectrogramTab(QtWidgets.QWidget, Ui_SpectrogramWindow):
         self.canvas = widgets.Canvas()
         self.spectrogram_axis = self.canvas.figure.gca()
         self.spectrogramWidget.addWidget(self.canvas)
-        self.canvas.figure.canvas.mpl_connect('button_press_event',
+        self.canvas.figure.canvas.mpl_connect("button_press_event",
                                               self._on_button_pressed_event)
-        self.canvas.figure.canvas.mpl_connect('button_release_event',
+        self.canvas.figure.canvas.mpl_connect("button_release_event",
                                               self._on_button_released_event)
-        self.canvas.figure.canvas.mpl_connect('motion_notify_event',
+        self.canvas.figure.canvas.mpl_connect("motion_notify_event",
                                               self._on_mouse_motion)
 
         # Hide unused widgets
@@ -133,13 +132,13 @@ class SpectrogramTab(QtWidgets.QWidget, Ui_SpectrogramWindow):
             return
 
         self.current_annotation = Rectangle(
-            (np.rint(event.xdata).astype(int), np.rint(
-                event.ydata).astype(int)),
+            (np.rint(event.xdata).astype(int), np.rint(event.ydata).astype(int)),
             0,
             0,
             linewidth=1,
-            edgecolor='r',
-            facecolor='none')
+            edgecolor="r",
+            facecolor="none",
+        )
         self.is_drawing = True
         self.spectrogram_axis.add_patch(self.current_annotation)
         self.canvas.draw_idle()
@@ -161,9 +160,12 @@ class SpectrogramTab(QtWidgets.QWidget, Ui_SpectrogramWindow):
             if cursor_y is not None:
                 self.current_annotation.set_height(cursor_y - annotation_y)
 
-            (time_pixel_start, freq_pixel_start,
-             time_pixel_end, freq_pixel_end) = \
-                utils.convert_rect_to_relative_pixels(self.current_annotation)
+            (
+                time_pixel_start,
+                freq_pixel_start,
+                time_pixel_end,
+                freq_pixel_end,
+            ) = utils.convert_rect_to_relative_pixels(self.current_annotation)
 
             self.current_annotation.remove()
             self.current_annotation = None
@@ -176,7 +178,8 @@ class SpectrogramTab(QtWidgets.QWidget, Ui_SpectrogramWindow):
                     time_pixel_start=time_pixel_start,
                     freq_pixel_start=freq_pixel_start,
                     time_pixel_end=time_pixel_end,
-                    freq_pixel_end=freq_pixel_end)
+                    freq_pixel_end=freq_pixel_end,
+                )
             else:
                 self.canvas.draw_idle()
 
@@ -203,8 +206,8 @@ class SpectrogramTab(QtWidgets.QWidget, Ui_SpectrogramWindow):
         spectrogram_data, display_size = spectrogram_data_and_size
         self.spectrogram_displayed = False
         if spectrogram_data is not None:
-            self.spectrogramScrollBar.setMaximum(spectrogram_data.times[-1] *
-                                                 1000 - display_size)
+            self.spectrogramScrollBar.setMaximum(spectrogram_data.times[-1] * 1000 -
+                                                 display_size)
             self.spectrogramScrollBar.setSliderPosition(0)
             self.spectrogramScrollBar.setValue(0)
             main_controller.update_from_slider_position(
@@ -248,14 +251,15 @@ class SpectrogramTab(QtWidgets.QWidget, Ui_SpectrogramWindow):
                              width,
                              height,
                              linewidth=1,
-                             edgecolor='r',
-                             facecolor='none')
+                             edgecolor="r",
+                             facecolor="none")
             self.spectrogram_axis.add_patch(rect)
             mab = widgets.MovableAnnotationBox(
                 rect,
                 annotation,
-                on_transition_finished=lambda *x: main_controller.
-                update_annotation(self.model, *x))
+                on_transition_finished=lambda *x: main_controller.update_annotation(
+                    self.model, *x),
+            )
 
             self._annotation_boxes.append(mab)
         self.canvas.draw_idle()
@@ -264,26 +268,23 @@ class SpectrogramTab(QtWidgets.QWidget, Ui_SpectrogramWindow):
         column_names, annotations = copy.deepcopy(column_names_and_annotations)
         self.squeakTable.setRowCount(len(annotations))
         self.squeakTable.setColumnCount(len(column_names))
-        column_names[0] = '      | ' + column_names[0]
+        column_names[0] = "      | " + column_names[0]
         self.squeakTable.setHorizontalHeaderLabels(column_names)
 
         header = self.squeakTable.horizontalHeader()
         for i in range(len(column_names)):
-            header.setSectionResizeMode(i,
-                                        QtWidgets.QHeaderView.ResizeToContents)
+            header.setSectionResizeMode(i, QtWidgets.QHeaderView.ResizeToContents)
 
         for i, annotation in enumerate(annotations):
             QApplication.processEvents()  # prevents freezing of the application
 
             item = self.squeakTable.item(i, 0)
             if item is None:
-                time_start_item = QtWidgets.QTableWidgetItem(
-                    f"{annotation.time_start}")
+                time_start_item = QtWidgets.QTableWidgetItem(f"{annotation.time_start}")
                 if annotation.checked:
                     time_start_item.setCheckState(QtCore.Qt.CheckState.Checked)
                 else:
-                    time_start_item.setCheckState(
-                        QtCore.Qt.CheckState.Unchecked)
+                    time_start_item.setCheckState(QtCore.Qt.CheckState.Unchecked)
                 self.squeakTable.setItem(i, 0, time_start_item)
             else:
                 if annotation.checked:
@@ -293,24 +294,21 @@ class SpectrogramTab(QtWidgets.QWidget, Ui_SpectrogramWindow):
 
             item = self.squeakTable.item(i, 1)
             if item is None:
-                time_end_item = QtWidgets.QTableWidgetItem(
-                    f"{annotation.time_end}")
+                time_end_item = QtWidgets.QTableWidgetItem(f"{annotation.time_end}")
                 self.squeakTable.setItem(i, 1, time_end_item)
             else:
                 item.setText(f"{annotation.time_end}")
 
             item = self.squeakTable.item(i, 2)
             if item is None:
-                freq_start_item = QtWidgets.QTableWidgetItem(
-                    f"{annotation.freq_start}")
+                freq_start_item = QtWidgets.QTableWidgetItem(f"{annotation.freq_start}")
                 self.squeakTable.setItem(i, 2, freq_start_item)
             else:
                 item.setText(f"{annotation.freq_start}")
 
             item = self.squeakTable.item(i, 3)
             if item is None:
-                freq_end_item = QtWidgets.QTableWidgetItem(
-                    f"{annotation.freq_end}")
+                freq_end_item = QtWidgets.QTableWidgetItem(f"{annotation.freq_end}")
                 self.squeakTable.setItem(i, 3, freq_end_item)
             else:
                 item.setText(f"{annotation.freq_end}")
@@ -374,7 +372,8 @@ class SpectrogramTab(QtWidgets.QWidget, Ui_SpectrogramWindow):
                 spectrogram_data,
                 ax=self.spectrogram_axis,
                 colormesh=self.spectrogram_color_mesh,
-                vmax=5)
+                vmax=5,
+            )
 
         self.canvas.draw_idle()
 
@@ -433,14 +432,12 @@ class ProjectTab(QtWidgets.QWidget, Ui_ProjectWindow):
         # Connect actions
         self.addMetadataButton.clicked.connect(self._on_add_project_metadata)
         self.projectNameEdit.textChanged.connect(
-            lambda: main_controller.set_project_name(
-                model=model, name=self.projectNameEdit.text()))
-        self.dateEdit.dateChanged.connect(
-            lambda: main_controller.set_experiment_date(
-                model=model, date=self.dateEdit.date()))
-        self.noteEdit.textChanged.connect(
-            lambda: main_controller.set_project_note(
-                model=model, note=self.noteEdit.toPlainText()))
+            lambda: main_controller.set_project_name(model=model,
+                                                     name=self.projectNameEdit.text()))
+        self.dateEdit.dateChanged.connect(lambda: main_controller.set_experiment_date(
+            model=model, date=self.dateEdit.date()))
+        self.noteEdit.textChanged.connect(lambda: main_controller.set_project_note(
+            model=model, note=self.noteEdit.toPlainText()))
 
         # Connect signals
         self.model.project_model.project_metadata_added.connect(
@@ -475,8 +472,8 @@ class ProjectTab(QtWidgets.QWidget, Ui_ProjectWindow):
                     break
             if last_common < min_length:
                 break
-        character_id = sum([len(part) for part in first_file[:last_common]]) \
-            + last_common - 1
+        character_id = (sum([len(part) for part in first_file[:last_common]]) +
+                        last_common - 1)
         character_id = min(character_id,
                            len(str(audio_files[0])) - len(audio_files[0].name))
         return [str(file_name)[character_id:] for file_name in audio_files]
@@ -489,8 +486,7 @@ class ProjectTab(QtWidgets.QWidget, Ui_ProjectWindow):
             def remove_active_new_key_widget(_):
                 self.active_new_key_value_widget = None
 
-            self.active_new_key_value_widget.closeEvent = \
-                remove_active_new_key_widget
+            self.active_new_key_value_widget.closeEvent = remove_active_new_key_widget
 
     def _on_project_metadata_added(self, key_value_type):
         # Close key_value_window
@@ -530,8 +526,7 @@ class ProjectTab(QtWidgets.QWidget, Ui_ProjectWindow):
         self.fileList.clear()
         self.audio_file_widgets.clear()
         for file_name in audio_files:
-            item = utils.initialize_widget(
-                widgets.FileName(self.model, file_name))
+            item = utils.initialize_widget(widgets.FileName(self.model, file_name))
             list_widget_item = QtWidgets.QListWidgetItem(self.fileList)
             list_widget_item.setSizeHint(item.sizeHint())
             self.audio_file_widgets[file_name] = list_widget_item
@@ -568,8 +563,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.actionSaveAs.triggered.connect(self._action_save_as)
         self.actionLoadProject.triggered.connect(self._action_load_project)
         self.actionSettings.triggered.connect(self._action_settings)
-        self.actionLoadAnnotations.triggered.connect(
-            self._action_load_annotations)
+        self.actionLoadAnnotations.triggered.connect(self._action_load_annotations)
         self.actionExport.triggered.connect(self._action_export_annotations)
         # todo (#75): remove unnecessary menu dropdown
 
@@ -588,15 +582,16 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.settings_window = initialize_widget(SettingsWindow(self.model))
 
     def _action_new_project(self):
-        context_manager.instantiate_project_creation_window(
-            old_widget=self, old_model=self.model)
+        context_manager.instantiate_project_creation_window(old_widget=self,
+                                                            old_model=self.model)
 
     def _action_load_annotations(self):
         file = QtWidgets.QFileDialog.getOpenFileName(
             self,
-            'Select a file with annotations',
-            Path('').__str__(),
-            'Audio files (*.txt *.csv)')[0]
+            "Select a file with annotations",
+            Path("").__str__(),
+            "Audio files (*.txt *.csv)",
+        )[0]
         main_controller.load_annotations(model=self.model, filename=Path(file))
 
     def _action_load_project(self):
@@ -604,8 +599,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                                         old_model=self.model)
 
     def _action_export_annotations(self):
-        filename = QtWidgets.QFileDialog().getSaveFileName(self, 'Save File')[0]
-        if filename != '':
+        filename = QtWidgets.QFileDialog().getSaveFileName(self, "Save File")[0]
+        if filename != "":
             main_controller.export_annotations(self.model, Path(filename))
 
     def _action_save(self):
@@ -631,12 +626,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def _action_save_as(self):
         folder = QtWidgets.QFileDialog.getExistingDirectory(
             self,
-            'Select audio files',
+            "Select audio files",
             Path(self.model.application_model.app_data_dir).__str__(),
             QtWidgets.QFileDialog.ShowDirsOnly |
-            QtWidgets.QFileDialog.DontResolveSymlinks)
-        persistency_controller.save_project_as(folder=Path(folder),
-                                               model=self.model)
+            QtWidgets.QFileDialog.DontResolveSymlinks,
+        )
+        persistency_controller.save_project_as(folder=Path(folder), model=self.model)
 
     @Slot()
     def _on_progressbar_definition(self, defined: bool):
@@ -658,8 +653,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     @Slot()
     def _on_progressbar_update(self,
-                               value: Tuple[Optional[str],
-                                            Optional[int],
+                               value: Tuple[Optional[str], Optional[int],
                                             Optional[str]]):
         if isinstance(self.progressbar, TaskProgressbar):
             self.progressbar.set_values(left_txt=value[0],

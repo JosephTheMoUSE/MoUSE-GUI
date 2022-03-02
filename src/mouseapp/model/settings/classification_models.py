@@ -13,7 +13,7 @@ class ThresholdModel(SerializableModel):
         super().__init__()
 
         self._default_values = {
-            "_threshold": 30000.,
+            "_threshold": 30000.0,
             "_label_low": "low freq",
             "_label_high": "high freq",
         }

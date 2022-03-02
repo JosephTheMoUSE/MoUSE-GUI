@@ -1,5 +1,4 @@
-from mouseapp.model.main_models import MainModel, ProjectModel, \
-    SpectrogramModel
+from mouseapp.model.main_models import MainModel, ProjectModel, SpectrogramModel
 from mouseapp.model.utils import SerializableModel
 from mouseapp.model.settings.settings_model import SettingsModel
 from tests.model_fixtures import *  # noqa F401 F403
@@ -28,14 +27,15 @@ def test_main_model(main_model, app_model):
     """
     serialized = main_model.to_dict()
 
-    new_main_model = MainModel(application_model=app_model,
-                               project_model=ProjectModel(),
-                               spectrogram_model=SpectrogramModel(),
-                               settings_model=SettingsModel())
+    new_main_model = MainModel(
+        application_model=app_model,
+        project_model=ProjectModel(),
+        spectrogram_model=SpectrogramModel(),
+        settings_model=SettingsModel(),
+    )
     new_main_model.from_dict(serialized)
 
-    def assert_equal_models(model: SerializableModel,
-                            new_model: SerializableModel):
+    def assert_equal_models(model: SerializableModel, new_model: SerializableModel):
         for attr_name in dir(model):
             assert set(dir(model)) == set(dir(new_model))
             if not model._is_settable_attribute(attr_name):
@@ -48,5 +48,4 @@ def test_main_model(main_model, app_model):
 
     assert isinstance(main_model.spectrogram_model, SerializableModel)
     assert isinstance(new_main_model.spectrogram_model, SerializableModel)
-    assert_equal_models(main_model.spectrogram_model,
-                        new_main_model.spectrogram_model)
+    assert_equal_models(main_model.spectrogram_model, new_main_model.spectrogram_model)

@@ -12,9 +12,10 @@ def initialize_widget(widget: QtWidgets.QWidget):
     return widget
 
 
-def initialize_basic_layout(parent: QtWidgets.QWidget,
-                            widgets: Union[QtWidgets.QWidget,
-                                           Iterable[QtWidgets.QWidget]]):
+def initialize_basic_layout(
+    parent: QtWidgets.QWidget,
+    widgets: Union[QtWidgets.QWidget, Iterable[QtWidgets.QWidget]],
+):
     if isinstance(widgets, QtWidgets.QWidget):
         widgets = (widgets,)
 

@@ -3,10 +3,12 @@ from typing import Optional
 from PySide6.QtCore import Signal
 from mouse.utils.sound_util import SpectrogramData
 from mouseapp.model.settings.classification_models import ThresholdModel
-from mouseapp.model.settings.denoising_models import (NoFilterModel,
-                                                      BilateralModel,
-                                                      SDTSModel,
-                                                      NoiseGateModel)
+from mouseapp.model.settings.denoising_models import (
+    NoFilterModel,
+    BilateralModel,
+    SDTSModel,
+    NoiseGateModel,
+)
 from mouseapp.model.settings.filtering_model import FilteringModel
 from mouseapp.model.settings.detection_models import GACModel, NNModel
 from mouseapp.model.settings.utils import Denoising, Detection
@@ -25,8 +27,8 @@ class SettingsModel(SerializableModel):
         super().__init__()
         self._denoising_spectrogram_data: Optional[SpectrogramData] = None
         self._detection_spectrogram_data: Optional[SpectrogramData] = None
-        self._preview_start: Optional[float] = 0.
-        self._preview_end: Optional[float] = 1.
+        self._preview_start: Optional[float] = 0.0
+        self._preview_end: Optional[float] = 1.0
 
         self._chosen_denoising_method = Denoising.NO_FILTER
         self._chosen_detection_method = Detection.GAC
@@ -48,9 +50,9 @@ class SettingsModel(SerializableModel):
         self._threshold_model = ThresholdModel()
 
         self._dict_denylist.update([
-            'no_filter_model',
-            'denoising_spectrogram_data',
-            'detection_spectrogram_data',
+            "no_filter_model",
+            "denoising_spectrogram_data",
+            "detection_spectrogram_data",
         ])
 
     @property

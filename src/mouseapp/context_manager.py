@@ -47,15 +47,19 @@ def initialize_from_existing() -> bool:
 
 
 def initialize_new():
-    old_model = MainModel(application_model=ApplicationModel(),
-                          spectrogram_model=None,
-                          project_model=None,
-                          settings_model=None)
+    old_model = MainModel(
+        application_model=ApplicationModel(),
+        spectrogram_model=None,
+        project_model=None,
+        settings_model=None,
+    )
 
-    next_model = MainModel(application_model=old_model.application_model,
-                           spectrogram_model=SpectrogramModel(),
-                           project_model=ProjectModel(),
-                           settings_model=SettingsModel())
+    next_model = MainModel(
+        application_model=old_model.application_model,
+        spectrogram_model=SpectrogramModel(),
+        project_model=ProjectModel(),
+        settings_model=SettingsModel(),
+    )
 
     from mouseapp.view.project_init_view import InitializeProjectWindow
 
@@ -72,16 +76,21 @@ def instantiate_project_creation_window(old_model, old_widget):
     creation widget selected.
     """
     from mouseapp.view.project_init_view import InitializeProjectWindow
-    next_model = MainModel(application_model=old_model.application_model,
-                           project_model=ProjectModel(),
-                           spectrogram_model=SpectrogramModel(),
-                           settings_model=SettingsModel())
+
+    next_model = MainModel(
+        application_model=old_model.application_model,
+        project_model=ProjectModel(),
+        spectrogram_model=SpectrogramModel(),
+        settings_model=SettingsModel(),
+    )
 
     initialize_project = initialize_widget(
-        InitializeProjectWindow(next_model=next_model,
-                                old_model=old_model,
-                                old_widget=old_widget,
-                                start_from_creation=True))
+        InitializeProjectWindow(
+            next_model=next_model,
+            old_model=old_model,
+            old_widget=old_widget,
+            start_from_creation=True,
+        ))
     return initialize_project
 
 
@@ -92,10 +101,13 @@ def instantiate_project_load_window(old_model, old_widget):
     `newProjectButton`.
     """
     from mouseapp.view.project_init_view import InitializeProjectWindow
-    next_model = MainModel(application_model=old_model.application_model,
-                           spectrogram_model=SpectrogramModel(),
-                           project_model=ProjectModel(),
-                           settings_model=SettingsModel())
+
+    next_model = MainModel(
+        application_model=old_model.application_model,
+        spectrogram_model=SpectrogramModel(),
+        project_model=ProjectModel(),
+        settings_model=SettingsModel(),
+    )
 
     initialize_project = initialize_widget(
         InitializeProjectWindow(next_model=next_model,
@@ -105,9 +117,11 @@ def instantiate_project_load_window(old_model, old_widget):
     return initialize_project
 
 
-def switch_projects(next_model: MainModel,
-                    old_model: MainModel,
-                    old_widget: Optional[QMainWindow] = None):
+def switch_projects(
+    next_model: MainModel,
+    old_model: MainModel,
+    old_widget: Optional[QMainWindow] = None,
+):
     """Close old model & main window, open new model & main window.
 
     Responsibilities of this function:
@@ -118,18 +132,19 @@ def switch_projects(next_model: MainModel,
      - create new instance of `MainWindow` and add a reference to it to
      `ApplicationModel`
     """
-    if old_model.spectrogram_model is not None or \
-            old_model.project_model is not None:
+    if old_model.spectrogram_model is not None or old_model.project_model is not None:
         assert old_widget is not None
         if old_model is None:
-            raise TypeError(
-                "When `old_model` is set `old_widget` can't be None")
+            raise TypeError("When `old_model` is set `old_widget` can't be None")
 
         old_widget.close()
 
     from mouseapp.view.main_view import MainWindow
-    mouse_project = MouseProject(name=next_model.project_model.project_name,
-                                 path=next_model.project_model.project_path)
+
+    mouse_project = MouseProject(
+        name=next_model.project_model.project_name,
+        path=next_model.project_model.project_path,
+    )
     next_model.application_model.user_projects.add(mouse_project)
     next_model.application_model.recent_project = mouse_project
     persistency_controller.save_config(app_model=next_model.application_model)
@@ -139,13 +154,12 @@ def switch_projects(next_model: MainModel,
 
 
 def finalize_project_creation(
-        next_model: MainModel,
-        old_model: MainModel,
-        old_widget: Optional[QtWidgets.QMainWindow] = None):
+    next_model: MainModel,
+    old_model: MainModel,
+    old_widget: Optional[QtWidgets.QMainWindow] = None,
+):
     """Set project path in project model and switch projects."""
-    next_model.project_model.project_path = \
+    next_model.project_model.project_path = (
         next_model.application_model.app_data_dir.joinpath(
-            next_model.project_model.project_name)
-    switch_projects(next_model=next_model,
-                    old_model=old_model,
-                    old_widget=old_widget)
+            next_model.project_model.project_name))
+    switch_projects(next_model=next_model, old_model=old_model, old_widget=old_widget)

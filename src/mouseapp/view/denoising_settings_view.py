@@ -13,8 +13,8 @@ from mouseapp.controller.settings_controllers import (
 from mouseapp.model.main_models import MainModel
 from mouseapp.model.settings.utils import Denoising
 from mouseapp.view import utils
-from mouseapp.view.generated.settings.ui_denoising_settings import \
-    Ui_DenoisingSettingsWidget
+from mouseapp.view.generated.settings.ui_denoising_settings import (
+    Ui_DenoisingSettingsWidget,)
 from mouseapp.view.preview_settings_view import PreviewSettingsWindow
 from mouseapp.view.widgets import SliderWithEdit
 
@@ -35,45 +35,38 @@ class DenoisingSettingsWindow(QtWidgets.QWidget, Ui_DenoisingSettingsWidget):
 
         # connect inputs
         # # connect denoising inputs
-        self.denoisingComboBox.currentTextChanged.connect(
-            self.change_denoising_page)
+        self.denoisingComboBox.currentTextChanged.connect(self.change_denoising_page)
         self.preview.previewButton.clicked.connect(self._on_preview_time)
         self.preview.runPreviewButton.hide()
         # bilateral
-        self.sigmaSpaceLineEdit.editingFinished.connect(
-            self._on_sigma_space_edit)
-        self.sigmaColorLineEdit.editingFinished.connect(
-            self._on_sigma_color_edit)
+        self.sigmaSpaceLineEdit.editingFinished.connect(self._on_sigma_space_edit)
+        self.sigmaColorLineEdit.editingFinished.connect(self._on_sigma_color_edit)
         self.dLineEdit.editingFinished.connect(self._on_d_edit)
         self.restoreBilateralButton.clicked.connect(self._on_bilateral_restore)
         # SDTS
         self.mLineEdit.editingFinished.connect(self._on_m_edit)
         self.SDTSNoiseDecreaseSlider = utils.initialize_widget(
             SliderWithEdit(minimum=0, maximum=1, resolution=100))
-        self.SDTSLeftGridLayout.replaceWidget(
-            self.placeholderSDTSNoiseDecreaseSlider,
-            self.SDTSNoiseDecreaseSlider)
+        self.SDTSLeftGridLayout.replaceWidget(self.placeholderSDTSNoiseDecreaseSlider,
+                                              self.SDTSNoiseDecreaseSlider)
         self.placeholderSDTSNoiseDecreaseSlider.deleteLater()
         self.SDTSNoiseDecreaseSlider.modifications_finished.connect(
             self._on_sdts_noise_decrease_edit)
         self.restoreSDTSButton.clicked.connect(self._on_sdts_restore)
         # noise gate
-        self.nGradFreqLineEdit.editingFinished.connect(
-            self._on_n_grad_freq_edit)
-        self.nGradTimeLineEdit.editingFinished.connect(
-            self._on_n_grad_time_edit)
-        self.nStdThreshLineEdit.editingFinished.connect(
-            self._on_n_std_thresh_edit)
+        self.nGradFreqLineEdit.editingFinished.connect(self._on_n_grad_freq_edit)
+        self.nGradTimeLineEdit.editingFinished.connect(self._on_n_grad_time_edit)
+        self.nStdThreshLineEdit.editingFinished.connect(self._on_n_std_thresh_edit)
         self.noiseGateNoiseDecreaseSlider = utils.initialize_widget(
             SliderWithEdit(minimum=0, maximum=1, resolution=100))
         self.noiseGateLeftGridLayout.replaceWidget(
             self.placeholderNoiseGateNoiseDecreaseSlider,
-            self.noiseGateNoiseDecreaseSlider)
+            self.noiseGateNoiseDecreaseSlider,
+        )
         self.placeholderNoiseGateNoiseDecreaseSlider.deleteLater()
         self.noiseGateNoiseDecreaseSlider.modifications_finished.connect(
             self._on_noise_gate_noise_decrease_edit)
-        self.noiseStartLineEdit.editingFinished.connect(
-            self._on_noise_start_edit)
+        self.noiseStartLineEdit.editingFinished.connect(self._on_noise_start_edit)
         self.noiseEndLineEdit.editingFinished.connect(self._on_noise_end_edit)
         self.restoreNoiseGateButton.clicked.connect(self._on_noise_gate_restore)
         self.noiseAudioCheckBox.setCheckState(QtCore.Qt.Checked)
@@ -88,50 +81,45 @@ class DenoisingSettingsWindow(QtWidgets.QWidget, Ui_DenoisingSettingsWidget):
         self.model.settings_model.chosen_denoising_method_signal.connect(
             self.change_denoising_method)
         # no filter
-        self.model.settings_model.no_filter_model.preview_model. \
-            preview_changed.connect(self.preview.draw_lower_spect)
+        self.model.settings_model.no_filter_model.preview_model.preview_changed.connect(
+            self.preview.draw_lower_spect)
         # bilateral
-        self.model.settings_model.bilateral_model.preview_model. \
-            preview_changed.connect(self.preview.draw_lower_spect)
+        self.model.settings_model.bilateral_model.preview_model.preview_changed.connect(
+            self.preview.draw_lower_spect)
         self.model.settings_model.bilateral_model.sigma_color_changed.connect(
             self._on_sigma_color_signal)
         self.model.settings_model.bilateral_model.sigma_space_changed.connect(
             self._on_sigma_space_signal)
-        self.model.settings_model.bilateral_model.d_changed.connect(
-            self._on_d_signal)
+        self.model.settings_model.bilateral_model.d_changed.connect(self._on_d_signal)
         # SDTS
-        self.model.settings_model.sdts_model.preview_model. \
-            preview_changed.connect(self.preview.draw_lower_spect)
-        self.model.settings_model.sdts_model.m_changed.connect(
-            self._on_m_signal)
+        self.model.settings_model.sdts_model.preview_model.preview_changed.connect(
+            self.preview.draw_lower_spect)
+        self.model.settings_model.sdts_model.m_changed.connect(self._on_m_signal)
         self.model.settings_model.sdts_model.noise_decrease_changed.connect(
             self._on_sdts_noise_decrease_signal)
         # noise gate
-        self.model.settings_model.noise_gate_model.preview_model. \
-            preview_changed.connect(self.preview.draw_lower_spect)
+        self.model.settings_model.noise_gate_model.preview_model.preview_changed.connect(
+            self.preview.draw_lower_spect)
         self.model.settings_model.noise_gate_model.n_grad_freq_changed.connect(
             self._on_n_grad_freq_signal)
         self.model.settings_model.noise_gate_model.n_grad_time_changed.connect(
             self._on_n_grad_time_signal)
         self.model.settings_model.noise_gate_model.n_std_thresh_changed.connect(
             self._on_n_std_thresh_signal)
-        self.model.settings_model.noise_gate_model.noise_decrease_changed. \
-            connect(self._on_noise_gate_noise_decrease_signal)
+        self.model.settings_model.noise_gate_model.noise_decrease_changed.connect(
+            self._on_noise_gate_noise_decrease_signal)
         self.model.settings_model.noise_gate_model.noise_start_changed.connect(
             self._on_noise_start_signal)
         self.model.settings_model.noise_gate_model.noise_end_changed.connect(
             self._on_noise_end_signal)
-        self.model.settings_model.noise_gate_model.\
-            noise_spectrogram_data_changed.\
-            connect(self._on_noise_spectrogram_data_signal)
-        self.model.settings_model.noise_gate_model.\
-            use_main_spectrogram_changed.\
-            connect(self._on_use_main_spectrogram_signal)
+        self.model.settings_model.noise_gate_model.noise_spectrogram_data_changed.connect(
+            self._on_noise_spectrogram_data_signal)
+        self.model.settings_model.noise_gate_model.use_main_spectrogram_changed.connect(
+            self._on_use_main_spectrogram_signal)
         self.model.settings_model.noise_gate_model.noise_audio_changed.connect(
             self._on_noise_audio_signal)
-        self.model.settings_model.noise_gate_model.\
-            passive_noise_audio_changed. \
-            connect(self._on_passive_noise_audio_signal)
+        self.model.settings_model.noise_gate_model.passive_noise_audio_changed.connect(
+            self._on_passive_noise_audio_signal)
 
         logging.debug("[DenoisingSettingsWindow] Finished initialization")
 
@@ -140,14 +128,13 @@ class DenoisingSettingsWindow(QtWidgets.QWidget, Ui_DenoisingSettingsWidget):
             Denoising.NO_FILTER: 0,
             Denoising.BILATERAL: 1,
             Denoising.SDTS: 2,
-            Denoising.NOISE_GATE: 3
+            Denoising.NOISE_GATE: 3,
         }
         self.denoisingComboBox.setCurrentIndex(text_map[text])
         self.change_denoising_page(text)
 
     def change_denoising_page(self, text: str):
-        common_settings_controller.set_chosen_denoising_method(
-            self.model, text.lower())
+        common_settings_controller.set_chosen_denoising_method(self.model, text.lower())
         if Denoising.NO_FILTER in text.lower():
             self.denoisingStackedWidget.setCurrentWidget(self.noFilterPage)
             no_filter_settings_controller.set_no_filter_preview(self.model)
@@ -167,12 +154,10 @@ class DenoisingSettingsWindow(QtWidgets.QWidget, Ui_DenoisingSettingsWidget):
             warnings.warn(f"Denoising method: {text.lower()} not supported")
 
     def _on_preview_time(self):
-        common_settings_controller. \
-            set_preview_start(model=self.model,
-                              value=self.preview.previewStartLineEdit.text())
-        common_settings_controller. \
-            set_preview_end(model=self.model,
-                            value=self.preview.previewEndLineEdit.text())
+        common_settings_controller.set_preview_start(
+            model=self.model, value=self.preview.previewStartLineEdit.text())
+        common_settings_controller.set_preview_end(
+            model=self.model, value=self.preview.previewEndLineEdit.text())
         if self.denoisingStackedWidget.currentWidget() == self.noFilterPage:
             no_filter_settings_controller.set_no_filter_preview(self.model)
         elif self.denoisingStackedWidget.currentWidget() == self.bilateralPage:
@@ -187,8 +172,7 @@ class DenoisingSettingsWindow(QtWidgets.QWidget, Ui_DenoisingSettingsWidget):
     # bilateral
 
     def _on_bilateral_restore(self):
-        bilateral_settings_controller.restore_default_bilateral_values(
-            self.model)
+        bilateral_settings_controller.restore_default_bilateral_values(self.model)
 
     def _on_sigma_space_edit(self):
         bilateral_settings_controller.set_sigma_space(
@@ -224,8 +208,7 @@ class DenoisingSettingsWindow(QtWidgets.QWidget, Ui_DenoisingSettingsWidget):
                                        value=int(self.mLineEdit.text()))
 
     def _on_sdts_noise_decrease_edit(self, value: float):
-        sdts_settings_controller.set_noise_decrease(model=self.model,
-                                                    value=value)
+        sdts_settings_controller.set_noise_decrease(model=self.model, value=value)
 
     def _on_m_signal(self, value: int):
         sdts_settings_controller.set_sdts_preview(self.model)
@@ -238,8 +221,7 @@ class DenoisingSettingsWindow(QtWidgets.QWidget, Ui_DenoisingSettingsWidget):
     # noise gate
 
     def _on_noise_gate_restore(self):
-        noise_gate_settings_controller.restore_default_noise_gate_values(
-            self.model)
+        noise_gate_settings_controller.restore_default_noise_gate_values(self.model)
 
     def _on_n_grad_freq_edit(self):
         noise_gate_settings_controller.set_n_grad_freq(
@@ -254,29 +236,26 @@ class DenoisingSettingsWindow(QtWidgets.QWidget, Ui_DenoisingSettingsWidget):
             model=self.model, value=self.nStdThreshLineEdit.text())
 
     def _on_noise_gate_noise_decrease_edit(self, value: float):
-        noise_gate_settings_controller.set_noise_decrease(model=self.model,
-                                                          value=value)
+        noise_gate_settings_controller.set_noise_decrease(model=self.model, value=value)
 
     def _on_noise_start_edit(self):
         noise_gate_settings_controller.set_noise_start(
             model=self.model, value=self.noiseStartLineEdit.text())
 
     def _on_noise_end_edit(self):
-        noise_gate_settings_controller.set_noise_end(
-            model=self.model, value=self.noiseEndLineEdit.text())
+        noise_gate_settings_controller.set_noise_end(model=self.model,
+                                                     value=self.noiseEndLineEdit.text())
 
     def _on_load_noise_audio(self):
-        file = QtWidgets.QFileDialog.getOpenFileName(
-            self,
-            'Select audio files',
-            Path('').__str__(),
-            'Audio files (*.wav *.mp3)')[0]
+        file = QtWidgets.QFileDialog.getOpenFileName(self,
+                                                     "Select audio files",
+                                                     Path("").__str__(),
+                                                     "Audio files (*.wav *.mp3)")[0]
         noise_gate_settings_controller.load_noise_audio(model=self.model,
                                                         file=Path(file))
 
     def _on_noise_audio_checkbox_changed(self):
-        self.loadNoiseAudioButton.setEnabled(
-            not self.noiseAudioCheckBox.isChecked())
+        self.loadNoiseAudioButton.setEnabled(not self.noiseAudioCheckBox.isChecked())
         noise_gate_settings_controller.set_use_main_spectrogram(
             self.model, self.noiseAudioCheckBox.isChecked())
 

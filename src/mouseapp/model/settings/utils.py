@@ -14,7 +14,7 @@ class PreviewModel(QObject):
         self._preview_data: Optional[SpectrogramData] = None
         self._last_update: float = time.time()
         # minimum time[s] between preview updates
-        self._time_between_updates = 1.
+        self._time_between_updates = 1.0
         # mutexes
         self._initial_mutex = QMutex()
         self._calculation_mutex = QMutex()

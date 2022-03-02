@@ -6,8 +6,7 @@ import mouseapp.controller.utils
 from PySide6.QtCore import QMutex
 from mouse.nn_detection.neural_network import find_USVs
 from mouse.utils.sound_util import clip_spectrogram
-from mouseapp.controller.settings_controllers.utils import \
-    set_denoising_for_detection
+from mouseapp.controller.settings_controllers.utils import set_denoising_for_detection
 from mouseapp.controller.utils import run_background_task
 from mouseapp.model.main_models import MainModel
 from mouseapp.model.utils import BackgroundTask
@@ -31,8 +30,7 @@ def set_batch_size(model: MainModel, batch_size: int):
 
 
 def set_confidence_threshold(model: MainModel, confidence_threshold: int):
-    model.settings_model.nn_model.confidence_threshold = \
-        confidence_threshold / 100
+    model.settings_model.nn_model.confidence_threshold = confidence_threshold / 100
 
 
 def set_NN_preview(model: MainModel):
@@ -52,9 +50,7 @@ def set_NN_preview(model: MainModel):
         t_start = model.settings_model.preview_start
         t_end = model.settings_model.preview_end
 
-        original_spec = clip_spectrogram(spec=spec,
-                                         t_start=t_start,
-                                         t_end=t_end)
+        original_spec = clip_spectrogram(spec=spec, t_start=t_start, t_end=t_end)
         set_denoising_for_detection(model, [original_spec])
         model.settings_model.detection_spectrogram_data = original_spec
 
@@ -64,14 +60,10 @@ def set_NN_preview(model: MainModel):
         calculation_mutex.unlock()
 
     if inital_mutex.tryLock():
-        run_background_task(main_model=model,
-                            task=set_preview,
-                            can_be_stopped=False)
+        run_background_task(main_model=model, task=set_preview, can_be_stopped=False)
 
 
-def _run_preview_NN(model: MainModel,
-                    calculation_mutex: QMutex,
-                    callback: Callable):
+def _run_preview_NN(model: MainModel, calculation_mutex: QMutex, callback: Callable):
     try:
         preview_model = model.settings_model.nn_model.preview_model
 
@@ -93,22 +85,23 @@ def _run_preview_NN(model: MainModel,
 
 
 def run_preview_NN(model: MainModel):
-    calculation_mutex = model.settings_model.nn_model. \
-        preview_model.calculation_mutex
+    calculation_mutex = model.settings_model.nn_model.preview_model.calculation_mutex
 
     if calculation_mutex.tryLock():
 
         def _callback():
-            receiver = model.settings_model.nn_model.preview_model. \
-                calculation_task.worker
+            receiver = (
+                model.settings_model.nn_model.preview_model.calculation_task.worker)
             mouseapp.controller.utils.process_qt_events(receiver=receiver)
 
-        task = run_background_task(main_model=model,
-                                   task=_run_preview_NN,
-                                   can_be_stopped=True,
-                                   model=model,
-                                   calculation_mutex=calculation_mutex,
-                                   callback=_callback)
+        task = run_background_task(
+            main_model=model,
+            task=_run_preview_NN,
+            can_be_stopped=True,
+            model=model,
+            calculation_mutex=calculation_mutex,
+            callback=_callback,
+        )
         model.settings_model.nn_model.preview_model.calculation_task = task
 
 

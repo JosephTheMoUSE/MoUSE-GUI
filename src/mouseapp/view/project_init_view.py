@@ -12,14 +12,11 @@ from mouseapp.controller import main_controller
 from mouseapp.controller import persistency_controller
 from mouseapp.controller.utils import warn_user
 from mouseapp.model.main_models import MainModel
-from mouseapp.view.generated.init_project.ui_basic_metadata_widget import \
-    Ui_BasicMetadataWidget
-from mouseapp.view.generated.init_project.ui_load_audio_widget import \
-    Ui_LoadAudioWidget
-from mouseapp.view.generated.init_project.ui_main_window \
-    import Ui_CreateProjectWindow
-from mouseapp.view.generated.init_project.ui_select_project \
-    import Ui_SelectProject
+from mouseapp.view.generated.init_project.ui_basic_metadata_widget import (
+    Ui_BasicMetadataWidget,)
+from mouseapp.view.generated.init_project.ui_load_audio_widget import Ui_LoadAudioWidget
+from mouseapp.view.generated.init_project.ui_main_window import Ui_CreateProjectWindow
+from mouseapp.view.generated.init_project.ui_select_project import Ui_SelectProject
 from mouseapp.view.widgets import ProjectEntry
 
 
@@ -49,9 +46,7 @@ class SelectProject(QtWidgets.QWidget, Ui_SelectProject):
         # Connect buttons
         self.projectsList.itemClicked.connect(self._on_project_item_clicked)
         self.loadProjectButton.clicked.connect(
-            partial(self._on_load_project,
-                    old_model=old_model,
-                    old_widget=old_widget))
+            partial(self._on_load_project, old_model=old_model, old_widget=old_widget))
         self.selectFromDiskButton.clicked.connect(self._on_select_from_disk)
 
     def _on_project_item_clicked(self, widget: QListWidgetItem):
@@ -67,8 +62,7 @@ class SelectProject(QtWidgets.QWidget, Ui_SelectProject):
                           f"{project_entry.mouse_project}")
             self._selected_project_path = project_entry.mouse_project.path
         else:
-            mouseapp.controller.utils.warn_user(self.model,
-                                                "Project can't be loaded!")
+            mouseapp.controller.utils.warn_user(self.model, "Project can't be loaded!")
             self.loadProjectButton.setEnabled(False)
 
     def _on_load_project(self, old_model, old_widget):
@@ -76,7 +70,8 @@ class SelectProject(QtWidgets.QWidget, Ui_SelectProject):
         assert self._selected_project_path is not None
         next_model = persistency_controller.load_project(
             app_model=old_model.application_model,
-            project_path=self._selected_project_path)
+            project_path=self._selected_project_path,
+        )
         if next_model is None:
             warn_user(old_model, "Project failed to load!")
             return
@@ -88,10 +83,11 @@ class SelectProject(QtWidgets.QWidget, Ui_SelectProject):
     def _on_select_from_disk(self):
         folder = QtWidgets.QFileDialog.getExistingDirectory(
             self,
-            'Select MoUSE project',
+            "Select MoUSE project",
             self.next_model.application_model.app_data_dir.__str__(),
             QtWidgets.QFileDialog.ShowDirsOnly |
-            QtWidgets.QFileDialog.DontResolveSymlinks)
+            QtWidgets.QFileDialog.DontResolveSymlinks,
+        )
         persistency_controller.update_projects(self.next_model, folder)
         self._selected_project_path: Optional[Path] = None
         self.projectsList.clear()
@@ -101,8 +97,8 @@ class SelectProject(QtWidgets.QWidget, Ui_SelectProject):
         self.loadProjectButton.setEnabled(False)
 
         for mouse_project in self.next_model.application_model.user_projects:
-            if (self.old_model.project_model is None or mouse_project.path
-                    == self.old_model.project_model.project_path):
+            if (self.old_model.project_model is None or
+                    mouse_project.path == self.old_model.project_model.project_path):
                 continue
             project_entry = ProjectEntry(mouse_project=mouse_project)
 
@@ -125,14 +121,12 @@ class BasicMetadata(QtWidgets.QWidget, Ui_BasicMetadataWidget):
 
         # Connect buttons
         self.projectNameEdit.textChanged.connect(
-            lambda: main_controller.set_project_name(
-                model=model, name=self.projectNameEdit.text()))
-        self.dateEdit.dateChanged.connect(
-            lambda: main_controller.set_experiment_date(
-                model=model, date=self.dateEdit.date()))
-        self.noteEdit.textChanged.connect(
-            lambda: main_controller.set_project_note(
-                model=model, note=self.noteEdit.toPlainText()))
+            lambda: main_controller.set_project_name(model=model,
+                                                     name=self.projectNameEdit.text()))
+        self.dateEdit.dateChanged.connect(lambda: main_controller.set_experiment_date(
+            model=model, date=self.dateEdit.date()))
+        self.noteEdit.textChanged.connect(lambda: main_controller.set_project_note(
+            model=model, note=self.noteEdit.toPlainText()))
 
 
 class LoadAudio(QtWidgets.QWidget, Ui_LoadAudioWidget):
@@ -157,33 +151,35 @@ class LoadAudio(QtWidgets.QWidget, Ui_LoadAudioWidget):
         if folder:
             files = QtWidgets.QFileDialog.getExistingDirectory(
                 self,
-                'Select audio files',
-                Path('').__str__(),
+                "Select audio files",
+                Path("").__str__(),
                 QtWidgets.QFileDialog.ShowDirsOnly |
-                QtWidgets.QFileDialog.DontResolveSymlinks)
-            main_controller.load_audio_files(model=self.model,
-                                             files=files,
-                                             folder=True)
+                QtWidgets.QFileDialog.DontResolveSymlinks,
+            )
+            main_controller.load_audio_files(model=self.model, files=files, folder=True)
         else:
             files = QtWidgets.QFileDialog.getOpenFileNames(
                 self,
-                'Select audio files',
-                Path('').__str__(),
-                'Audio files (*.wav *.mp3)')[0]
+                "Select audio files",
+                Path("").__str__(),
+                "Audio files (*.wav *.mp3)",
+            )[0]
             main_controller.load_audio_files(model=self.model, files=files)
 
     def _on_audio_files_changed(self, value):
-        self.fileLoadingStatusInfo.setText(f'Loaded {value} audio files.')
+        self.fileLoadingStatusInfo.setText(f"Loaded {value} audio files.")
 
 
 class InitializeProjectWindow(QtWidgets.QWidget, Ui_CreateProjectWindow):
     """Create Initialize Project Window class."""
 
-    def __init__(self,
-                 next_model: MainModel,
-                 old_model: MainModel,
-                 old_widget,
-                 start_from_creation: bool = False):
+    def __init__(
+        self,
+        next_model: MainModel,
+        old_model: MainModel,
+        old_widget,
+        start_from_creation: bool = False,
+    ):
         super(InitializeProjectWindow, self).__init__()
         self.setupUi(self)
 
@@ -207,17 +203,15 @@ class InitializeProjectWindow(QtWidgets.QWidget, Ui_CreateProjectWindow):
         for widget in [
                 self.select_project_widget,
                 self.basic_metadata_widget,
-                self.load_audio_widget
+                self.load_audio_widget,
         ]:
             self.initialization_layout.addWidget(widget)
         self.setLayout(self.initialization_layout)
 
         if start_from_creation:
-            self.initialization_layout.setCurrentWidget(
-                self.basic_metadata_widget)
+            self.initialization_layout.setCurrentWidget(self.basic_metadata_widget)
         else:
-            self.initialization_layout.setCurrentWidget(
-                self.select_project_widget)
+            self.initialization_layout.setCurrentWidget(self.select_project_widget)
 
         # Connect next/previous buttons
         self.select_project_widget.newProjectButton.clicked.connect(
@@ -229,10 +223,12 @@ class InitializeProjectWindow(QtWidgets.QWidget, Ui_CreateProjectWindow):
             partial(self.initialization_layout.setCurrentWidget,
                     self.basic_metadata_widget))
         self.load_audio_widget.buttonFinish.clicked.connect(
-            partial(self._button_finish_clicked,
-                    next_model=next_model,
-                    old_model=old_model,
-                    old_widget=old_widget))
+            partial(
+                self._button_finish_clicked,
+                next_model=next_model,
+                old_model=old_model,
+                old_widget=old_widget,
+            ))
 
     def _button_finish_clicked(self, next_model, old_model, old_widget):
         """Finalize creation of a new model and close creation window."""

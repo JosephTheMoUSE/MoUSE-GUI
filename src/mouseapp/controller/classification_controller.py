@@ -19,15 +19,15 @@ def run_selected_classification(model: MainModel):
         def callback():
             process_qt_events(model.spectrogram_model.background_task.worker)
             num_progress = model.spectrogram_model.progressbar_count
-            model.spectrogram_model.progressbar_progress = \
-                int(num_progress / annotation_count * 100)
+            model.spectrogram_model.progressbar_progress = int(num_progress /
+                                                               annotation_count * 100)
             model.spectrogram_model.progressbar_count += 1
 
         def classify_USVs():
             try:
                 model.spectrogram_model.progressbar_exists = True
-                model.spectrogram_model.progressbar_primary_text =\
-                    "Classification progress:"
+                model.spectrogram_model.progressbar_primary_text = (
+                    "Classification progress:")
                 model.spectrogram_model.progressbar_count = 0
                 model.spectrogram_model.progressbar_secondary_text = None
 
@@ -60,10 +60,12 @@ def make_frequency_classification(model: MainModel, callback: Callable):
         threshold=float(threshold),
         low_label=low_label,
         high_label=high_label,
-        callback=callback)
+        callback=callback,
+    )
 
-    for annotation, squeak_box in zip(model.spectrogram_model.annotations,
-                                      classified_squeaks):
+    for annotation, squeak_box in zip(
+        model.spectrogram_model.annotations, classified_squeaks
+    ):
         annotation.label = squeak_box.label
 
     model.spectrogram_model.annotations_changed()

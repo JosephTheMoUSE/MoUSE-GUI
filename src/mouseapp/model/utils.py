@@ -22,7 +22,7 @@ class MouseProject:
         return self.path.__hash__()
 
     def __str__(self):  # noqa D105
-        return f'({repr(self.name)}, {repr(str(self.path))})'
+        return f"({repr(self.name)}, {repr(str(self.path))})"
 
     def __eq__(self, other):  # noqa D105
         if not isinstance(other, MouseProject):
@@ -145,12 +145,12 @@ class Annotation:
 
     def to_dict(self):
         return {
-            'time_start': self.time_start,
-            'time_end': self.time_end,
-            'freq_start': self.freq_start,
-            'freq_end': self.freq_end,
-            'label': self.label,
-            'table_data': dict(self.table_data)
+            "time_start": self.time_start,
+            "time_end": self.time_end,
+            "freq_start": self.freq_start,
+            "freq_end": self.freq_end,
+            "label": self.label,
+            "table_data": dict(self.table_data),
         }
 
     def to_squeak_box(self, spec_data: SpectrogramData):
@@ -159,11 +159,13 @@ class Annotation:
         t_end = np.abs(spec_data.times - self.time_end).argmin()
         freq_start = np.abs(spec_data.freqs - self.freq_start).argmin()
         freq_end = np.abs(spec_data.freqs - self.freq_end).argmin()
-        return SqueakBox(freq_start=int(freq_start),
-                         freq_end=int(freq_end),
-                         t_start=int(t_start),
-                         t_end=int(t_end),
-                         label=self.label)
+        return SqueakBox(
+            freq_start=int(freq_start),
+            freq_end=int(freq_end),
+            t_start=int(t_start),
+            t_end=int(t_end),
+            label=self.label,
+        )
 
     @staticmethod
     def from_dict(**values) -> Annotation:
@@ -176,14 +178,16 @@ class Annotation:
                         spec_data: SpectrogramData,
                         table_data: Dict = None) -> Annotation:
         t_start, t_end = spec_data.times[[squeak_box.t_start, squeak_box.t_end]]
-        freq_start, freq_end = spec_data.freqs[[squeak_box.freq_start,
-                                                squeak_box.freq_end]]
+        freq_start, freq_end = spec_data.freqs[
+            [squeak_box.freq_start, squeak_box.freq_end]
+        ]
         annotation = Annotation(
             time_start=float(t_start),
             time_end=float(t_end),
             freq_start=float(freq_start),
             freq_end=float(freq_end),
-            label=squeak_box.label if squeak_box.label else "Unknown")
+            label=squeak_box.label if squeak_box.label else "Unknown",
+        )
 
         for key, val in table_data.items():
             annotation.table_data[key] = val
@@ -195,7 +199,7 @@ class SerializableModel(QObject):
     def __init__(self):
         super(SerializableModel, self).__init__()
         self._dict_denylist = set(dir(QObject))
-        self._dict_denylist.add('_dict_denylist')
+        self._dict_denylist.add("_dict_denylist")
 
     def to_dict(self):
         result = {}
@@ -211,8 +215,8 @@ class SerializableModel(QObject):
             setattr(self, attribute_name, evaluated_value)
 
     def _is_settable_attribute(self, name):
-        return not (name.startswith('__') or callable(getattr(self, name)) or
-                    name in self._dict_denylist or name.endswith('attr_name'))
+        return not (name.startswith("__") or callable(getattr(self, name)) or
+                    name in self._dict_denylist or name.endswith("attr_name"))
 
     def __iter__(self):
         """Iterate through attributes and their values.

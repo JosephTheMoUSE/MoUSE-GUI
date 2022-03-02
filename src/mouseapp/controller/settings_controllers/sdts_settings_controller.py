@@ -49,6 +49,4 @@ def set_sdts_preview(model: MainModel):
         calculation_mutex.unlock()
 
     if inital_mutex.tryLock():
-        run_background_task(main_model=model,
-                            task=set_preview,
-                            can_be_stopped=False)
+        run_background_task(main_model=model, task=set_preview, can_be_stopped=False)

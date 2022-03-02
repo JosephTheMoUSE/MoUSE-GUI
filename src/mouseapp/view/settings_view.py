@@ -5,8 +5,7 @@ from PySide6 import QtWidgets, QtCore
 from mouseapp.controller.settings_controllers import common_settings_controller
 from mouseapp.model.main_models import MainModel
 from mouseapp.view import utils
-from mouseapp.view.classification_settings_view import \
-    ClassificationSettingsWindow
+from mouseapp.view.classification_settings_view import ClassificationSettingsWindow
 from mouseapp.view.denoising_settings_view import DenoisingSettingsWindow
 from mouseapp.view.detection_settings_view import DetectionSettingsWindow
 from mouseapp.view.filtering_settings_view import FilteringSettingsWindow
@@ -27,18 +26,15 @@ class SettingsWindow(QtWidgets.QWidget, Ui_SettingsWidget):
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
 
         # Instantiate denoising settings widget
-        self.denoising_widget = utils.initialize_widget(
-            DenoisingSettingsWindow(model))
+        self.denoising_widget = utils.initialize_widget(DenoisingSettingsWindow(model))
         utils.initialize_basic_layout(self.denoisingTab, self.denoising_widget)
 
         # Instantiate detection settings widget
-        self.detection_widget = utils.initialize_widget(
-            DetectionSettingsWindow(model))
+        self.detection_widget = utils.initialize_widget(DetectionSettingsWindow(model))
         utils.initialize_basic_layout(self.detectionTab, self.detection_widget)
 
         # Instantiate filtering settings widget
-        self.filtering_widget = utils.initialize_widget(
-            FilteringSettingsWindow(model))
+        self.filtering_widget = utils.initialize_widget(FilteringSettingsWindow(model))
         utils.initialize_basic_layout(self.filteringTab, self.filtering_widget)
 
         # Instantiate classification settings widget

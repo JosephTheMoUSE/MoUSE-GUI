@@ -5,8 +5,8 @@ from mouse.utils import visualization
 from mouse.utils.sound_util import SpectrogramData
 from mouseapp.model.main_models import MainModel
 from mouseapp.view import widgets
-from mouseapp.view.generated.settings.ui_preview_settings import \
-    Ui_PreviewSettingsWidget
+from mouseapp.view.generated.settings.ui_preview_settings import (
+    Ui_PreviewSettingsWidget,)
 
 
 class PreviewSettingsWindow(QtWidgets.QWidget, Ui_PreviewSettingsWidget):
@@ -30,8 +30,7 @@ class PreviewSettingsWindow(QtWidgets.QWidget, Ui_PreviewSettingsWidget):
             self.verticalLayout.addWidget(self.canvas)
 
         # signals
-        self.model.settings_model.time_start_changed. \
-            connect(self._on_start_signal)
+        self.model.settings_model.time_start_changed.connect(self._on_start_signal)
         self.model.settings_model.time_end_changed.connect(self._on_end_signal)
 
     def draw_upper_spect(self, value: Optional[SpectrogramData]):
