@@ -7,8 +7,7 @@ from mouse.nn_detection import neural_network
 from mouse.utils.sound_util import SpectrogramData
 from mouseapp.controller.denoising_controller import apply_denoising
 from mouseapp.controller.main_controller import set_visible_annotations
-from mouseapp.controller.utils import process_qt_events, run_background_task, \
-    warn_user
+from mouseapp.controller.utils import process_qt_events, run_background_task, warn_user
 from mouseapp.model import constants
 from mouseapp.model.main_models import MainModel
 from mouseapp.model.settings.utils import Denoising, Detection
@@ -19,8 +18,7 @@ def set_detection_method(model: MainModel, detection_method: Detection):
     model.settings_model.chosen_detection_method = detection_method
 
 
-def _run_GAC(model: MainModel, callback: Callable,
-             spectrogram: SpectrogramData):
+def _run_GAC(model: MainModel, callback: Callable, spectrogram: SpectrogramData):
     try:
         kwargs = model.settings_model.gac_model.get_kwargs()
         print("GAC detection starts with kwargs:", kwargs)
@@ -33,12 +31,12 @@ def _run_GAC(model: MainModel, callback: Callable,
 
         def iter_callback(level_set: np.ndarray):
             num_progress = model.spectrogram_model.progressbar_count
-            model.spectrogram_model.progressbar_progress = \
-                int(num_progress / kwargs["iterations"] * 100)
+            model.spectrogram_model.progressbar_progress = int(
+                num_progress / kwargs["iterations"] * 100)
             if num_progress == kwargs["iterations"]:
                 model.spectrogram_model.progressbar_progress = None
-                model.spectrogram_model.progressbar_secondary_text = \
-                    "level set to USVs conversion..."
+                model.spectrogram_model.progressbar_secondary_text = (
+                    "level set to USVs conversion...")
 
             model.spectrogram_model.progressbar_count += 1
 
@@ -53,11 +51,10 @@ def _run_GAC(model: MainModel, callback: Callable,
             denoising_str = str(model.settings_model.bilateral_model)
         elif model.settings_model.chosen_denoising_method == Denoising.SDTS:
             denoising_str = str(model.settings_model.sdts_model)
-        elif model.settings_model.chosen_denoising_method == \
-                Denoising.NOISE_GATE:
+        elif model.settings_model.chosen_denoising_method == Denoising.NOISE_GATE:
             denoising_str = str(model.settings_model.noise_gate_model)
         else:
-            denoising_str = ''
+            denoising_str = ""
 
         detection_str = str(model.settings_model.gac_model)
 
@@ -67,8 +64,10 @@ def _run_GAC(model: MainModel, callback: Callable,
                 lambda box: Annotation.from_squeak_box(
                     box,
                     spec_data=spectrogram,
-                    table_data={constants.COL_DETECTION_METHOD: method_str}),
-                detections))
+                    table_data={constants.COL_DETECTION_METHOD: method_str},
+                ),
+                detections,
+            ))
         model.spectrogram_model.update_annotations(annotations)
     finally:
         model.spectrogram_model.progressbar_exists = None
@@ -87,12 +86,11 @@ def _run_NN(model: MainModel, callback: Callable, spectrogram: SpectrogramData):
 
         def _iter_callback(idx, total):
             num_progress = idx + 1
-            model.spectrogram_model.progressbar_progress = \
-                int(num_progress / total * 100)
+            model.spectrogram_model.progressbar_progress = int(num_progress / total *
+                                                               100)
             if num_progress == total:
                 model.spectrogram_model.progressbar_progress = None
-                model.spectrogram_model.progressbar_secondary_text = \
-                    "Merging boxes..."
+                model.spectrogram_model.progressbar_secondary_text = "Merging boxes..."
             callback(None)
 
         detections = neural_network.find_USVs(
@@ -105,11 +103,10 @@ def _run_NN(model: MainModel, callback: Callable, spectrogram: SpectrogramData):
             denoising_str = str(model.settings_model.bilateral_model)
         elif model.settings_model.chosen_denoising_method == Denoising.SDTS:
             denoising_str = str(model.settings_model.sdts_model)
-        elif model.settings_model.chosen_denoising_method == \
-                Denoising.NOISE_GATE:
+        elif model.settings_model.chosen_denoising_method == Denoising.NOISE_GATE:
             denoising_str = str(model.settings_model.noise_gate_model)
         else:
-            denoising_str = ''
+            denoising_str = ""
 
         detection_str = str(model.settings_model.nn_model)
 
@@ -119,8 +116,10 @@ def _run_NN(model: MainModel, callback: Callable, spectrogram: SpectrogramData):
                 lambda box: Annotation.from_squeak_box(
                     box,
                     spec_data=spectrogram,
-                    table_data={constants.COL_DETECTION_METHOD: method_str}),
-                detections))
+                    table_data={constants.COL_DETECTION_METHOD: method_str},
+                ),
+                detections,
+            ))
         model.spectrogram_model.update_annotations(annotations)
     finally:
         model.spectrogram_model.progressbar_exists = None

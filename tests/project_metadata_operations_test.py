@@ -10,8 +10,7 @@ def test_show_key_value_window(qtbot, clean_main_model):
     widget = ProjectTab(clean_main_model)
     qtbot.addWidget(widget)
 
-    qtbot.mouseClick(widget.addMetadataButton,
-                     qt_api.QtCore.Qt.MouseButton.LeftButton)
+    qtbot.mouseClick(widget.addMetadataButton, qt_api.QtCore.Qt.MouseButton.LeftButton)
 
     assert widget.active_new_key_value_widget is not None
     assert widget.active_new_key_value_widget.isVisible()
@@ -23,12 +22,13 @@ def test_add_new_key_value_string_to_model(qtbot, clean_main_model):
 
     widget.keyEditField.setText("test-key")
     widget.valueEditField.setText("test-value")
-    qtbot.mouseClick(widget.addKeyValueButton,
-                     qt_api.QtCore.Qt.MouseButton.LeftButton)
+    qtbot.mouseClick(widget.addKeyValueButton, qt_api.QtCore.Qt.MouseButton.LeftButton)
 
     assert "test-key" in clean_main_model.project_model.project_metadata
     assert clean_main_model.project_model.project_metadata["test-key"] == (
-        "test-value", "Text")
+        "test-value",
+        "Text",
+    )
 
 
 def test_add_new_key_value_int_to_model(qtbot, clean_main_model):
@@ -38,12 +38,10 @@ def test_add_new_key_value_int_to_model(qtbot, clean_main_model):
     widget.keyEditField.setText("test-key")
     widget.valueEditField.setText("2.0")
     widget.valueTypeComboBox.setCurrentText("Integer")
-    qtbot.mouseClick(widget.addKeyValueButton,
-                     qt_api.QtCore.Qt.MouseButton.LeftButton)
+    qtbot.mouseClick(widget.addKeyValueButton, qt_api.QtCore.Qt.MouseButton.LeftButton)
 
     assert "test-key" in clean_main_model.project_model.project_metadata
-    assert clean_main_model.project_model.project_metadata["test-key"] == (
-        2, "Integer")
+    assert clean_main_model.project_model.project_metadata["test-key"] == (2, "Integer")
 
 
 def test_add_new_key_value_float_to_model(qtbot, clean_main_model):
@@ -53,12 +51,10 @@ def test_add_new_key_value_float_to_model(qtbot, clean_main_model):
     widget.keyEditField.setText("test-key")
     widget.valueEditField.setText("2.2")
     widget.valueTypeComboBox.setCurrentText("Real")
-    qtbot.mouseClick(widget.addKeyValueButton,
-                     qt_api.QtCore.Qt.MouseButton.LeftButton)
+    qtbot.mouseClick(widget.addKeyValueButton, qt_api.QtCore.Qt.MouseButton.LeftButton)
 
     assert "test-key" in clean_main_model.project_model.project_metadata
-    assert clean_main_model.project_model.project_metadata["test-key"] == (
-        2.2, "Real")
+    assert clean_main_model.project_model.project_metadata["test-key"] == (2.2, "Real")
 
 
 def test_show_new_key_value_in_project_tab(qtbot, clean_main_model):
@@ -78,12 +74,11 @@ def test_show_new_key_value_in_project_tab(qtbot, clean_main_model):
     # Check if key value widget is visible and has proper settings
     assert "test-key" in project_tab.key_value_widgets
     assert project_tab.key_value_widgets["test-key"].isVisibleTo(project_tab)
-    assert project_tab.key_value_widgets["test-key"].keyLabel.text(
-    ) == "test-key"
-    assert project_tab.key_value_widgets["test-key"].valueEditField.toPlainText(
-    ) == "test-value"
-    assert project_tab.key_value_widgets[
-        "test-key"].valueTypeComboBox.currentText() == "Text"
+    assert project_tab.key_value_widgets["test-key"].keyLabel.text() == "test-key"
+    assert (project_tab.key_value_widgets["test-key"].valueEditField.toPlainText() ==
+            "test-value")
+    assert (project_tab.key_value_widgets["test-key"].valueTypeComboBox.currentText() ==
+            "Text")
 
 
 def test_remove_key_value_from_model(qtbot, main_model):

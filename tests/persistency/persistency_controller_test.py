@@ -11,21 +11,24 @@ from tests.model_fixtures import *  # noqa
 def test_load_config(app_model, tmpdir):
     """Tests whether the config is saved and loaded correctly."""
     base_dir = Path(tmpdir)
-    app_model.recent_project = MouseProject(
-        name="project_recent", path=base_dir.joinpath("project_recent"))
+    app_model.recent_project = MouseProject(name="project_recent",
+                                            path=base_dir.joinpath("project_recent"))
     app_model.user_projects = {
         app_model.recent_project,
-        MouseProject(name="project_other",
-                     path=base_dir.joinpath("project_other"))
+        MouseProject(name="project_other", path=base_dir.joinpath("project_other")),
     }
     persistency_controller.save_config(app_model)
 
     # here application is closed and opened again...
 
-    with mock.patch("mouseapp.model.main_models.appdirs.user_config_dir",
-                    mock.MagicMock(return_value=str(tmpdir))):
-        with mock.patch("mouseapp.model.main_models.appdirs.user_config_dir",
-                        mock.MagicMock(return_value=str(tmpdir))):
+    with mock.patch(
+            "mouseapp.model.main_models.appdirs.user_config_dir",
+            mock.MagicMock(return_value=str(tmpdir)),
+    ):
+        with mock.patch(
+                "mouseapp.model.main_models.appdirs.user_config_dir",
+                mock.MagicMock(return_value=str(tmpdir)),
+        ):
             reopened_app_model = ApplicationModel()
 
     assert reopened_app_model.recent_project == app_model.recent_project
@@ -37,8 +40,8 @@ def test_load_model(main_model):
     main_model.application_model.recent_project = None
     persistency_controller.save_project(main_model)
     assert main_model.application_model.recent_project is not None
-    assert main_model.application_model.recent_project.path == \
-           main_model.project_model.project_path
+    assert (main_model.application_model.recent_project.path ==
+            main_model.project_model.project_path)
 
     # here application is closed and opened again...
 
@@ -72,7 +75,7 @@ def test_project_saves_on_close_event(main_model, qtbot):
     widget.close()
 
     app_model = main_model.application_model
-    loaded_model = persistency_controller.load_project(
-        app_model, app_model.recent_project.path)
+    loaded_model = persistency_controller.load_project(app_model,
+                                                       app_model.recent_project.path)
 
     assert main_model.to_dict() == loaded_model.to_dict()

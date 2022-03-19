@@ -1,10 +1,9 @@
 from PySide6 import QtCore, QtWidgets
 
-from mouseapp.controller.settings_controllers import \
-    filtering_settings_controller
+from mouseapp.controller.settings_controllers import filtering_settings_controller
 from mouseapp.model.main_models import MainModel
-from mouseapp.view.generated.settings.ui_filtering_settings import \
-    Ui_FilteringSettingsWidget
+from mouseapp.view.generated.settings.ui_filtering_settings import (
+    Ui_FilteringSettingsWidget,)
 
 
 class FilteringSettingsWindow(QtWidgets.QWidget, Ui_FilteringSettingsWidget):
@@ -25,10 +24,10 @@ class FilteringSettingsWindow(QtWidgets.QWidget, Ui_FilteringSettingsWidget):
             self._on_frequency_threshold_edited)
 
         # signals
-        self.model.settings_model.filtering_model.frequency_filter_changed. \
-            connect(self._on_frequency_filter_signal)
-        self.model.settings_model.filtering_model.frequency_threshold_changed. \
-            connect(self._on_frequency_threshold_signal)
+        self.model.settings_model.filtering_model.frequency_filter_changed.connect(
+            self._on_frequency_filter_signal)
+        self.model.settings_model.filtering_model.frequency_threshold_changed.connect(
+            self._on_frequency_threshold_signal)
 
         model.settings_model.filtering_model.emit_all_setting_signals()
 

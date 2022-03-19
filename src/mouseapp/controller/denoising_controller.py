@@ -10,20 +10,22 @@ def apply_bilateral_filter(model: MainModel, spectrogram: SpectrogramData):
     bilateral_model = model.settings_model.bilateral_model
     kwargs = bilateral_model.get_kwargs()
 
-    denoising.bilateral_filter(spectrogram=spectrogram,
-                               d=kwargs["d"],
-                               sigma_color=kwargs["sigma_color"],
-                               sigma_space=kwargs["sigma_space"])
+    denoising.bilateral_filter(
+        spectrogram=spectrogram,
+        d=kwargs["d"],
+        sigma_color=kwargs["sigma_color"],
+        sigma_space=kwargs["sigma_space"],
+    )
 
 
 def apply_sdts_filter(model: MainModel, spectrogram: SpectrogramData):
     sdts_model = model.settings_model.sdts_model
     kwargs = sdts_model.get_kwargs()
 
-    denoising.short_duration_transient_suppression_filter(
-        spectrogram=spectrogram,
-        alpha=1 - kwargs["noise_decrease"],
-        m=kwargs["m"])
+    denoising.short_duration_transient_suppression_filter(spectrogram=spectrogram,
+                                                          alpha=1 -
+                                                          kwargs["noise_decrease"],
+                                                          m=kwargs["m"])
 
 
 def apply_noise_gate_filter(model: MainModel, spectrogram: SpectrogramData):
@@ -40,24 +42,27 @@ def apply_noise_gate_filter(model: MainModel, spectrogram: SpectrogramData):
         noise_spectrogram = clip_spectrogram(
             spec=model.spectrogram_model.spectrogram_data,
             t_start=kwargs["noise_start"],
-            t_end=kwargs["noise_end"])
+            t_end=kwargs["noise_end"],
+        )
     else:
         noise_spectrogram = clip_spectrogram(
             spec=kwargs["noise_spectrogram_data"],
             t_start=kwargs["noise_start"],
-            t_end=kwargs["noise_end"])
+            t_end=kwargs["noise_end"],
+        )
 
-    denoising.noise_gate_filter(spectrogram=spectrogram,
-                                noise_spectrogram=noise_spectrogram,
-                                n_grad_freq=kwargs["n_grad_freq"],
-                                n_grad_time=kwargs["n_grad_time"],
-                                n_std_thresh=kwargs["n_std_thresh"],
-                                noise_decrease=kwargs["noise_decrease"])
+    denoising.noise_gate_filter(
+        spectrogram=spectrogram,
+        noise_spectrogram=noise_spectrogram,
+        n_grad_freq=kwargs["n_grad_freq"],
+        n_grad_time=kwargs["n_grad_time"],
+        n_std_thresh=kwargs["n_std_thresh"],
+        noise_decrease=kwargs["noise_decrease"],
+    )
 
 
 def apply_denoising(model: MainModel, spectrogram):
-    denoising_method: Denoising = \
-        model.settings_model.chosen_denoising_method
+    denoising_method: Denoising = model.settings_model.chosen_denoising_method
     denoised_spectrogram = copy.deepcopy(spectrogram)
 
     if denoising_method == Denoising.BILATERAL:

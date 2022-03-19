@@ -39,14 +39,14 @@ class ProjectModel(SerializableModel):
         if audio_files is None:
             audio_files = list()
         self._audio_files: List[Path] = audio_files
-        self._audio_files_attr_name = 'audio_files'
+        self._audio_files_attr_name = "audio_files"
         self._project_name = ""
         self._experiment_date: Optional[QDate] = None
-        self._experiment_date_attr_name = 'experiment_date'
+        self._experiment_date_attr_name = "experiment_date"
         self._experiment_note = ""
         self._project_metadata: Dict[str, Tuple[Any, str]] = dict()
         self._project_path: Optional[Path] = None
-        self._project_path_attr_name = 'project_path'
+        self._project_path_attr_name = "project_path"
 
     @property
     def audio_files(self):
@@ -98,13 +98,17 @@ class ProjectModel(SerializableModel):
         self._project_metadata = project_metadata
 
     def add_project_metadata(self, key_value_type):
-        self.project_metadata[key_value_type[0]] = (key_value_type[1],
-                                                    key_value_type[2])
+        self.project_metadata[key_value_type[0]] = (
+            key_value_type[1],
+            key_value_type[2],
+        )
         self.project_metadata_added.emit(key_value_type)
 
     def update_project_metadata(self, key_value_type):
-        self.project_metadata[key_value_type[0]] = (key_value_type[1],
-                                                    key_value_type[2])
+        self.project_metadata[key_value_type[0]] = (
+            key_value_type[1],
+            key_value_type[2],
+        )
         self.project_metadata_updated.emit(key_value_type)
 
     def remove_project_metadata(self, key):
@@ -169,7 +173,7 @@ class SpectrogramModel(SerializableModel):
         self.win_length = 512
         self.hop_length = 256
         self.center = True
-        self.pad_mode = 'reflect'
+        self.pad_mode = "reflect"
         self.power = 1
         self.sample_rate = None
         self.spectrogram_calculator: Optional[Spectrogram] = None
@@ -207,21 +211,21 @@ class SpectrogramModel(SerializableModel):
 
         # SerializableModel setup
         self._dict_denylist.update([
-            'spectrogram_data',
-            'spectrogram_calculator',
-            'time_mask',
-            'current_spectrogram_chunk_data',
-            'visible_annotations',
-            'checked_annotations_counter',
-            'current_spectrogram_chunk_data',
-            'spectrogram_data',
-            'visible_annotations',
-            'detection_mutex',
-            'progressbar_primary_text',
-            'progressbar_secondary_text',
-            'progressbar_count',
-            'progressbar_progress',
-            'progressbar_exists',
+            "spectrogram_data",
+            "spectrogram_calculator",
+            "time_mask",
+            "current_spectrogram_chunk_data",
+            "visible_annotations",
+            "checked_annotations_counter",
+            "current_spectrogram_chunk_data",
+            "spectrogram_data",
+            "visible_annotations",
+            "detection_mutex",
+            "progressbar_primary_text",
+            "progressbar_secondary_text",
+            "progressbar_count",
+            "progressbar_progress",
+            "progressbar_exists",
         ])
 
     @property
@@ -248,9 +252,11 @@ class SpectrogramModel(SerializableModel):
     @progressbar_progress.setter
     def progressbar_progress(self, value: Optional[int]):
         self._progressbar_progress = value
-        self.detection_info_changed.emit((self._progressbar_primary_text,
-                                          self._progressbar_progress,
-                                          self._progressbar_secondary_text))
+        self.detection_info_changed.emit((
+            self._progressbar_primary_text,
+            self._progressbar_progress,
+            self._progressbar_secondary_text,
+        ))
 
     @property
     def progressbar_exists(self):
@@ -268,9 +274,11 @@ class SpectrogramModel(SerializableModel):
     @progressbar_primary_text.setter
     def progressbar_primary_text(self, value):
         self._progressbar_primary_text = value
-        self.detection_info_changed.emit((self._progressbar_primary_text,
-                                          self._progressbar_progress,
-                                          self._progressbar_secondary_text))
+        self.detection_info_changed.emit((
+            self._progressbar_primary_text,
+            self._progressbar_progress,
+            self._progressbar_secondary_text,
+        ))
 
     @property
     def progressbar_secondary_text(self):
@@ -279,9 +287,11 @@ class SpectrogramModel(SerializableModel):
     @progressbar_secondary_text.setter
     def progressbar_secondary_text(self, value):
         self._progressbar_secondary_text = value
-        self.detection_info_changed.emit((self._progressbar_primary_text,
-                                          self._progressbar_progress,
-                                          self._progressbar_secondary_text))
+        self.detection_info_changed.emit((
+            self._progressbar_primary_text,
+            self._progressbar_progress,
+            self._progressbar_secondary_text,
+        ))
 
     @property
     def progressbar_count(self):
@@ -392,12 +402,12 @@ class SpectrogramModel(SerializableModel):
         self.annotation_field_changed.emit((row_id, column_id, value))
 
     def _value_to_dict(self, name, value):
-        if name == 'annotations':  # serialize annotations
+        if name == "annotations":  # serialize annotations
             return [annotation.to_dict() for annotation in value]
         return value
 
     def _value_from_dict(self, name, value):
-        if name == 'annotations':
+        if name == "annotations":
             return [Annotation.from_dict(**annotation) for annotation in value]
         return value
 
@@ -421,11 +431,10 @@ class ApplicationModel(QObject):
         super().__init__()
         self.active_windows = set()
         self.background_tasks: Set[BackgroundTask] = set()
-        self.app_name = 'MoUSE'
+        self.app_name = "MoUSE"
         self.app_data_dir = Path(appdirs.user_data_dir(appname=self.app_name))
-        self.app_config_dir = Path(
-            appdirs.user_config_dir(appname=self.app_name))
-        self.app_config_file = self.app_config_dir.joinpath('config.ini')
+        self.app_config_dir = Path(appdirs.user_config_dir(appname=self.app_name))
+        self.app_config_file = self.app_config_dir.joinpath("config.ini")
         self.user_projects: Set[MouseProject] = set()
         self.recent_project: Optional[MouseProject] = None
 
@@ -433,22 +442,20 @@ class ApplicationModel(QObject):
             logging.debug("[ApplicationModel] Reading config file...")
             parser = configparser.ConfigParser()
             parser.read(self.app_config_file)
-            user_projects = parser.get(section='CONFIGURATION',
-                                       option='user_projects',
+            user_projects = parser.get(section="CONFIGURATION",
+                                       option="user_projects",
                                        fallback=str(set()))
-            logging.debug(
-                f"[ApplicationModel] Loaded projects: {user_projects}")
+            logging.debug(f"[ApplicationModel] Loaded projects: {user_projects}")
             self.user_projects = {
                 MouseProject.from_string(entry) for entry in eval(user_projects)
             }
 
-            recrent_project_string = parser.get(section='CONFIGURATION',
-                                                option='last_project',
+            recrent_project_string = parser.get(section="CONFIGURATION",
+                                                option="last_project",
                                                 fallback="")
             logging.debug(f"[ApplicationModel] Recent project: {user_projects}")
             if recrent_project_string != "":
-                self.recent_project = MouseProject.from_string(
-                    recrent_project_string)
+                self.recent_project = MouseProject.from_string(recrent_project_string)
 
     def text_warning(self, warning):
         self.text_warning_signal.emit(warning)

@@ -11,12 +11,13 @@ from mouseapp.controller.detection_controller import set_detection_method
 from mouseapp.controller.settings_controllers import (
     gac_settings_controller,
     common_settings_controller,
-    neural_settings_controller)
+    neural_settings_controller,
+)
 from mouseapp.model.main_models import MainModel
 from mouseapp.model.settings.utils import Detection
 from mouseapp.view import utils
-from mouseapp.view.generated.settings.ui_detection_settings import \
-    Ui_DetectionSettingsWidget
+from mouseapp.view.generated.settings.ui_detection_settings import (
+    Ui_DetectionSettingsWidget,)
 from mouseapp.view.preview_settings_view import PreviewSettingsWindow
 from mouseapp.view.widgets import SliderWithEdit
 
@@ -55,33 +56,26 @@ class DetectionSettingsWindow(QtWidgets.QWidget, Ui_DetectionSettingsWidget):
 
         # connect inputs
         # # connect detection inputs
-        self.detectionComboBox.currentTextChanged.connect(
-            self.change_detection_page)
-        self.gac_preview.runPreviewButton.clicked.connect(
-            self._on_run_detection)
+        self.detectionComboBox.currentTextChanged.connect(self.change_detection_page)
+        self.gac_preview.runPreviewButton.clicked.connect(self._on_run_detection)
         self.nn_preview.runPreviewButton.clicked.connect(self._on_run_detection)
 
         # # connect GAC inputs
         self.baloonComboBox.currentTextChanged.connect(self._on_baloon_combobox)
-        self.iterationsLineEdit.editingFinished.connect(
-            self._on_iterations_edit)
+        self.iterationsLineEdit.editingFinished.connect(self._on_iterations_edit)
         self.smoothingLineEdit.editingFinished.connect(self._on_smoothing_edit)
         self.sigmaLineEdit.editingFinished.connect(self._on_sigma_edit)
         self.alphaLineEdit.editingFinished.connect(self._on_alpha_edit)
-        self.baloonSlider.modifications_finished.connect(
-            self._on_threshold_edit)
-        self.floodLevelSlider.modifications_finished.connect(
-            self._on_flood_changed)
+        self.baloonSlider.modifications_finished.connect(self._on_threshold_edit)
+        self.floodLevelSlider.modifications_finished.connect(self._on_flood_changed)
         self.restoreGACButton.clicked.connect(self._on_gac_restore)
         self.gac_preview.previewButton.clicked.connect(self._on_preview_time)
         self.nn_preview.previewButton.clicked.connect(self._on_preview_time)
 
         # Neural Network inputs
-        self.modelTypeComboBox.currentTextChanged.connect(
-            self._model_name_changed)
+        self.modelTypeComboBox.currentTextChanged.connect(self._model_name_changed)
         self.batchSizeSpinBox.valueChanged.connect(self._batch_size_changed)
-        self.confidenceSpinBox.valueChanged.connect(
-            self._confidence_value_changed)
+        self.confidenceSpinBox.valueChanged.connect(self._confidence_value_changed)
 
         # connect signals
         self.model.settings_model.detection_spec_changed.connect(
@@ -113,7 +107,7 @@ class DetectionSettingsWindow(QtWidgets.QWidget, Ui_DetectionSettingsWidget):
         self.gac_preview.hide()
         self.nn_preview.hide()
 
-        if 'gac' in text.lower():
+        if "gac" in text.lower():
             self.detectionStackedWidget.setCurrentWidget(self.GACPage)
 
             if not self.was_gac_loaded:
@@ -132,10 +126,8 @@ class DetectionSettingsWindow(QtWidgets.QWidget, Ui_DetectionSettingsWidget):
             self.nn_preview.show()
 
     def _connect_gac_signals(self):
-        self.model.settings_model.gac_model.sigma_changed.connect(
-            self._on_sigma_signal)
-        self.model.settings_model.gac_model.alpha_changed.connect(
-            self._on_alpha_signal)
+        self.model.settings_model.gac_model.sigma_changed.connect(self._on_sigma_signal)
+        self.model.settings_model.gac_model.alpha_changed.connect(self._on_alpha_signal)
         self.model.settings_model.gac_model.iterations_changed.connect(
             self._on_iterations_signal)
         self.model.settings_model.gac_model.smoothing_changed.connect(
@@ -146,25 +138,25 @@ class DetectionSettingsWindow(QtWidgets.QWidget, Ui_DetectionSettingsWidget):
             self._on_baloon_signal)
         self.model.settings_model.gac_model.flood_threshold_changed.connect(
             self._on_flood_signal)
-        self.model.settings_model.gac_model.preview_model.preview_changed. \
-            connect(self._on_gac_preview_signal)
-        self.model.settings_model.gac_model.preview_model.detections_changed. \
-            connect(self._on_gac_detection_signal)
-        self.model.settings_model.gac_model.preview_model.\
-            method_allowed_changed.connect(self._on_method_allowed_signal)
+        self.model.settings_model.gac_model.preview_model.preview_changed.connect(
+            self._on_gac_preview_signal)
+        self.model.settings_model.gac_model.preview_model.detections_changed.connect(
+            self._on_gac_detection_signal)
+        self.model.settings_model.gac_model.preview_model.method_allowed_changed.connect(
+            self._on_method_allowed_signal)
 
     def _connect_nn_signals(self):
-        self.model.settings_model.nn_model.model_batch_size_changed. \
-            connect(self._on_batch_signal)
-        self.model.settings_model.nn_model.model_confidence_threshold_changed. \
-            connect(self._on_confidence_threshold_signal)
-        self.model.settings_model.nn_model.model_name_changed. \
-            connect(self._on_model_name_signal)
+        self.model.settings_model.nn_model.model_batch_size_changed.connect(
+            self._on_batch_signal)
+        self.model.settings_model.nn_model.model_confidence_threshold_changed.connect(
+            self._on_confidence_threshold_signal)
+        self.model.settings_model.nn_model.model_name_changed.connect(
+            self._on_model_name_signal)
 
-        self.model.settings_model.nn_model.preview_model.detections_changed. \
-            connect(self._on_nn_detection_signal)
-        self.model.settings_model.nn_model.preview_model.\
-            method_allowed_changed.connect(self._on_method_allowed_signal)
+        self.model.settings_model.nn_model.preview_model.detections_changed.connect(
+            self._on_nn_detection_signal)
+        self.model.settings_model.nn_model.preview_model.method_allowed_changed.connect(
+            self._on_method_allowed_signal)
 
     def _on_baloon_combobox(self, text: str):
         gac_settings_controller.set_baloon(model=self.model, value=text)
@@ -173,8 +165,8 @@ class DetectionSettingsWindow(QtWidgets.QWidget, Ui_DetectionSettingsWidget):
         gac_settings_controller.set_threshold(model=self.model, value=value)
 
     def _on_smoothing_edit(self):
-        gac_settings_controller.set_smoothing(
-            model=self.model, value=int(self.smoothingLineEdit.text()))
+        gac_settings_controller.set_smoothing(model=self.model,
+                                              value=int(self.smoothingLineEdit.text()))
 
     def _on_sigma_edit(self):
         gac_settings_controller.set_sigma(model=self.model,
@@ -185,28 +177,25 @@ class DetectionSettingsWindow(QtWidgets.QWidget, Ui_DetectionSettingsWidget):
                                           value=self.alphaLineEdit.text())
 
     def _on_flood_changed(self, value: int):
-        gac_settings_controller.set_flood_threshold(model=self.model,
-                                                    value=value)
+        gac_settings_controller.set_flood_threshold(model=self.model, value=value)
 
     def _on_iterations_edit(self):
-        gac_settings_controller.set_iterations(
-            model=self.model, value=int(self.iterationsLineEdit.text()))
+        gac_settings_controller.set_iterations(model=self.model,
+                                               value=int(
+                                                   self.iterationsLineEdit.text()))
 
     def _on_gac_restore(self):
         gac_settings_controller.restore_default_gac_values(self.model)
 
     def _on_preview_time(self):
         common_settings_controller.set_preview_start(
-            model=self.model,
-            value=self.gac_preview.previewStartLineEdit.text())
-        common_settings_controller. \
-            set_preview_end(model=self.model,
-                            value=self.gac_preview.previewEndLineEdit.text())
+            model=self.model, value=self.gac_preview.previewStartLineEdit.text())
+        common_settings_controller.set_preview_end(
+            model=self.model, value=self.gac_preview.previewEndLineEdit.text())
         common_settings_controller.set_preview_start(
             model=self.model, value=self.nn_preview.previewStartLineEdit.text())
-        common_settings_controller. \
-            set_preview_end(model=self.model,
-                            value=self.nn_preview.previewEndLineEdit.text())
+        common_settings_controller.set_preview_end(
+            model=self.model, value=self.nn_preview.previewEndLineEdit.text())
         if self.detectionStackedWidget.currentWidget() == self.GACPage:
             gac_settings_controller.set_gac_preview(self.model)
         elif self.detectionStackedWidget.currentWidget() == self.nnPage:
@@ -253,17 +242,18 @@ class DetectionSettingsWindow(QtWidgets.QWidget, Ui_DetectionSettingsWidget):
     def _on_end_signal(self, value: float):
         self.previewEndLineEdit.setText(str(value))
 
-    def _on_gac_preview_signal(
-            self, value: [Optional[SpectrogramData], Optional[np.ndarray]]):
+    def _on_gac_preview_signal(self,
+                               value: [Optional[SpectrogramData],
+                                       Optional[np.ndarray]]):
         spec, level_set = value
         self.gac_preview.lower_axis.clear()
         visualization.draw_spectrogram(spec=spec,
                                        ax=self.gac_preview.lower_axis,
-                                       vmin=0.,
-                                       vmax=1.)
+                                       vmin=0.0,
+                                       vmax=1.0)
         if level_set is not None:
             img = np.ma.array(data=level_set, mask=level_set)
-            self.gac_preview.lower_axis.pcolormesh(img, cmap='gray')
+            self.gac_preview.lower_axis.pcolormesh(img, cmap="gray")
         self.gac_preview.canvas.draw()
 
     def _on_batch_signal(self, val):
@@ -282,8 +272,7 @@ class DetectionSettingsWindow(QtWidgets.QWidget, Ui_DetectionSettingsWidget):
         neural_settings_controller.set_batch_size(self.model, batch_size)
 
     def _confidence_value_changed(self, confidence: int):
-        neural_settings_controller.set_confidence_threshold(
-            self.model, confidence)
+        neural_settings_controller.set_confidence_threshold(self.model, confidence)
 
     def _on_method_allowed_signal(self, value: bool):
         self.gac_preview.runPreviewButton.setEnabled(value)
@@ -293,14 +282,16 @@ class DetectionSettingsWindow(QtWidgets.QWidget, Ui_DetectionSettingsWidget):
         boxes, height = value
         for rect in self.rectangles:
             rect.remove()
-        self.rectangles = visualization.draw_boxes(
-            boxes=boxes, spec_height=height, ax=self.gac_preview.upper_axis)
+        self.rectangles = visualization.draw_boxes(boxes=boxes,
+                                                   spec_height=height,
+                                                   ax=self.gac_preview.upper_axis)
         self.gac_preview.canvas.draw()
 
     def _on_nn_detection_signal(self, value: [List[SqueakBox], int]):
         boxes, height = value
         for rect in self.rectangles:
             rect.remove()
-        self.rectangles = visualization.draw_boxes(
-            boxes=boxes, spec_height=height, ax=self.nn_preview.upper_axis)
+        self.rectangles = visualization.draw_boxes(boxes=boxes,
+                                                   spec_height=height,
+                                                   ax=self.nn_preview.upper_axis)
         self.nn_preview.canvas.draw()

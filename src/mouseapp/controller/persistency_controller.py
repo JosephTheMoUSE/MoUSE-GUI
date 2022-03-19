@@ -6,13 +6,17 @@ from pathlib import Path
 from typing import Optional
 
 from mouseapp.controller.utils import warn_user
-from mouseapp.model.main_models import ApplicationModel, MainModel, \
-    ProjectModel, SpectrogramModel
+from mouseapp.model.main_models import (
+    ApplicationModel,
+    MainModel,
+    ProjectModel,
+    SpectrogramModel,
+)
 from mouseapp.model.settings.settings_model import SettingsModel
 from mouseapp.model.utils import MouseProject
 
-warnings.filterwarnings('ignore', category=DeprecationWarning)
-warnings.filterwarnings('ignore', category=RuntimeWarning)
+warnings.filterwarnings("ignore", category=DeprecationWarning)
+warnings.filterwarnings("ignore", category=RuntimeWarning)
 import deepdish as dd  # noqa
 
 warnings.resetwarnings()
@@ -43,9 +47,7 @@ def save_project(model: MainModel):
     """
     project_path = model.project_model.project_path
     if project_path.exists() and not _is_mouse_project(project_path):
-        warn_user(model,
-                  "Application can't be saved under"
-                  "already existing folder!")
+        warn_user(model, "Application can't be saved under an already existing folder!")
         return ""
 
     project_save_path = _add_project_data_filename(project_path)
@@ -60,8 +62,8 @@ def save_project(model: MainModel):
     dd.io.save(project_save_path, model_dict)
 
     # Update recent project if needed
-    if model.application_model.recent_project is None or \
-            model.application_model.recent_project.path != project_path:
+    if (model.application_model.recent_project is None or
+            model.application_model.recent_project.path != project_path):
         model.application_model.recent_project = MouseProject(
             name=model.project_model.project_name, path=project_path)
         save_config(model.application_model)
@@ -70,13 +72,15 @@ def save_project(model: MainModel):
     return f"Project saved - {current_time}"
 
 
-def load_project(app_model: ApplicationModel, project_path: Path) \
-        -> Optional[MainModel]:
+def load_project(app_model: ApplicationModel,
+                 project_path: Path) -> Optional[MainModel]:
     """Load `model` from a file in directory `project_path` if possible."""
-    model = MainModel(application_model=app_model,
-                      spectrogram_model=SpectrogramModel(),
-                      project_model=ProjectModel(),
-                      settings_model=SettingsModel())
+    model = MainModel(
+        application_model=app_model,
+        spectrogram_model=SpectrogramModel(),
+        project_model=ProjectModel(),
+        settings_model=SettingsModel(),
+    )
 
     project_save_path = _add_project_data_filename(project_path)
     try:
@@ -98,13 +102,11 @@ def save_config(app_model: ApplicationModel):
         app_config_path.parent.mkdir(parents=True)
 
     config = configparser.ConfigParser()
-    config['CONFIGURATION'] = {
-        'user_projects':
-            str({str(project) for project in app_model.user_projects}),
-        'last_project':
-            str(app_model.recent_project)
+    config["CONFIGURATION"] = {
+        "user_projects": str({str(project) for project in app_model.user_projects}),
+        "last_project": str(app_model.recent_project),
     }
-    with app_config_path.open('w') as fp:
+    with app_config_path.open("w") as fp:
         config.write(fp)
 
 
@@ -118,8 +120,7 @@ def save_project_as(folder: Path, model: MainModel):
     change_model_path(model=model, new_path=project_path)
 
 
-def _get_project_name(app_model: ApplicationModel, project_path: Path) \
-        -> Optional[str]:
+def _get_project_name(app_model: ApplicationModel, project_path: Path) -> Optional[str]:
     if not _is_mouse_project(project_path):
         raise ValueError("Can't get name of a not-MoUSE project!")
     model = load_project(app_model, project_path)
@@ -141,7 +142,8 @@ def update_projects(model: MainModel, folder: str):
         warn_user(
             model,
             "This project is damaged or incompatible with "
-            "current version of MoUSE!")
+            "current version of MoUSE!",
+        )
         return False
     model.application_model.user_projects.add(
         MouseProject(name=project_name, path=project_path))

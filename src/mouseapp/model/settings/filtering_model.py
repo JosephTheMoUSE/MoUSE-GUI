@@ -13,10 +13,10 @@ class FilteringModel(SerializableModel):
 
         self._default_values = {
             "_frequency_filter": False,
-            "_frequency_threshold": 18000.,
+            "_frequency_threshold": 18000.0,
         }
         self._frequency_filter: bool = False
-        self._frequency_threshold: float = 0.
+        self._frequency_threshold: float = 0.0
         self.set_default_values()
         self.emit_all_setting_signals()
 

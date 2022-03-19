@@ -24,8 +24,7 @@ def run_background_task(main_model: MainModel,
     in `ApplicationModel`.
     """
     # Remove finished threads
-    main_model.application_model.background_tasks -= \
-        _get_finished_tasks(main_model)
+    main_model.application_model.background_tasks -= _get_finished_tasks(main_model)
 
     class Worker(QObject):
         finished = Signal()
@@ -66,9 +65,7 @@ def run_background_task(main_model: MainModel,
                                          worker=worker,
                                          kill_signal=worker.finished)
     else:
-        background_task = BackgroundTask(thread=thread,
-                                         worker=worker,
-                                         kill_signal=None)
+        background_task = BackgroundTask(thread=thread, worker=worker, kill_signal=None)
 
     thread.start()
 
@@ -98,7 +95,7 @@ def process_qt_events(receiver: QObject):
 
 def float_convert(word: str) -> float:
     """Clean `word` and convert it to a finite float."""
-    result = float(word.replace(',', '.'))
+    result = float(word.replace(",", "."))
     if math.isinf(result):
         raise ValueError(f"could not convert string to float: '{word}'")
     return result

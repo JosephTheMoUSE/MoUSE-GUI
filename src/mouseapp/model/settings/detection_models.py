@@ -56,10 +56,10 @@ class GACPreviewModel(DetectionPreviewModel):
 
     def __init__(self):
         super().__init__()
-        self._last_gac_step: float = 0.
+        self._last_gac_step: float = 0.0
         self._initial_level_set: Optional[np.ndarray] = None
         # minimum time[s] between redrawing gac updates
-        self._time_between_gac_steps = .5
+        self._time_between_gac_steps = 0.5
 
     @property
     def initial_level_set(self):
@@ -111,7 +111,7 @@ class DetectionModel(SerializableModel):
             setattr(self, key, val)
 
     def get_kwargs(self):
-        return {(key if key[0] != '_' else key[1:]): getattr(self, key)
+        return {(key if key[0] != "_" else key[1:]): getattr(self, key)
                 for key in self._default_values.keys()}
 
     def _value_to_dict(self, name, value):
@@ -147,21 +147,21 @@ class GACModel(DetectionModel):
         }
         self._iterations: int = 0
         self._smoothing: int = 0
-        self._threshold: float = 0.
-        self._balloon: float = 0.
-        self._alpha: float = 0.
+        self._threshold: float = 0.0
+        self._balloon: float = 0.0
+        self._alpha: float = 0.0
         self._sigma: int = 0
         self._flood_threshold: float = 0.95
         self.set_default_values()
 
     def __repr__(self):
-        return (f'GAC:iterations={self.iterations},'
-                f'smoothing={self.smoothing},'
-                f'threshold={self.threshold},'
-                f'balloon={self.smoothing},'
-                f'alpha={self.alpha},'
-                f'sigma={self.sigma},'
-                f'flood_threshold={self.flood_threshold};')
+        return (f"GAC:iterations={self.iterations},"
+                f"smoothing={self.smoothing},"
+                f"threshold={self.threshold},"
+                f"balloon={self.smoothing},"
+                f"alpha={self.alpha},"
+                f"sigma={self.sigma},"
+                f"flood_threshold={self.flood_threshold};")
 
     @property
     def iterations(self):
@@ -243,15 +243,17 @@ class GACModel(DetectionModel):
             seed[:, -1] = 0
             seed[0, :] = 0
             seed[-1, :] = 0
-            return morphology.reconstruction(seed, mask, method='erosion')
+            return morphology.reconstruction(seed, mask, method="erosion")
 
         kwargs = {
             "preprocessing_fn":
-                partial(segmentation.inverse_gaussian_gradient,
-                        sigma=self._sigma,
-                        alpha=self._alpha),
+                partial(
+                    segmentation.inverse_gaussian_gradient,
+                    sigma=self._sigma,
+                    alpha=self._alpha,
+                ),
             "level_set_fn":
-                level_set_fn
+                level_set_fn,
         }
 
         for key in self._default_values.keys():
@@ -285,17 +287,17 @@ class NNModel(DetectionModel):
         self._preview_model: DetectionPreviewModel = DetectionPreviewModel()
 
         self._default_values = {
-            '_model_name':
-                'f-rcnn-custom',
-            '_batch_size':
+            "_model_name":
+                "f-rcnn-custom",
+            "_batch_size":
                 1,
-            '_confidence_threshold':
+            "_confidence_threshold":
                 0.2,
-            '_cache_dir':
-                Path(appdirs.user_data_dir(appname='MoUSE')) /
-                'nn_pretrained_models_cache'
+            "_cache_dir":
+                Path(appdirs.user_data_dir(appname="MoUSE")) /
+                "nn_pretrained_models_cache",
         }
-        self._model_name = 'F-RCNN-custom'
+        self._model_name = "F-RCNN-custom"
         self._batch_size = 1
         self._confidence_threshold = 0.2
         self._cache_dir = None
@@ -308,9 +310,9 @@ class NNModel(DetectionModel):
     @model_name.setter
     def model_name(self, value: str):
         if value not in PRETRAINED_MODELS_CHECKPOINTS:
-            raise ValueError(f'Model type should be one of '
-                             f'{list(PRETRAINED_MODELS_CHECKPOINTS.keys())} '
-                             f'but found {value}')
+            raise ValueError(f"Model type should be one of "
+                             f"{list(PRETRAINED_MODELS_CHECKPOINTS.keys())} "
+                             f"but found {value}")
         self._model_name = value
         self.model_name_changed.emit(value)
 
@@ -321,7 +323,7 @@ class NNModel(DetectionModel):
     @batch_size.setter
     def batch_size(self, value: int):
         if value <= 0:
-            raise ValueError('Batch size should be greater than zero')
+            raise ValueError("Batch size should be greater than zero")
         self._batch_size = int(value)
         self.model_batch_size_changed.emit(value)
 
@@ -332,7 +334,7 @@ class NNModel(DetectionModel):
     @confidence_threshold.setter
     def confidence_threshold(self, value: float):
         if value < 0:
-            raise ValueError('Confidence threshold should be in range [0, 1]')
+            raise ValueError("Confidence threshold should be in range [0, 1]")
         self._confidence_threshold = value
         self.model_confidence_threshold_changed.emit(value)
 
@@ -346,6 +348,6 @@ class NNModel(DetectionModel):
         self.confidence_threshold = self._confidence_threshold
 
     def __repr__(self):
-        return (f'NN:model_name={self.model_name},'
-                f'confidence_threshold={self.confidence_threshold},'
-                f'batch_size={self.batch_size},')
+        return (f"NN:model_name={self.model_name},"
+                f"confidence_threshold={self.confidence_threshold},"
+                f"batch_size={self.batch_size},")

@@ -16,12 +16,10 @@ from matplotlib.patches import Rectangle
 from mouseapp.controller import main_controller
 from mouseapp.model.utils import Annotation
 from mouseapp.view import utils
-from mouseapp.view.generated.init_project.ui_project_entry \
-    import Ui_ProjectEntry
-from mouseapp.view.generated.key_value_metadata.ui_key_value_widget \
-    import Ui_KeyValue
-from mouseapp.view.generated.key_value_metadata.ui_new_key_value_widget \
-    import Ui_NewKeyValue
+from mouseapp.view.generated.init_project.ui_project_entry import Ui_ProjectEntry
+from mouseapp.view.generated.key_value_metadata.ui_key_value_widget import Ui_KeyValue
+from mouseapp.view.generated.key_value_metadata.ui_new_key_value_widget import (
+    Ui_NewKeyValue,)
 from mouseapp.view.generated.ui_filename_widget import Ui_FileNameWidget
 from mouseapp.view.generated.ui_progress_bar import Ui_ProgressBar
 
@@ -41,9 +39,12 @@ class NewKeyValue(QtWidgets.QWidget, Ui_NewKeyValue):
         self.addKeyValueButton.clicked.connect(
             lambda: main_controller.add_key_value_metadata(
                 model=self.model,
-                key_value=(self.keyEditField.toPlainText(),
-                           self.valueEditField.toPlainText()),
-                value_type=self.valueTypeComboBox.currentText()))
+                key_value=(
+                    self.keyEditField.toPlainText(),
+                    self.valueEditField.toPlainText(),
+                ),
+                value_type=self.valueTypeComboBox.currentText(),
+            ))
 
 
 class KeyValue(QtWidgets.QWidget, Ui_KeyValue):
@@ -61,13 +62,10 @@ class KeyValue(QtWidgets.QWidget, Ui_KeyValue):
 
         # Connect actions
         self.removeKeyValueButton.clicked.connect(
-            lambda: main_controller.remove_key_value_metadata(
-                model, key_value_type[0]))
+            lambda: main_controller.remove_key_value_metadata(model, key_value_type[0]))
         self.valueEditField.textChanged.connect(
             lambda: main_controller.update_key_value_metadata(
-                model,
-                key=key_value_type[0],
-                value=self.valueEditField.toPlainText()))
+                model, key=key_value_type[0], value=self.valueEditField.toPlainText()))
         self.valueTypeComboBox.currentIndexChanged.connect(
             lambda: main_controller.update_key_value_metadata(
                 model,
@@ -125,8 +123,7 @@ class FileName(QtWidgets.QWidget, Ui_FileNameWidget):
 
         # Connect buttons
         self.removeButton.clicked.connect(
-            lambda: main_controller.remove_audio_file(self.model,
-                                                      self.file_name))
+            lambda: main_controller.remove_audio_file(self.model, self.file_name))
 
         # Hide the button as its currently unused
         self.removeButton.hide()
@@ -204,8 +201,7 @@ class SliderWithEdit(QtWidgets.QWidget):
 
     def set_value(self, value: float):
         self.edit.setText(str(value))
-        self.slider.setValue(
-            int((value - self.minimum) / self.span * self.resolution))
+        self.slider.setValue(int((value - self.minimum) / self.span * self.resolution))
 
     def _on_slider(self, value: int):
         self.modifications_finished.emit(value / self.resolution * self.span +
@@ -216,8 +212,7 @@ class SliderWithEdit(QtWidgets.QWidget):
 
         value = self.edit.text()
         f_value = float_convert(value)
-        self.modifications_finished.emit(
-            np.clip(f_value, self.minimum, self.maximum))
+        self.modifications_finished.emit(np.clip(f_value, self.minimum, self.maximum))
 
 
 class MovableAnnotationBox:
@@ -254,12 +249,14 @@ class MovableAnnotationBox:
         TOP = auto()
         CENTER = auto()
 
-    def __init__(self,
-                 rect: Rectangle,
-                 annotation: Annotation,
-                 threshold: Real = 1,
-                 on_annotation_changed: Callable = None,
-                 on_transition_finished: Callable = None):
+    def __init__(
+        self,
+        rect: Rectangle,
+        annotation: Annotation,
+        threshold: Real = 1,
+        on_annotation_changed: Callable = None,
+        on_transition_finished: Callable = None,
+    ):
         self.rect = rect
         self.annotation = annotation
         self.threshold = threshold
@@ -270,12 +267,12 @@ class MovableAnnotationBox:
         self.cid_drag = None
 
     def connect(self):
-        self.cid_press = self.rect.figure.canvas.mpl_connect(
-            'button_press_event', self.on_press)
+        self.cid_press = self.rect.figure.canvas.mpl_connect("button_press_event",
+                                                             self.on_press)
         self.cid_release = self.rect.figure.canvas.mpl_connect(
-            'button_release_event', self.on_release)
-        self.cid_drag = self.rect.figure.canvas.mpl_connect(
-            'motion_notify_event', self.on_drag)
+            "button_release_event", self.on_release)
+        self.cid_drag = self.rect.figure.canvas.mpl_connect("motion_notify_event",
+                                                            self.on_drag)
 
     def on_press(self, event):
         if self.lock is not None:
@@ -285,12 +282,14 @@ class MovableAnnotationBox:
             return
 
         contains, attributes = self._contains(event, threshold=self.threshold)
-        if contains or attributes['on_side']:
-            MovableAnnotationBox.motion_type = attributes['side']
+        if contains or attributes["on_side"]:
+            MovableAnnotationBox.motion_type = attributes["side"]
             MovableAnnotationBox.lock = self
             MovableAnnotationBox.initial_event = event
             MovableAnnotationBox.initial_rect_position = self.rect.xy, (
-                self.rect.get_width(), self.rect.get_height())
+                self.rect.get_width(),
+                self.rect.get_height(),
+            )
 
     def on_release(self, event):
         if MovableAnnotationBox.lock is not self:
@@ -299,14 +298,19 @@ class MovableAnnotationBox:
         MovableAnnotationBox.initial_event = None
         MovableAnnotationBox.initial_rect_position = None
         if self.on_transition_finished is not None:
-            (time_pixel_start, freq_pixel_start,
-             time_pixel_end, freq_pixel_end) = \
-                utils.convert_rect_to_relative_pixels(self.rect)
-            self.on_transition_finished(self.annotation,
-                                        time_pixel_start,
-                                        freq_pixel_start,
-                                        time_pixel_end,
-                                        freq_pixel_end)
+            (
+                time_pixel_start,
+                freq_pixel_start,
+                time_pixel_end,
+                freq_pixel_end,
+            ) = utils.convert_rect_to_relative_pixels(self.rect)
+            self.on_transition_finished(
+                self.annotation,
+                time_pixel_start,
+                freq_pixel_start,
+                time_pixel_end,
+                freq_pixel_end,
+            )
 
     def _get_box_position(self):
         x0, y0 = self.rect.get_xy()
@@ -323,15 +327,15 @@ class MovableAnnotationBox:
             if contains:
                 self.rect.figure.canvas.setCursor(QtCore.Qt.SizeAllCursor)
                 MovableAnnotationBox.rect_near_cursor = self.rect
-            elif attributes['on_side'] and attributes['side'] in [
+            elif attributes["on_side"] and attributes["side"] in [
                     MovableAnnotationBox.BoxSide.LEFT,
-                    MovableAnnotationBox.BoxSide.RIGHT
+                    MovableAnnotationBox.BoxSide.RIGHT,
             ]:
                 self.rect.figure.canvas.setCursor(QtCore.Qt.SizeHorCursor)
                 MovableAnnotationBox.rect_near_cursor = self.rect
-            elif attributes['on_side'] and attributes['side'] in [
+            elif attributes["on_side"] and attributes["side"] in [
                     MovableAnnotationBox.BoxSide.TOP,
-                    MovableAnnotationBox.BoxSide.BOTTOM
+                    MovableAnnotationBox.BoxSide.BOTTOM,
             ]:
                 self.rect.figure.canvas.setCursor(QtCore.Qt.SizeVerCursor)
                 MovableAnnotationBox.rect_near_cursor = self.rect
@@ -342,8 +346,10 @@ class MovableAnnotationBox:
             if MovableAnnotationBox.lock is not self:
                 return
             (x0, y0), (width0, height0) = self.initial_rect_position
-            event_x, event_y = (np.rint(event.xdata).astype(int),
-                                np.rint(event.ydata).astype(int))
+            event_x, event_y = (
+                np.rint(event.xdata).astype(int),
+                np.rint(event.ydata).astype(int),
+            )
             dx = event_x - np.rint(self.initial_event.xdata).astype(int)
             dy = event_y - np.rint(self.initial_event.ydata).astype(int)
             if MovableAnnotationBox.motion_type == self.BoxSide.CENTER:
@@ -365,14 +371,19 @@ class MovableAnnotationBox:
                     self.rect.set_height(height0 - dy)
 
             if self.on_annotation_changed is not None:
-                (time_pixel_start, freq_pixel_start,
-                 time_pixel_end, freq_pixel_end) = \
-                    utils.convert_rect_to_relative_pixels(self.rect)
-                self.on_annotation_changed(self.annotation,
-                                           time_pixel_start,
-                                           freq_pixel_start,
-                                           time_pixel_end,
-                                           freq_pixel_end)
+                (
+                    time_pixel_start,
+                    freq_pixel_start,
+                    time_pixel_end,
+                    freq_pixel_end,
+                ) = utils.convert_rect_to_relative_pixels(self.rect)
+                self.on_annotation_changed(
+                    self.annotation,
+                    time_pixel_start,
+                    freq_pixel_start,
+                    time_pixel_end,
+                    freq_pixel_end,
+                )
             self.rect.figure.canvas.draw_idle()
 
     def disconnect(self):
@@ -382,10 +393,10 @@ class MovableAnnotationBox:
 
     def _contains(self, event, threshold=1):
         contains, attributes = self.rect.contains(event)
-        attributes['on_side'] = False
-        attributes['side'] = MovableAnnotationBox.BoxSide.OUT
+        attributes["on_side"] = False
+        attributes["side"] = MovableAnnotationBox.BoxSide.OUT
         if contains:
-            attributes['side'] = MovableAnnotationBox.BoxSide.CENTER
+            attributes["side"] = MovableAnnotationBox.BoxSide.CENTER
             return contains, attributes
         else:
             x0, x1, y0, y1 = self._get_box_position()
@@ -396,25 +407,25 @@ class MovableAnnotationBox:
 
             if y0 <= event_y <= y1:
                 if 0 < x0 - event_x < threshold:
-                    attributes['on_side'] = True
-                    attributes['side'] = MovableAnnotationBox.BoxSide.LEFT
+                    attributes["on_side"] = True
+                    attributes["side"] = MovableAnnotationBox.BoxSide.LEFT
                 elif 0 < event_x - x1 < threshold:
-                    attributes['on_side'] = True
-                    attributes['side'] = MovableAnnotationBox.BoxSide.RIGHT
+                    attributes["on_side"] = True
+                    attributes["side"] = MovableAnnotationBox.BoxSide.RIGHT
 
             if x0 <= event_x <= x1:
                 if 0 < y0 - event_y < 2 * threshold:
-                    attributes['on_side'] = True
-                    attributes['side'] = MovableAnnotationBox.BoxSide.BOTTOM
+                    attributes["on_side"] = True
+                    attributes["side"] = MovableAnnotationBox.BoxSide.BOTTOM
                 elif 0 < event_y - y1 < 2 * threshold:
-                    attributes['on_side'] = True
-                    attributes['side'] = MovableAnnotationBox.BoxSide.TOP
+                    attributes["on_side"] = True
+                    attributes["side"] = MovableAnnotationBox.BoxSide.TOP
         return contains, attributes
 
     @staticmethod
     def select(mab):
         if MovableAnnotationBox.selected_annotation is not None:
-            MovableAnnotationBox.selected_annotation.rect.set(edgecolor='red')
+            MovableAnnotationBox.selected_annotation.rect.set(edgecolor="red")
 
         MovableAnnotationBox.selected_annotation = mab
-        mab.rect.set(edgecolor='green')
+        mab.rect.set(edgecolor="green")
