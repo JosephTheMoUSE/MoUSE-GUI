@@ -188,14 +188,17 @@ class DetectionSettingsWindow(QtWidgets.QWidget, Ui_DetectionSettingsWidget):
         gac_settings_controller.restore_default_gac_values(self.model)
 
     def _on_preview_time(self):
-        common_settings_controller.set_preview_start(
-            model=self.model, value=self.gac_preview.previewStartLineEdit.text())
-        common_settings_controller.set_preview_end(
-            model=self.model, value=self.gac_preview.previewEndLineEdit.text())
-        common_settings_controller.set_preview_start(
-            model=self.model, value=self.nn_preview.previewStartLineEdit.text())
-        common_settings_controller.set_preview_end(
-            model=self.model, value=self.nn_preview.previewEndLineEdit.text())
+        if self.detectionStackedWidget.currentWidget() == self.GACPage:
+            common_settings_controller.set_preview_start(
+                model=self.model, value=self.gac_preview.previewStartLineEdit.text())
+            common_settings_controller.set_preview_end(
+                model=self.model, value=self.gac_preview.previewEndLineEdit.text())
+        else:
+            common_settings_controller.set_preview_start(
+                model=self.model, value=self.nn_preview.previewStartLineEdit.text())
+            common_settings_controller.set_preview_end(
+                model=self.model, value=self.nn_preview.previewEndLineEdit.text())
+
         if self.detectionStackedWidget.currentWidget() == self.GACPage:
             gac_settings_controller.set_gac_preview(self.model)
         elif self.detectionStackedWidget.currentWidget() == self.nnPage:
