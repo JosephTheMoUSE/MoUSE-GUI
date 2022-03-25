@@ -1,5 +1,6 @@
 import math
 import sys
+from datetime import datetime
 from typing import Callable
 
 from PySide6.QtCore import QObject, Signal, Slot, QThread
@@ -9,7 +10,12 @@ from mouseapp.model.utils import BackgroundTask
 
 
 def warn_user(model: MainModel, message: str):
-    model.application_model.text_warning(message)
+    warning_times = model.application_model.warning_times
+    warning_delta = model.application_model.time_between_warnings
+    if (message not in warning_times or
+            datetime.now() - warning_times[message] > warning_delta):
+        model.application_model.text_warning(message)
+    warning_times[message] = datetime.now()
 
 
 def run_background_task(main_model: MainModel,

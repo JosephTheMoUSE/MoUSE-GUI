@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import configparser
+import datetime
 import logging
 from pathlib import Path
 from typing import Any, Dict, List, NamedTuple, Optional, Set, Tuple
@@ -437,6 +438,8 @@ class ApplicationModel(QObject):
         self.app_config_file = self.app_config_dir.joinpath("config.ini")
         self.user_projects: Set[MouseProject] = set()
         self.recent_project: Optional[MouseProject] = None
+        self.time_between_warnings: datetime.timedelta = datetime.timedelta(seconds=1)
+        self.warning_times: Dict[str, datetime.datetime] = dict()
 
         if self.app_config_file.exists():
             logging.debug("[ApplicationModel] Reading config file...")
