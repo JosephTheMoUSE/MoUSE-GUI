@@ -10,8 +10,9 @@ from mouseapp.controller.settings_controllers import (
     noise_gate_settings_controller,
     common_settings_controller,
 )
+from mouseapp.controller.utils import warn_user
 from mouseapp.model.main_models import MainModel
-from mouseapp.model.settings.utils import Denoising
+from mouseapp.model.settings.utils import Denoising, Detection
 from mouseapp.view import utils
 from mouseapp.view.generated.settings.ui_denoising_settings import (
     Ui_DenoisingSettingsWidget,)
@@ -135,6 +136,13 @@ class DenoisingSettingsWindow(QtWidgets.QWidget, Ui_DenoisingSettingsWidget):
 
     def change_denoising_page(self, text: str):
         common_settings_controller.set_chosen_denoising_method(self.model, text.lower())
+        if (self.model.settings_model.chosen_detection_method == Detection.NN and
+                Denoising.NO_FILTER != text.lower()):
+            warn_user(
+                self.model,
+                "Neural Network wasn't prepared for a denoised spectrogram! "
+                "Quality of detected USVs may be low.",
+            )
         if Denoising.NO_FILTER in text.lower():
             self.denoisingStackedWidget.setCurrentWidget(self.noFilterPage)
             no_filter_settings_controller.set_no_filter_preview(self.model)
