@@ -13,8 +13,9 @@ from mouseapp.controller.settings_controllers import (
     common_settings_controller,
     neural_settings_controller,
 )
+from mouseapp.controller.utils import warn_user
 from mouseapp.model.main_models import MainModel
-from mouseapp.model.settings.utils import Detection
+from mouseapp.model.settings.utils import Detection, Denoising
 from mouseapp.view import utils
 from mouseapp.view.generated.settings.ui_detection_settings import (
     Ui_DetectionSettingsWidget,)
@@ -119,6 +120,12 @@ class DetectionSettingsWindow(QtWidgets.QWidget, Ui_DetectionSettingsWidget):
             set_detection_method(self.model, Detection.GAC)
             self.gac_preview.show()
         elif "nn detector" in text.lower():
+            if self.model.settings_model.chosen_denoising_method != Denoising.NO_FILTER:
+                warn_user(
+                    self.model,
+                    "Neural Network wasn't prepared for a denoised spectrogram! Quality of detected USVs may be low.",
+                )
+
             self.detectionStackedWidget.setCurrentWidget(self.nnPage)
             neural_settings_controller.emit_settings_signals(self.model)
             neural_settings_controller.set_NN_preview(self.model)
