@@ -87,6 +87,8 @@ class DetectionSettingsWindow(QtWidgets.QWidget, Ui_DetectionSettingsWidget):
         self._connect_nn_signals()
         self._connect_gac_signals()
 
+        self.preview_redrawed = False
+
         logging.debug("[DetectionSettingsWindow] Finished initialization")
 
     def closeEvent(self, event):
@@ -118,6 +120,9 @@ class DetectionSettingsWindow(QtWidgets.QWidget, Ui_DetectionSettingsWidget):
 
             set_detection_method(self.model, Detection.GAC)
             self.gac_preview.show()
+            if self.preview_redrawed:
+                self.preview_redrawed = False
+                self._on_preview_time()
         elif "nn detector" in text.lower():
             self.detectionStackedWidget.setCurrentWidget(self.nnPage)
             neural_settings_controller.emit_settings_signals(self.model)
@@ -188,20 +193,19 @@ class DetectionSettingsWindow(QtWidgets.QWidget, Ui_DetectionSettingsWidget):
         gac_settings_controller.restore_default_gac_values(self.model)
 
     def _on_preview_time(self):
+
         if self.detectionStackedWidget.currentWidget() == self.GACPage:
             common_settings_controller.set_preview_start(
                 model=self.model, value=self.gac_preview.previewStartLineEdit.text())
             common_settings_controller.set_preview_end(
                 model=self.model, value=self.gac_preview.previewEndLineEdit.text())
-        else:
+            gac_settings_controller.set_gac_preview(self.model)
+        elif self.detectionStackedWidget.currentWidget() == self.nnPage:
+            self.preview_redrawed = True
             common_settings_controller.set_preview_start(
                 model=self.model, value=self.nn_preview.previewStartLineEdit.text())
             common_settings_controller.set_preview_end(
                 model=self.model, value=self.nn_preview.previewEndLineEdit.text())
-
-        if self.detectionStackedWidget.currentWidget() == self.GACPage:
-            gac_settings_controller.set_gac_preview(self.model)
-        elif self.detectionStackedWidget.currentWidget() == self.nnPage:
             neural_settings_controller.set_NN_preview(self.model)
 
     def _on_run_detection(self):
