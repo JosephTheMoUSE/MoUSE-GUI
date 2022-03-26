@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>713</width>
-    <height>658</height>
+    <width>802</width>
+    <height>703</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0">
+  <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <widget class="Line" name="upperHorizontalLine">
      <property name="orientation">
@@ -39,6 +39,11 @@
        </item>
        <item>
         <property name="text">
+         <string>GAC optimisation</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
          <string>NN Detector</string>
         </property>
        </item>
@@ -56,50 +61,62 @@
      </property>
      <widget class="QWidget" name="GACPage">
       <layout class="QGridLayout" name="gacGridLayout">
-       <item row="6" column="0">
-        <spacer name="verticalSpacer_3">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item row="5" column="0" colspan="8">
-        <widget class="Line" name="previewHorizontalLine">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
+       <item row="6" column="6" colspan="2">
+        <widget class="QPushButton" name="restoreGACButton">
+         <property name="text">
+          <string>Restore defaults</string>
          </property>
         </widget>
        </item>
-       <item row="12" column="0" colspan="8">
+       <item row="6" column="3">
+        <widget class="QLabel" name="smoothingLabel">
+         <property name="text">
+          <string>Smoothing</string>
+         </property>
+        </widget>
+       </item>
+       <item row="16" column="0" colspan="8">
         <layout class="QVBoxLayout" name="GACPreviewLayout"/>
        </item>
-       <item row="1" column="5" rowspan="3">
+       <item row="6" column="0">
+        <widget class="QLabel" name="floodLabel">
+         <property name="text">
+          <string>Flood level</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="7">
+        <widget class="QLineEdit" name="iterationsLineEdit">
+         <property name="text">
+          <string>42</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLineEdit" name="sigmaLineEdit">
+         <property name="text">
+          <string>5.00001</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="5" rowspan="6">
         <widget class="Line" name="previewVerticalLine_2">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
          </property>
         </widget>
        </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="sigmaLabel">
+       <item row="1" column="6">
+        <widget class="QLabel" name="iterationsLabel">
          <property name="text">
-          <string>Sigma</string>
+          <string>Iterations</string>
          </property>
         </widget>
        </item>
-       <item row="2" column="4">
-        <widget class="QSlider" name="placeholderBaloonSlider">
-         <property name="maximum">
-          <number>100</number>
-         </property>
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
+       <item row="6" column="4">
+        <widget class="QLineEdit" name="smoothingLineEdit">
+         <property name="text">
+          <string>1</string>
          </property>
         </widget>
        </item>
@@ -122,7 +139,66 @@
          </item>
         </widget>
        </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="alphaLabel">
+         <property name="text">
+          <string>Alpha</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="4">
+        <widget class="QSlider" name="placeholderBaloonSlider">
+         <property name="maximum">
+          <number>100</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="3">
+        <widget class="QLabel" name="baloonLabel">
+         <property name="text">
+          <string>Balloon</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="2" rowspan="6">
+        <widget class="Line" name="detectionVerticalLine">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="3">
+        <widget class="QLabel" name="thresholdLabel">
+         <property name="text">
+          <string>Balloon threshold</string>
+         </property>
+        </widget>
+       </item>
+       <item row="9" column="0" colspan="8">
+        <widget class="Line" name="previewHorizontalLine">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="sigmaLabel">
+         <property name="text">
+          <string>Sigma</string>
+         </property>
+        </widget>
+       </item>
        <item row="3" column="1">
+        <widget class="QLineEdit" name="alphaLineEdit">
+         <property name="text">
+          <string>123.45</string>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="1">
         <widget class="QSlider" name="placeholderFloodLevelSlider">
          <property name="maximum">
           <number>100</number>
@@ -141,123 +217,8 @@
          </property>
         </widget>
        </item>
-       <item row="2" column="0">
-        <widget class="QLabel" name="alphaLabel">
-         <property name="text">
-          <string>Alpha</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="6">
-        <widget class="QLabel" name="iterationsLabel">
-         <property name="text">
-          <string>Iterations</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="4">
-        <widget class="QLineEdit" name="smoothingLineEdit">
-         <property name="text">
-          <string>1</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="3">
-        <widget class="QLabel" name="thresholdLabel">
-         <property name="text">
-          <string>Balloon threshold</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="7">
-        <widget class="QLineEdit" name="iterationsLineEdit">
-         <property name="text">
-          <string>42</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="QLineEdit" name="sigmaLineEdit">
-         <property name="text">
-          <string>5.00001</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="0">
-        <widget class="QLabel" name="floodLabel">
-         <property name="text">
-          <string>Flood level</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="6" colspan="2">
-        <widget class="QPushButton" name="restoreGACButton">
-         <property name="text">
-          <string>Restore defaults</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="1">
-        <widget class="QLineEdit" name="alphaLineEdit">
-         <property name="text">
-          <string>123.45</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="3">
-        <widget class="QLabel" name="baloonLabel">
-         <property name="text">
-          <string>Balloon</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="3">
-        <widget class="QLabel" name="smoothingLabel">
-         <property name="text">
-          <string>Smoothing</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="2" rowspan="3">
-        <widget class="Line" name="detectionVerticalLine">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="nnPage">
-      <layout class="QGridLayout" name="nnGridLayout">
-       <item row="1" column="3">
-        <widget class="QLabel" name="modelBatchSize">
-         <property name="text">
-          <string>Batch Size</string>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="0" colspan="8">
-        <layout class="QVBoxLayout" name="nnPreviewLayout"/>
-       </item>
-       <item row="2" column="4">
-        <widget class="QSpinBox" name="confidenceSpinBox">
-         <property name="minimum">
-          <number>1</number>
-         </property>
-         <property name="maximum">
-          <number>100</number>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="0" colspan="8">
-        <widget class="Line" name="line">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="3">
-        <spacer name="verticalSpacer">
+       <item row="10" column="0">
+        <spacer name="verticalSpacer_3">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
          </property>
@@ -269,12 +230,192 @@
          </property>
         </spacer>
        </item>
-       <item row="6" column="0" colspan="8">
-        <widget class="Line" name="nnPreviewHorizontalLine">
+      </layout>
+     </widget>
+     <widget class="QWidget" name="GACOptimisationPage">
+      <layout class="QGridLayout" name="gridLayout_2" columnstretch="0,0,0,0,0,0,0,0,0">
+       <item row="3" column="0">
+        <widget class="QLabel" name="numTrialsLabel">
+         <property name="text">
+          <string>Number of trials</string>
+         </property>
+        </widget>
+       </item>
+       <item row="10" column="0" colspan="9">
+        <widget class="QLabel" name="USVNumLabel">
+         <property name="text">
+          <string>---</string>
+         </property>
+        </widget>
+       </item>
+       <item row="12" column="0">
+        <spacer name="verticalSpacer_4">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="1" column="3">
+        <widget class="QLabel" name="betaLabel">
+         <property name="text">
+          <string>Beta</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="4">
+        <widget class="QLineEdit" name="timeEndLineEdit">
+         <property name="text">
+          <string>1.000001</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="6" colspan="3">
+        <widget class="QPushButton" name="runOptimisationPushButton">
+         <property name="text">
+          <string>Run optimisation</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QLineEdit" name="timeStartLineEdit">
+         <property name="text">
+          <string>0000001</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="4">
+        <widget class="QLineEdit" name="betaLineEdit">
+         <property name="text">
+          <string>1.23</string>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="0" colspan="9">
+        <widget class="Line" name="line_3">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
         </widget>
+       </item>
+       <item row="3" column="3">
+        <widget class="QLabel" name="randomTrialsLabel">
+         <property name="text">
+          <string>Random trials</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="2" rowspan="4">
+        <widget class="Line" name="line_4">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="metricLabel">
+         <property name="text">
+          <string>Metric</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QComboBox" name="metricComboBox">
+         <item>
+          <property name="text">
+           <string>F beta score</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Intersection over union</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="0" column="0" colspan="9">
+        <widget class="Line" name="line_2">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="14" column="3" colspan="6">
+        <widget class="QPushButton" name="automaticGACConfigurationButton">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="text">
+          <string>Configure GAC with best trial</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0">
+        <widget class="QLabel" name="timeStartLabel">
+         <property name="text">
+          <string>Time start [s]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="4">
+        <widget class="QLineEdit" name="randomTrialsLineEdit">
+         <property name="text">
+          <string>11</string>
+         </property>
+        </widget>
+       </item>
+       <item row="11" column="0">
+        <widget class="QLabel" name="resultLabel">
+         <property name="text">
+          <string>Results will be reported here</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QLineEdit" name="numTrialsLineEdit">
+         <property name="text">
+          <string>51</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="3">
+        <widget class="QLabel" name="timeEndLabel">
+         <property name="text">
+          <string>Time end [s]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="5" rowspan="4">
+        <widget class="Line" name="line">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="14" column="0" colspan="2">
+        <layout class="QHBoxLayout" name="progressbarPlaceholderLayout"/>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="nnPage">
+      <layout class="QGridLayout" name="nnGridLayout">
+       <item row="2" column="4">
+        <widget class="QSpinBox" name="confidenceSpinBox">
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="0" colspan="8">
+        <layout class="QVBoxLayout" name="nnPreviewLayout"/>
        </item>
        <item row="2" column="3">
         <widget class="QLabel" name="modelConfidenceScore">
@@ -300,6 +441,13 @@
          </property>
         </widget>
        </item>
+       <item row="4" column="0" colspan="8">
+        <widget class="Line" name="nnPreviewHorizontalLine">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
        <item row="1" column="1">
         <widget class="QComboBox" name="modelTypeComboBox">
          <item>
@@ -308,6 +456,26 @@
           </property>
          </item>
         </widget>
+       </item>
+       <item row="1" column="3">
+        <widget class="QLabel" name="modelBatchSize">
+         <property name="text">
+          <string>Batch Size</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="4">
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
        </item>
       </layout>
      </widget>
