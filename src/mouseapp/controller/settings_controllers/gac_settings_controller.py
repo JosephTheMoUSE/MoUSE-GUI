@@ -84,8 +84,7 @@ def set_gac_preview(model: MainModel):
         clipped_spec.spec = torch.Tensor(gac_model.get_kwargs()["preprocessing_fn"](
             clipped_spec.spec.numpy()))
 
-        init_level_set = gac_model.get_kwargs()["level_set_fn"](
-            clipped_spec.spec.numpy())
+        init_level_set = gac_model.get_kwargs()["level_set"](clipped_spec.spec.numpy())
         gac_model.preview_model.initial_level_set = init_level_set
 
         gac_model.preview_model.preview_data = clipped_spec
