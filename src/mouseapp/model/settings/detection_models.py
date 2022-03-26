@@ -5,6 +5,8 @@ from typing import List, Optional
 import appdirs
 import numpy as np
 from PySide6.QtCore import Signal
+
+import mouse.segmentation
 from mouse.nn_detection.neural_network import PRETRAINED_MODELS_CHECKPOINTS
 from mouse.utils.data_util import SqueakBox
 from mouse.utils.sound_util import SpectrogramData
@@ -231,19 +233,8 @@ class GACModel(DetectionModel):
         return self._preview_model
 
     def get_kwargs(self):
-
-        def level_set_fn(spec: np.ndarray):
-            mask = spec <= self._flood_threshold
-            seed = np.ones_like(mask)
-            mask[:, 0] = 0
-            mask[:, -1] = 0
-            mask[0, :] = 0
-            mask[-1, :] = 0
-            seed[:, 0] = 0
-            seed[:, -1] = 0
-            seed[0, :] = 0
-            seed[-1, :] = 0
-            return morphology.reconstruction(seed, mask, method="erosion")
+        level_set = mouse.segmentation.eroded_level_set_generator(
+            threshold=self._flood_threshold)
 
         kwargs = {
             "preprocessing_fn":
@@ -252,8 +243,8 @@ class GACModel(DetectionModel):
                     sigma=self._sigma,
                     alpha=self._alpha,
                 ),
-            "level_set_fn":
-                level_set_fn,
+            "level_set":
+                level_set,
         }
 
         for key in self._default_values.keys():
