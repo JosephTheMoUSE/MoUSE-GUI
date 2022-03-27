@@ -1,4 +1,5 @@
 import time
+from dataclasses import dataclass
 from enum import Enum
 from typing import Optional
 
@@ -51,3 +52,34 @@ class Denoising(str, Enum):
 class Detection(str, Enum):
     GAC = "GAC detection"
     NN = "Neural network detection"
+
+
+@dataclass(frozen=True)
+class OptimisationResult:
+    metric_name: str
+    metric: float
+    precision: Optional[float]
+    recall: Optional[float]
+    box_count: int
+    sigma: float
+    iters: int
+    threshold: float
+    flood_threshold: float
+    smoothing: int
+
+    def __gt__(self, other):
+        return self.metric > other.metric
+
+    def __lt__(self, other):
+        return self.metric < other.metric
+
+    def __str__(self):
+        optional_metrics = ""
+        if None not in {self.precision, self.recall}:
+            optional_metrics = (
+                f"(precision: {self.precision:.3f}, recall: {self.recall:.3f})")
+        return (
+            f"Trial score ({self.metric_name}): {self.metric:.3f} {optional_metrics}\n"
+            f"Score was calculated based on {self.box_count} detections.\n"
+            f"Trial configuration:\n\tsigma = {self.sigma}\n\titers = {self.iters}\n\tthresold = {self.threshold}\n\tflood_threshold = {self.flood_threshold}\n\tsmoothing = {self.smoothing}"
+        )
