@@ -1,9 +1,11 @@
 import logging
-from typing import Optional, List
+from typing import Optional, List, Tuple
 
 import matplotlib.pyplot as plt
 import numpy as np
 from PySide6 import QtWidgets, QtCore
+
+import mouseapp.controller.settings_controllers.gac_optimisation_controller
 from mouse.utils import visualization
 from mouse.utils.data_util import SqueakBox
 from mouse.utils.sound_util import SpectrogramData
@@ -12,15 +14,16 @@ from mouseapp.controller.settings_controllers import (
     gac_settings_controller,
     common_settings_controller,
     neural_settings_controller,
+    gac_optimisation_controller,
 )
 from mouseapp.controller.utils import warn_user
 from mouseapp.model.main_models import MainModel
-from mouseapp.model.settings.utils import Detection, Denoising
+from mouseapp.model.settings.utils import Detection, Denoising, OptimisationResult
 from mouseapp.view import utils
 from mouseapp.view.generated.settings.ui_detection_settings import (
     Ui_DetectionSettingsWidget,)
 from mouseapp.view.preview_settings_view import PreviewSettingsWindow
-from mouseapp.view.widgets import SliderWithEdit
+from mouseapp.view.widgets import SliderWithEdit, TaskProgressbar
 
 
 class DetectionSettingsWindow(QtWidgets.QWidget, Ui_DetectionSettingsWidget):
@@ -32,6 +35,7 @@ class DetectionSettingsWindow(QtWidgets.QWidget, Ui_DetectionSettingsWidget):
         self.model = model
         self.rectangles: List[plt.Rectangle] = []
         self.was_gac_loaded = False
+        self.progressbar: Optional[TaskProgressbar] = None
 
         # enforce garbaga collection of this window
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
@@ -71,6 +75,17 @@ class DetectionSettingsWindow(QtWidgets.QWidget, Ui_DetectionSettingsWidget):
         self.gac_preview.previewButton.clicked.connect(self._on_preview_time)
         self.nn_preview.previewButton.clicked.connect(self._on_preview_time)
 
+        # # connect GAC optimisation inputs
+        self.runOptimisationPushButton.clicked.connect(self._on_gac_optimisation)
+        self.automaticGACConfigurationButton.clicked.connect(self._on_autoconfigure_gac)
+        self.timeStartLineEdit.editingFinished.connect(self._on_optimisation_time_start)
+        self.timeEndLineEdit.editingFinished.connect(self._on_optimisation_time_end)
+        self.numTrialsLineEdit.editingFinished.connect(self._on_optimisation_iters)
+        self.randomTrialsLineEdit.editingFinished.connect(
+            self._on_optimisation_random_iters)
+        self.betaLineEdit.editingFinished.connect(self._on_optimisation_beta)
+        self.metricComboBox.currentTextChanged.connect(self._on_optimisation_metric)
+
         # Neural Network inputs
         self.modelTypeComboBox.currentTextChanged.connect(self._model_name_changed)
         self.batchSizeSpinBox.valueChanged.connect(self._batch_size_changed)
@@ -85,6 +100,7 @@ class DetectionSettingsWindow(QtWidgets.QWidget, Ui_DetectionSettingsWidget):
             self.change_detection_method)
         self._connect_nn_signals()
         self._connect_gac_signals()
+        self._connect_optimisation_signals()
 
         self.time_changed = False
 
@@ -105,7 +121,7 @@ class DetectionSettingsWindow(QtWidgets.QWidget, Ui_DetectionSettingsWidget):
         self.change_detection_page(text)
 
     def change_detection_page(self, text: str):
-        if "gac" in text.lower():
+        if "gac" == text.lower():
             self.detectionStackedWidget.setCurrentWidget(self.GACPage)
 
             if not self.was_gac_loaded:
@@ -118,6 +134,8 @@ class DetectionSettingsWindow(QtWidgets.QWidget, Ui_DetectionSettingsWidget):
             if self.time_changed:
                 self.time_changed = False
                 self._on_preview_time()
+        elif "gac optimisation" == text.lower():
+            self.detectionStackedWidget.setCurrentWidget(self.GACOptimisationPage)
         elif "nn detector" in text.lower():
             if self.model.settings_model.chosen_denoising_method != Denoising.NO_FILTER:
                 warn_user(
@@ -149,6 +167,29 @@ class DetectionSettingsWindow(QtWidgets.QWidget, Ui_DetectionSettingsWidget):
             self._on_gac_detection_signal)
         self.model.settings_model.gac_model.preview_model.method_allowed_changed.connect(
             self._on_method_allowed_signal)
+
+    def _connect_optimisation_signals(self):
+        self.model.settings_model.gac_model.optimisation_results_changed.connect(
+            self._on_optimisation_results_signal)
+        self.model.settings_model.gac_model.optimisation_box_count_changed.connect(
+            self._on_optimisation_box_count_signal)
+        self.model.settings_model.gac_model.optimisation_best_changed.connect(
+            self._on_optimisation_best_signal)
+        self.model.settings_model.gac_model.time_start_changed.connect(
+            self._on_time_start_signal)
+        self.model.settings_model.gac_model.time_end_changed.connect(
+            self._on_time_end_signal)
+        self.model.settings_model.gac_model.beta_changed.connect(self._on_beta_signal)
+        self.model.settings_model.gac_model.optimisation_iters_changed.connect(
+            self._on_optimisation_iters_signal)
+        self.model.settings_model.gac_model.optimisation_random_iters_changed.connect(
+            self._on_optimisation_random_iters_signal)
+        self.model.settings_model.gac_model.progressbar_changed.connect(
+            self._on_progressbar_definition)
+        self.model.settings_model.gac_model.progressbar_info_changed.connect(
+            self._on_progressbar_info_changed)
+        self.model.settings_model.gac_model.optimisation_allowed_changed.connect(
+            self._on_optimisation_allowed_changed)
 
     def _connect_nn_signals(self):
         self.model.settings_model.nn_model.model_batch_size_changed.connect(
@@ -191,6 +232,36 @@ class DetectionSettingsWindow(QtWidgets.QWidget, Ui_DetectionSettingsWidget):
 
     def _on_gac_restore(self):
         gac_settings_controller.restore_default_gac_values(self.model)
+
+    def _on_gac_optimisation(self):
+        gac_optimisation_controller.run_optimisation(self.model)
+
+    def _on_autoconfigure_gac(self):
+        gac_optimisation_controller.autoconfigure_gac(self.model)
+
+    def _on_optimisation_time_start(self):
+        mouseapp.controller.settings_controllers.gac_optimisation_controller.set_optimisation_time_start(
+            model=self.model, value=self.timeStartLineEdit.text())
+
+    def _on_optimisation_time_end(self):
+        mouseapp.controller.settings_controllers.gac_optimisation_controller.set_optimisation_time_end(
+            model=self.model, value=self.timeEndLineEdit.text())
+
+    def _on_optimisation_iters(self):
+        mouseapp.controller.settings_controllers.gac_optimisation_controller.set_optimisation_iters(
+            model=self.model, value=self.numTrialsLineEdit.text())
+
+    def _on_optimisation_random_iters(self):
+        mouseapp.controller.settings_controllers.gac_optimisation_controller.set_optimisation_random_iters(
+            model=self.model, value=self.randomTrialsLineEdit.text())
+
+    def _on_optimisation_beta(self):
+        mouseapp.controller.settings_controllers.gac_optimisation_controller.set_beta(
+            model=self.model, value=self.betaLineEdit.text())
+
+    def _on_optimisation_metric(self, value: str):
+        mouseapp.controller.settings_controllers.gac_optimisation_controller.set_metric(
+            model=self.model, value=value)
 
     def _on_preview_time(self):
 
@@ -263,6 +334,38 @@ class DetectionSettingsWindow(QtWidgets.QWidget, Ui_DetectionSettingsWidget):
             self.gac_preview.lower_axis.pcolormesh(img, cmap="gray")
         self.gac_preview.canvas.draw()
 
+    def _on_optimisation_results_signal(self, value: List[OptimisationResult]):
+        if len(value) > 0:
+            last_results = [round(result.metric, 2) for result in value][-5:]
+            best = str(self.model.settings_model.gac_model.optimisation_best)
+
+            self.resultLabel.setText(f"Most recent results: {last_results}\n\n"
+                                     f"Best result:\n{best}")
+
+    def _on_optimisation_box_count_signal(self, value: int):
+        self.USVNumLabel.setText(f"Number of USVs used in optimisation: {value}")
+
+    def _on_optimisation_best_signal(self, value: Optional[OptimisationResult]):
+        if isinstance(value, OptimisationResult):
+            self.automaticGACConfigurationButton.setEnabled(True)
+        else:
+            self.automaticGACConfigurationButton.setDisabled(True)
+
+    def _on_time_start_signal(self, value: float):
+        self.timeStartLineEdit.setText(str(value))
+
+    def _on_time_end_signal(self, value: float):
+        self.timeEndLineEdit.setText(str(value))
+
+    def _on_beta_signal(self, value: float):
+        self.betaLineEdit.setText(str(value))
+
+    def _on_optimisation_iters_signal(self, value: int):
+        self.numTrialsLineEdit.setText(str(value))
+
+    def _on_optimisation_random_iters_signal(self, value: int):
+        self.randomTrialsLineEdit.setText(str(value))
+
     def _on_batch_signal(self, val):
         self.batchSizeSpinBox.setValue(val)
 
@@ -302,3 +405,30 @@ class DetectionSettingsWindow(QtWidgets.QWidget, Ui_DetectionSettingsWidget):
                                                    spec_height=height,
                                                    ax=self.nn_preview.upper_axis)
         self.nn_preview.canvas.draw()
+
+    def _on_progressbar_definition(self, defined: bool):
+        if not defined:
+            self.progressbarPlaceholderLayout.removeWidget(self.progressbar)
+            self.progressbar.deleteLater()
+            self.progressbar = None
+            return
+
+        if self.model.settings_model.gac_model.background_task is None:
+            raise ValueError("Progress bar is associated with "
+                             "`background_task`, but `background_task` is "
+                             "`None`.")
+        killable = self.model.settings_model.gac_model.background_task.is_killable()
+        self.progressbar: TaskProgressbar = utils.initialize_widget(
+            TaskProgressbar(hide_stop_button=not killable))
+        if killable:
+            self.progressbar.buttonClicked.connect(
+                self.model.settings_model.gac_model.background_task.kill)
+
+        self.progressbarPlaceholderLayout.addWidget(self.progressbar)
+
+    def _on_progressbar_info_changed(self, values: Tuple):
+        left, progress, right = values
+        self.progressbar.set_values(left_txt=left, progress=progress, right_txt=right)
+
+    def _on_optimisation_allowed_changed(self, value: bool):
+        self.runOptimisationPushButton.setEnabled(value)
