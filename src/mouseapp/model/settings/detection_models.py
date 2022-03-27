@@ -4,13 +4,14 @@ from typing import List, Optional
 
 import appdirs
 import numpy as np
-from PySide6.QtCore import Signal
+from PySide6.QtCore import Signal, QMutex
 
 import mouse.segmentation
 from mouse.nn_detection.neural_network import PRETRAINED_MODELS_CHECKPOINTS
 from mouse.utils.data_util import SqueakBox
+from mouse.utils.metrics import Metric
 from mouse.utils.sound_util import SpectrogramData
-from mouseapp.model.settings.utils import PreviewModel
+from mouseapp.model.settings.utils import PreviewModel, OptimisationResult
 from mouseapp.model.utils import BackgroundTask, SerializableModel
 from skimage import morphology, segmentation
 
@@ -133,9 +134,33 @@ class GACModel(DetectionModel):
     alpha_changed = Signal(float)
     sigma_changed = Signal(float)
 
+    optimisation_box_count_changed = Signal(int)
+    optimisation_results_changed = Signal(list)
+    optimisation_best_changed = Signal(object)
+    time_start_changed = Signal(float)
+    time_end_changed = Signal(float)
+    beta_changed = Signal(float)
+    metric_changed = Signal(object)
+    optimisation_iters_changed = Signal(int)
+    optimisation_random_iters_changed = Signal(int)
+    progressbar_changed = Signal(bool)
+    progressbar_info_changed = Signal(tuple)
+    optimisation_allowed_changed = Signal(bool)
+
     def __init__(self):
         super().__init__()
-        self._dict_denylist.add("preview_model")
+        self._dict_denylist.update([
+            "preview_model",
+            "optimisation_results",
+            "optimisation_best",
+            "optimisation_mutex",
+            "progressbar_left_label",
+            "progressbar_right_label",
+            "background_task",
+            "progressbar_iter",
+            "progressbar_exists",
+            "optimisation_allowed",
+        ])
         self._preview_model: GACPreviewModel = GACPreviewModel()
 
         self._default_values = {
@@ -156,6 +181,25 @@ class GACModel(DetectionModel):
         self._flood_threshold: float = 0.95
         self.set_default_values()
 
+        self._optimisation_box_count: int = -1
+        self._start_time: float = 0.0
+        self._end_time: float = 1.0
+        self._beta: float = 1.0
+        self._metric_threshold: float = 0.1
+        self._max_concurrent: int = 2
+        self._metric: Metric = Metric.F_BETA
+        self._optimisation_iters: int = 1
+        self._optimisation_random_iters: int = 1
+        self._optimisation_results: List[OptimisationResult] = []
+        self._optimisation_best: Optional[OptimisationResult] = None
+        self._progressbar_exists: bool = False
+        self.background_task: Optional[BackgroundTask] = None
+        self.progressbar_left_label: str = "Optimisation progress:"
+        self.progressbar_right_label: str = ""
+        self._progressbar_iter: int = 0
+        self.optimisation_mutex = QMutex()
+        self._optimisation_allowed = True
+
     def __repr__(self):
         return (f"GAC:iterations={self.iterations},"
                 f"smoothing={self.smoothing},"
@@ -164,6 +208,11 @@ class GACModel(DetectionModel):
                 f"alpha={self.alpha},"
                 f"sigma={self.sigma},"
                 f"flood_threshold={self.flood_threshold};")
+
+    def _value_from_dict(self, name, value):
+        if name == "max_concurrent":
+            return int(value)
+        return value
 
     @property
     def iterations(self):
@@ -229,6 +278,135 @@ class GACModel(DetectionModel):
         self.flood_threshold_changed.emit(value)
 
     @property
+    def optimisation_box_count(self) -> int:
+        """Number of ground truth boxes used during optimisation."""  # noqa D401
+        return self._optimisation_box_count
+
+    @optimisation_box_count.setter
+    def optimisation_box_count(self, value: int):
+        self._optimisation_box_count = value
+        self.optimisation_box_count_changed.emit(value)
+
+    @property
+    def start_time(self) -> float:
+        return self._start_time
+
+    @start_time.setter
+    def start_time(self, value: float):
+        self._start_time = value
+        self.time_start_changed.emit(value)
+
+    @property
+    def end_time(self) -> float:
+        return self._end_time
+
+    @end_time.setter
+    def end_time(self, value: float):
+        self._end_time = value
+        self.time_end_changed.emit(value)
+
+    @property
+    def beta(self) -> float:
+        return self._beta
+
+    @beta.setter
+    def beta(self, value: float):
+        self._beta = value
+        self.beta_changed.emit(value)
+
+    @property
+    def metric(self) -> Metric:
+        return self._metric
+
+    @metric.setter
+    def metric(self, value: Metric):
+        self._metric = value
+        self.metric_changed.emit(value)
+
+    @property
+    def metric_threshold(self) -> float:
+        return self._metric_threshold
+
+    @metric_threshold.setter
+    def metric_threshold(self, value: float):
+        self._metric_threshold = value
+
+    @property
+    def max_concurrent(self) -> int:
+        return self._max_concurrent
+
+    @max_concurrent.setter
+    def max_concurrent(self, value: int):
+        self._max_concurrent = value
+
+    @property
+    def optimisation_iters(self) -> int:
+        return self._optimisation_iters
+
+    @optimisation_iters.setter
+    def optimisation_iters(self, value: int):
+        self._optimisation_iters = value
+        self.optimisation_iters_changed.emit(value)
+
+    @property
+    def optimisation_random_iters(self) -> int:
+        return self._optimisation_random_iters
+
+    @optimisation_random_iters.setter
+    def optimisation_random_iters(self, value: int):
+        self._optimisation_random_iters = value
+        self.optimisation_random_iters_changed.emit(value)
+
+    @property
+    def optimisation_results(self) -> List:
+        return self._optimisation_results
+
+    @optimisation_results.setter
+    def optimisation_results(self, value: List):
+        self._optimisation_results = value
+        self.optimisation_results_changed.emit(value)
+
+    @property
+    def optimisation_best(self) -> Optional:
+        return self._optimisation_best
+
+    @optimisation_best.setter
+    def optimisation_best(self, value: Optional):
+        self._optimisation_best = value
+        self.optimisation_best_changed.emit(value)
+
+    @property
+    def progressbar_exists(self) -> bool:
+        return self._progressbar_exists
+
+    @progressbar_exists.setter
+    def progressbar_exists(self, value: bool):
+        self._progressbar_exists = value
+        self.progressbar_changed.emit(value)
+
+    @property
+    def progressbar_iter(self) -> int:
+        return self._progressbar_iter
+
+    @progressbar_iter.setter
+    def progressbar_iter(self, value: int):
+        self._progressbar_iter = value
+        self.progressbar_info_changed.emit((
+            self.progressbar_left_label,
+            self._progressbar_iter,
+            self.progressbar_right_label,
+        ))
+
+    @property
+    def optimisation_allowed(self) -> bool:
+        return self._optimisation_allowed
+
+    @optimisation_allowed.setter
+    def optimisation_allowed(self, value: bool):
+        self._optimisation_allowed = value
+        self.optimisation_allowed_changed.emit(value)
+
+    @property
     def preview_model(self) -> GACPreviewModel:
         return self._preview_model
 
@@ -265,6 +443,13 @@ class GACModel(DetectionModel):
         self.alpha = self._alpha
         self.sigma = self._sigma
         self.flood_threshold = self._flood_threshold
+
+        self.beta = self._beta
+        self.optimisation_iters = self._optimisation_iters
+        self.optimisation_random_iters = self._optimisation_random_iters
+        self.metric = self._metric
+        self.start_time = self._start_time
+        self.end_time = self._end_time
 
 
 class NNModel(DetectionModel):
