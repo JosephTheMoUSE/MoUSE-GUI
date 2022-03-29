@@ -87,7 +87,7 @@ class DetectionSettingsWindow(QtWidgets.QWidget, Ui_DetectionSettingsWidget):
         self._connect_nn_signals()
         self._connect_gac_signals()
 
-        self.preview_redrawed = False
+        self.time_changed = False
 
         logging.debug("[DetectionSettingsWindow] Finished initialization")
 
@@ -120,8 +120,8 @@ class DetectionSettingsWindow(QtWidgets.QWidget, Ui_DetectionSettingsWidget):
 
             set_detection_method(self.model, Detection.GAC)
             self.gac_preview.show()
-            if self.preview_redrawed:
-                self.preview_redrawed = False
+            if self.time_changed:
+                self.time_changed = False
                 self._on_preview_time()
         elif "nn detector" in text.lower():
             self.detectionStackedWidget.setCurrentWidget(self.nnPage)
@@ -201,7 +201,7 @@ class DetectionSettingsWindow(QtWidgets.QWidget, Ui_DetectionSettingsWidget):
                 model=self.model, value=self.gac_preview.previewEndLineEdit.text())
             gac_settings_controller.set_gac_preview(self.model)
         elif self.detectionStackedWidget.currentWidget() == self.nnPage:
-            self.preview_redrawed = True
+            self.time_changed = True
             common_settings_controller.set_preview_start(
                 model=self.model, value=self.nn_preview.previewStartLineEdit.text())
             common_settings_controller.set_preview_end(
