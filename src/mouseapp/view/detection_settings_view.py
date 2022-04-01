@@ -37,10 +37,8 @@ class DetectionSettingsWindow(QtWidgets.QWidget, Ui_DetectionSettingsWidget):
 
         self.gac_preview = PreviewSettingsWindow(self.model)
         self.nn_preview = PreviewSettingsWindow(self.model, use_only_upper=True)
-        self.gac_preview.hide()
-        self.nn_preview.hide()
-        self.verticalLayout.addWidget(self.gac_preview)
-        self.verticalLayout.addWidget(self.nn_preview)
+        self.GACPreviewLayout.addWidget(self.gac_preview)
+        self.nnPreviewLayout.addWidget(self.nn_preview)
 
         # Change `QSlider` to `SliderWithEdit`
         self.floodLevelSlider = utils.initialize_widget(
@@ -106,9 +104,6 @@ class DetectionSettingsWindow(QtWidgets.QWidget, Ui_DetectionSettingsWidget):
         self.change_detection_page(text)
 
     def change_detection_page(self, text: str):
-        self.gac_preview.hide()
-        self.nn_preview.hide()
-
         if "gac" in text.lower():
             self.detectionStackedWidget.setCurrentWidget(self.GACPage)
 
@@ -119,7 +114,6 @@ class DetectionSettingsWindow(QtWidgets.QWidget, Ui_DetectionSettingsWidget):
                 gac_settings_controller.emit_detections(self.model)
 
             set_detection_method(self.model, Detection.GAC)
-            self.gac_preview.show()
             if self.time_changed:
                 self.time_changed = False
                 self._on_preview_time()
@@ -128,7 +122,6 @@ class DetectionSettingsWindow(QtWidgets.QWidget, Ui_DetectionSettingsWidget):
             neural_settings_controller.emit_settings_signals(self.model)
             neural_settings_controller.set_NN_preview(self.model)
             set_detection_method(self.model, Detection.NN)
-            self.nn_preview.show()
 
     def _connect_gac_signals(self):
         self.model.settings_model.gac_model.sigma_changed.connect(self._on_sigma_signal)
