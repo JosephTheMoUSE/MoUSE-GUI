@@ -209,8 +209,12 @@ class SerializableModel(QObject):
 
     def from_dict(self, property_dict):
         for attribute_name, value in property_dict.items():
-            assert attribute_name in dir(type(self))
-            assert self._is_settable_attribute(attribute_name)
+            if attribute_name not in dir(type(self)):
+                raise RuntimeError(f"Model can't be loaded! `{attribute_name}` is not"
+                                   f"present in {self.__class__}!")
+            if not self._is_settable_attribute(attribute_name):
+                raise RuntimeError(f"Model can't be loaded! `{attribute_name}` "
+                                   f"shouldn't be present in serialised model.")
             evaluated_value = self._value_from_dict(attribute_name, value)
             setattr(self, attribute_name, evaluated_value)
 
