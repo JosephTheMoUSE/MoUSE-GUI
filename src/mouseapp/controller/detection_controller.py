@@ -68,7 +68,8 @@ def _run_GAC(model: MainModel, callback: Callable, spectrogram: SpectrogramData)
                 ),
                 detections,
             ))
-        model.spectrogram_model.update_annotations(annotations)
+        model.spectrogram_model.annotation_table_model.append_annotations(
+            annotations)
     finally:
         model.spectrogram_model.progressbar_exists = None
         model.spectrogram_model.progressbar_primary_text = None
@@ -120,7 +121,8 @@ def _run_NN(model: MainModel, callback: Callable, spectrogram: SpectrogramData):
                 ),
                 detections,
             ))
-        model.spectrogram_model.update_annotations(annotations)
+        model.spectrogram_model.annotation_table_model.append_annotations(
+            annotations)
     finally:
         model.spectrogram_model.progressbar_exists = None
         model.spectrogram_model.progressbar_primary_text = None

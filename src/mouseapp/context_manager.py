@@ -40,7 +40,8 @@ def initialize_from_existing() -> bool:
         if model is not None:
             initialize_widget(MainWindow(model=model))
             model.project_model.emit_all_setting_signals()
-            model.spectrogram_model.emit_all_setting_signals()
+            # todo(werkaaa): Uncomment when finished
+            # model.spectrogram_model.emit_all_setting_signals()
 
             return True
     return False
@@ -150,7 +151,8 @@ def switch_projects(
     persistency_controller.save_config(app_model=next_model.application_model)
     initialize_widget(MainWindow(model=next_model))
     next_model.project_model.emit_all_setting_signals()
-    next_model.spectrogram_model.emit_all_setting_signals()
+    # todo(werkaaa): Uncomment when finished
+    # next_model.spectrogram_model.emit_all_setting_signals() #TODO: remove comment
 
 
 def finalize_project_creation(

@@ -31,6 +31,7 @@ from mouseapp.controller import (  # yapf: disable
 )
 from mouseapp import context_manager
 from mouseapp.model.main_models import MainModel
+from mouseapp.model.annotation_table_model import AnnotationTableModel
 from mouseapp.view import utils
 from mouseapp.view import widgets
 from mouseapp.view.generated.ui_mouse_main_window import Ui_MainWindow
@@ -58,6 +59,16 @@ class SpectrogramTab(QtWidgets.QWidget, Ui_SpectrogramWindow):
         self._annotation_boxes: List[widgets.MovableAnnotationBox] = []
         self.table_index: int = 0
 
+        # Change squeakTable model to custom one
+        old_model = self.squeakTable.model()
+        if old_model is not None:
+            self.table.setModel(None)
+            old_model.deleteLater()
+
+        new_model = main_controller.update_annotation_table_model(
+            self.model, self.squeakTable)
+        self.squeakTable.setModel(new_model)
+
         # Connect inputs
         self.spectrogramScrollBar.setSingleStep(
             self.model.spectrogram_model._slider_step_size)
@@ -82,9 +93,9 @@ class SpectrogramTab(QtWidgets.QWidget, Ui_SpectrogramWindow):
         self.model.project_model.audio_files_signal.connect(
             lambda audio_files: main_controller.update_signal_data(
                 self.model, audio_files))
-        self.model.spectrogram_model.annotations_info_signal.connect(
-            lambda column_names_and_annotations: self._show_annotations_info(
-                column_names_and_annotations))
+        # self.model.spectrogram_model.annotations_info_signal.connect(
+        #     lambda column_names_and_annotations: self._show_annotations_info(
+        #         column_names_and_annotations))
         self.model.spectrogram_model.slider_step_size_changed.connect(
             self._update_slider_params)
         self.model.spectrogram_model.spectrogram_data_changed.connect(self._reset_view)
@@ -92,13 +103,13 @@ class SpectrogramTab(QtWidgets.QWidget, Ui_SpectrogramWindow):
             self._draw_spectrogram)
         self.model.spectrogram_model.visible_annotations_changed.connect(
             self._update_visible_annotations)
-        self.model.spectrogram_model.annotation_field_changed.connect(
-            self._handle_annotation_field_changed)
+        # self.model.spectrogram_model.annotation_field_changed.connect(
+        #     self._handle_annotation_field_changed)
         self.model.spectrogram_model.select_annotations.connect(
             self._handle_select_annotations)
         self.model.spectrogram_model.detection_allowed_changed.connect(
             self.detectButton.setEnabled)
-        self.model.spectrogram_model.delete_button_show.connect(
+        self.model.spectrogram_model.annotation_table_model.delete_button_show.connect(
             self._handle_delete_button_show)
         self.squeakTable.verticalHeader().sectionClicked.connect(
             self._show_annotation_on_spec)
@@ -237,6 +248,7 @@ class SpectrogramTab(QtWidgets.QWidget, Ui_SpectrogramWindow):
         # cast annotation positions to relative spectrogram coordinates
         x_start = find_nearest(display_start_time, times)
         for annotation in visible_annotations:
+            # todo(werekaaa): How to do it efficiently?
             annotation_start_time = find_nearest(annotation.time_start, times)
             annotation_end_time = find_nearest(annotation.time_end, times)
             annotation_start_freq = find_nearest(annotation.freq_start, freqs)
@@ -264,72 +276,78 @@ class SpectrogramTab(QtWidgets.QWidget, Ui_SpectrogramWindow):
             self._annotation_boxes.append(mab)
         self.canvas.draw_idle()
 
-    def _show_annotations_info(self, column_names_and_annotations):
-        column_names, annotations = copy.deepcopy(column_names_and_annotations)
-        self.squeakTable.setRowCount(len(annotations))
-        self.squeakTable.setColumnCount(len(column_names))
-        column_names[0] = "      | " + column_names[0]
-        self.squeakTable.setHorizontalHeaderLabels(column_names)
-
-        header = self.squeakTable.horizontalHeader()
-        for i in range(len(column_names)):
-            header.setSectionResizeMode(i, QtWidgets.QHeaderView.ResizeToContents)
-
-        for i, annotation in enumerate(annotations):
-            QApplication.processEvents()  # prevents freezing of the application
-
-            item = self.squeakTable.item(i, 0)
-            if item is None:
-                time_start_item = QtWidgets.QTableWidgetItem(f"{annotation.time_start}")
-                if annotation.checked:
-                    time_start_item.setCheckState(QtCore.Qt.CheckState.Checked)
-                else:
-                    time_start_item.setCheckState(QtCore.Qt.CheckState.Unchecked)
-                self.squeakTable.setItem(i, 0, time_start_item)
-            else:
-                if annotation.checked:
-                    item.setCheckState(QtCore.Qt.CheckState.Checked)
-                else:
-                    item.setCheckState(QtCore.Qt.CheckState.Unchecked)
-
-            item = self.squeakTable.item(i, 1)
-            if item is None:
-                time_end_item = QtWidgets.QTableWidgetItem(f"{annotation.time_end}")
-                self.squeakTable.setItem(i, 1, time_end_item)
-            else:
-                item.setText(f"{annotation.time_end}")
-
-            item = self.squeakTable.item(i, 2)
-            if item is None:
-                freq_start_item = QtWidgets.QTableWidgetItem(f"{annotation.freq_start}")
-                self.squeakTable.setItem(i, 2, freq_start_item)
-            else:
-                item.setText(f"{annotation.freq_start}")
-
-            item = self.squeakTable.item(i, 3)
-            if item is None:
-                freq_end_item = QtWidgets.QTableWidgetItem(f"{annotation.freq_end}")
-                self.squeakTable.setItem(i, 3, freq_end_item)
-            else:
-                item.setText(f"{annotation.freq_end}")
-
-            item = self.squeakTable.item(i, 4)
-            if item is None:
-                label_item = QtWidgets.QTableWidgetItem(f"{annotation.label}")
-                self.squeakTable.setItem(i, 4, label_item)
-            else:
-                item.setText(f"{annotation.label}")
-
-            for j in range(5, len(column_names)):
-                item = self.squeakTable.item(i, j)
-                if item is None:
-                    table_data_item = QtWidgets.QTableWidgetItem(
-                        f"{annotation.table_data[column_names[j]]}")
-                    self.squeakTable.setItem(i, j, table_data_item)
-                else:
-                    item.setText(f"{annotation.table_data[column_names[j]]}")
-
-        self.squeakTable.itemChanged.connect(self._annotation_info_changed)
+    # def _show_annotations_info(self, column_names_and_annotations):
+    #     column_names, annotations = copy.deepcopy(column_names_and_annotations)
+    #     self.squeakTable.setRowCount(len(annotations))
+    #     self.squeakTable.setColumnCount(len(column_names))
+    #     column_names[0] = '      | ' + column_names[0]
+    #     self.squeakTable.setHorizontalHeaderLabels(column_names)
+    #
+    #     header = self.squeakTable.horizontalHeader()
+    #     for i in range(len(column_names)):
+    #         header.setSectionResizeMode(i,
+    #                                     QtWidgets.QHeaderView.ResizeToContents)
+    #     self.squeakTable.setSortingEnabled(False)
+    #     for i, annotation in enumerate(annotations):
+    #         QApplication.processEvents()  # prevents freezing of the application
+    #
+    #         item = self.squeakTable.item(i, 0)
+    #         if item is None:
+    #             time_start_item = QtWidgets.QTableWidgetItem(
+    #                 f"{annotation.time_start}")
+    #             if annotation.checked:
+    #                 time_start_item.setCheckState(QtCore.Qt.CheckState.Checked)
+    #             else:
+    #                 time_start_item.setCheckState(
+    #                     QtCore.Qt.CheckState.Unchecked)
+    #             self.squeakTable.setItem(i, 0, time_start_item)
+    #         else:
+    #             if annotation.checked:
+    #                 item.setCheckState(QtCore.Qt.CheckState.Checked)
+    #             else:
+    #                 item.setCheckState(QtCore.Qt.CheckState.Unchecked)
+    #
+    #         item = self.squeakTable.item(i, 1)
+    #         if item is None:
+    #             time_end_item = QtWidgets.QTableWidgetItem(
+    #                 f"{annotation.time_end}")
+    #             self.squeakTable.setItem(i, 1, time_end_item)
+    #         else:
+    #             item.setText(f"{annotation.time_end}")
+    #
+    #         item = self.squeakTable.item(i, 2)
+    #         if item is None:
+    #             freq_start_item = QtWidgets.QTableWidgetItem(
+    #                 f"{annotation.freq_start}")
+    #             self.squeakTable.setItem(i, 2, freq_start_item)
+    #         else:
+    #             item.setText(f"{annotation.freq_start}")
+    #
+    #         item = self.squeakTable.item(i, 3)
+    #         if item is None:
+    #             freq_end_item = QtWidgets.QTableWidgetItem(
+    #                 f"{annotation.freq_end}")
+    #             self.squeakTable.setItem(i, 3, freq_end_item)
+    #         else:
+    #             item.setText(f"{annotation.freq_end}")
+    #
+    #         item = self.squeakTable.item(i, 4)
+    #         if item is None:
+    #             label_item = QtWidgets.QTableWidgetItem(f"{annotation.label}")
+    #             self.squeakTable.setItem(i, 4, label_item)
+    #         else:
+    #             item.setText(f"{annotation.label}")
+    #
+    #         for j in range(5, len(column_names)):
+    #             item = self.squeakTable.item(i, j)
+    #             if item is None:
+    #                 table_data_item = QtWidgets.QTableWidgetItem(
+    #                     f"{annotation.table_data[column_names[j]]}")
+    #                 self.squeakTable.setItem(i, j, table_data_item)
+    #             else:
+    #                 item.setText(f"{annotation.table_data[column_names[j]]}")
+    #
+    #     self.squeakTable.itemChanged.connect(self._annotation_info_changed)
 
     def _on_delete_all_clicked(self):
         msgBox = QtWidgets.QMessageBox()
@@ -347,15 +365,16 @@ class SpectrogramTab(QtWidgets.QWidget, Ui_SpectrogramWindow):
         else:
             self.deleteButton.setEnabled(False)
 
-    def _annotation_info_changed(self, item):
-        idx = self.squeakTable.indexFromItem(item)
-        main_controller.change_annotation_data(self.model,
-                                               idx.row(),
-                                               idx.column(),
-                                               item)
+    # todo(werkaaa): is this function necessary?
+    # def _annotation_info_changed(self, item):
+    #     idx = self.squeakTable.indexFromItem(item)
+    #     main_controller.change_annotation_data(self.model,
+    #                                            idx.row(),
+    #                                            idx.column(),
+    #                                            item)
 
-    def _handle_annotation_field_changed(self, data):
-        self.squeakTable.item(data[0], data[1]).setText(f"{data[2]}")
+    # def _handle_annotation_field_changed(self, data):
+    #     self.squeakTable.item(data[0], data[1]).setText(f"{data[2]}")
 
     def _delete_all_annotations(self, row_ids):
         for i in row_ids[:-1]:
@@ -378,13 +397,15 @@ class SpectrogramTab(QtWidgets.QWidget, Ui_SpectrogramWindow):
         self.canvas.draw_idle()
 
     def _show_annotation_on_spec(self, index: int):
-        annotation_count = len(self.model.spectrogram_model.annotations)
+        annotation_count = len(
+            self.model.spectrogram_model.annotation_table_model.annotations)
         if annotation_count == 0:
             return
 
         self.table_index = np.clip(index, 0, annotation_count - 1)
 
-        annotation = self.model.spectrogram_model.annotations[self.table_index]
+        annotation = self.model.spectrogram_model.annotation_table_model.annotations[
+            self.table_index]
         t_0 = annotation.table_data[constants.COL_BEGIN_TIME]
         position = 1000 * t_0 - self.model.spectrogram_model.annotation_margin
         position = max(0, position)

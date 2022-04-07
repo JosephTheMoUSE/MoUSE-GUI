@@ -216,7 +216,7 @@ def set_visible_annotations(model: MainModel):
         display_start_time,
         display_end_time,
     ) = spectrogram_model.current_spectrogram_chunk_data.times[[0, -1]]
-    for annotation in spectrogram_model.annotations:
+    for annotation in spectrogram_model.annotation_table_model.annotations:
         if ((display_start_time <= annotation.time_start < display_end_time) or
             (display_start_time <= annotation.time_end < display_end_time) or
             (annotation.time_start <= display_start_time and
@@ -269,7 +269,8 @@ def load_annotations(model: MainModel, filename: Path):
         constants.COL_USV_LABEL,
     ] + column_names
 
-    model.spectrogram_model.update_annotations_column_names(column_names)
+    model.spectrogram_model.annotation_table_model.update_annotations_column_names(
+        column_names)
     annotations = []
     for _, entry in annotations_df.iterrows():
         table_data = {column_name: entry[column_name] for column_name in column_names}
@@ -285,100 +286,20 @@ def load_annotations(model: MainModel, filename: Path):
                 table_data=table_data,
             ))
 
-    model.spectrogram_model.update_annotations(annotations)
+    model.spectrogram_model.annotation_table_model.append_annotations(
+        annotations)
     set_visible_annotations(model)
 
 
 def _handle_change_in_check_state(model: MainModel, new_check_state: bool, row_id: int):
     if new_check_state:
-        model.spectrogram_model.checked_annotations_counter += 1
-        model.spectrogram_model.annotations[row_id].checked = True
+        model.spectrogram_model.annotation_table_model.checked_annotations_counter += 1
+        model.spectrogram_model.annotation_table_model.annotations[
+            row_id].checked = True
     else:
-        model.spectrogram_model.checked_annotations_counter -= 1
-        model.spectrogram_model.annotations[row_id].checked = False
-
-
-def change_annotation_data(model: MainModel, row_id, col_id, new_item):
-    new_value = new_item.text()
-    annotations = model.spectrogram_model.annotations
-    column_names = model.spectrogram_model.annotations_column_names
-    column = column_names[col_id]
-
-    if column in [
-            constants.COL_BEGIN_TIME,
-            constants.COL_END_TIME,
-            constants.COL_LOW_FREQ,
-            constants.COL_HIGH_FREQ,
-    ]:
-        try:
-            new_value = np.float64(new_value)
-        except ValueError:
-            warn_user(model, "Changed value should be a real number.")
-            model.spectrogram_model.signal_annotation_field_change(
-                annotations[row_id].table_data[column], row_id, col_id)
-            return
-
-    if column == constants.COL_BEGIN_TIME:
-        new_check_state = (True if new_item.checkState() == QtCore.Qt.CheckState.Checked
-                           else False)
-        if annotations[row_id].checked != new_check_state:
-            _handle_change_in_check_state(model, new_check_state, row_id)
-            return
-
-        if annotations[row_id].time_start == new_value:
-            return
-
-        if new_value >= annotations[row_id].time_end:
-            warn_user(model, "Begin Time should be smaller than End Time.")
-            model.spectrogram_model.signal_annotation_field_change(
-                annotations[row_id].table_data[column], row_id, col_id)
-            return
-
-        annotations[row_id].time_start = new_value
-    elif column == constants.COL_END_TIME:
-        if annotations[row_id].time_end == new_value:
-            return
-
-        if new_value <= annotations[row_id].time_start:
-            warn_user(model, "End Time should be greater than Begin Time.")
-            model.spectrogram_model.signal_annotation_field_change(
-                annotations[row_id].table_data[column], row_id, col_id)
-            return
-
-        annotations[row_id].time_end = new_value
-    elif column == constants.COL_LOW_FREQ:
-        if annotations[row_id].freq_start == new_value:
-            return
-
-        if new_value >= annotations[row_id].freq_end:
-            warn_user(model, "Low Freq should be smaller than High Freq.")
-            model.spectrogram_model.signal_annotation_field_change(
-                annotations[row_id].table_data[column], row_id, col_id)
-            return
-
-        annotations[row_id].freq_start = new_value
-    elif column == constants.COL_HIGH_FREQ:
-        if annotations[row_id].freq_end == new_value:
-            return
-
-        if new_value <= annotations[row_id].freq_start:
-            warn_user(model, "High Freq should be grater than Low Freq.")
-            model.spectrogram_model.signal_annotation_field_change(
-                annotations[row_id].table_data[column], row_id, col_id)
-            return
-
-        annotations[row_id].freq_end = new_value
-    elif column == constants.COL_USV_LABEL:
-        if annotations[row_id].label == new_value:
-            return
-        annotations[row_id].label = new_value
-    else:
-        if annotations[row_id].table_data[column] == new_value:
-            return
-        annotations[row_id].table_data[column] = new_value
-
-    model.spectrogram_model.signal_visible_annotations()
-
+        model.spectrogram_model.annotation_table_model.checked_annotations_counter -= 1
+        model.spectrogram_model.annotation_table_model.annotations[
+            row_id].checked = False
 
 def update_annotation(
     model: MainModel,
@@ -393,14 +314,17 @@ def update_annotation(
     time_pixel_end += offset
 
     spectrogram_data = model.spectrogram_model.spectrogram_data
-    time_start, time_end = spectrogram_data.times[[time_pixel_start, time_pixel_end]]
-    freq_start, freq_end = spectrogram_data.freqs[[freq_pixel_start, freq_pixel_end]]
+    time_start, time_end = spectrogram_data.times[[time_pixel_start,
+                                                   time_pixel_end]]
+    freq_start, freq_end = spectrogram_data.freqs[[freq_pixel_start,
+                                                   freq_pixel_end]]
 
     annotation.time_start = time_start
     annotation.time_end = time_end
     annotation.freq_start = freq_start
     annotation.freq_end = freq_end
-    model.spectrogram_model.annotations_changed()
+    # todo(werkaaa): Can it be done more efficiently?
+    model.spectrogram_model.annotation_table_model.update_all_displayed_data()
 
 
 def add_new_annotation(model: MainModel,
@@ -434,11 +358,12 @@ def add_new_annotation(model: MainModel,
         table_data=table_data,
     )
     model.spectrogram_model.update_visible_annotations([annotation])
-    model.spectrogram_model.update_annotations([annotation])
+    model.spectrogram_model.annotation_table_model.append_annotations(
+        [annotation])
 
 
 def export_annotations(model: MainModel, filename: Path):
-    annotations = model.spectrogram_model.annotations
+    annotations = model.spectrogram_model.annotation_table_model.annotations
     project_model = model.project_model
 
     # Get keys
@@ -482,36 +407,39 @@ def export_annotations(model: MainModel, filename: Path):
     print(f"Saved annotations to {filename}")
 
 
-def delete_selected_annotations(model: MainModel):
-    new_annotations = []
-    for annotation in model.spectrogram_model.annotations:
-        if not annotation.checked:
-            new_annotations.append(annotation)
+# todo(werkaaa): Uncomment and rewrite this function when new view support
+# deleting selected rows
 
-    new_visible_annotations = []
-    for annotation in model.spectrogram_model.visible_annotations:
-        if not annotation.checked:
-            new_visible_annotations.append(annotation)
-
-    model.spectrogram_model.annotations = []
-    model.spectrogram_model.annotations = new_annotations
-    model.spectrogram_model.visible_annotations = new_visible_annotations
-
-    if len(model.spectrogram_model.annotations) == 0:
-        model.spectrogram_model.annotations_column_names = [
-            constants.COL_BEGIN_TIME,
-            constants.COL_END_TIME,
-            constants.COL_LOW_FREQ,
-            constants.COL_HIGH_FREQ,
-            constants.COL_USV_LABEL,
-            constants.COL_DETECTION_METHOD,
-        ]
-
-    model.spectrogram_model.checked_annotations_counter = 0
+# def delete_selected_annotations(model: MainModel):
+#     new_annotations = []
+#     for annotation in model.spectrogram_model.annotations:
+#         if not annotation.checked:
+#             new_annotations.append(annotation)
+#
+#     new_visible_annotations = []
+#     for annotation in model.spectrogram_model.visible_annotations:
+#         if not annotation.checked:
+#             new_visible_annotations.append(annotation)
+#
+#     model.spectrogram_model.annotations = []
+#     model.spectrogram_model.annotations = new_annotations
+#     model.spectrogram_model.visible_annotations = new_visible_annotations
+#
+#     if len(model.spectrogram_model.annotations) == 0:
+#         model.spectrogram_model.annotations_column_names = [
+#             constants.COL_BEGIN_TIME,
+#             constants.COL_END_TIME,
+#             constants.COL_LOW_FREQ,
+#             constants.COL_HIGH_FREQ,
+#             constants.COL_USV_LABEL,
+#             constants.COL_DETECTION_METHOD,
+#         ]
+#
+#     model.spectrogram_model.annotation_table_model.checked_annotations_counter = 0
 
 
 def delete_all_annotations(model: MainModel):
-    model.spectrogram_model.annotations_column_names = [
+    model.spectrogram_model.annotation_table_model.annotations_column_names = [
         constants.COL_BEGIN_TIME,
         constants.COL_END_TIME,
         constants.COL_LOW_FREQ,
@@ -519,17 +447,32 @@ def delete_all_annotations(model: MainModel):
         constants.COL_USV_LABEL,
         constants.COL_DETECTION_METHOD,
     ]
-    model.spectrogram_model.annotations = []
+    annotation_number = len(
+        model.spectrogram_model.annotation_table_model.annotations)
+    model.spectrogram_model.annotation_table_model.removeRows(
+        0, annotation_number)
     model.spectrogram_model.visible_annotations = []
-    model.spectrogram_model.checked_annotations_counter = 0
+    model.spectrogram_model.annotation_table_model.checked_annotations_counter = 0
 
 
 def filter_annotations(model: MainModel):
-    annotations = model.spectrogram_model.annotations
+    annotations = model.spectrogram_model.annotation_table_model.annotations
     if model.settings_model.filtering_model.frequency_filter:
         threshold = model.settings_model.filtering_model.frequency_threshold
         selected = []
         for i, annotation in enumerate(annotations):
             if 0.5 * (annotation.freq_start + annotation.freq_end) <= threshold:
                 selected.append(i)
-        model.spectrogram_model.select_annotations.emit(selected)
+    # todo(werkaaa): Uncomment and fix when we support checkboxes
+    # model.spectrogram_model.select_annotations.emit(selected)
+
+
+def update_annotation_table_model(model: MainModel, view):
+    """
+    Creates new annotation_table_model with new view.
+    """
+    saved_model = model.spectrogram_model.annotation_table_model
+    model.spectrogram_model.annotation_table_model = saved_model.copy_with_view(
+        view)
+    saved_model.deleteLater()
+    return model.spectrogram_model.annotation_table_model
