@@ -404,35 +404,32 @@ def export_annotations(model: MainModel, filename: Path):
     print(f"Saved annotations to {filename}")
 
 
-# todo(werkaaa): Uncomment and rewrite this function when new view support
-# deleting selected rows
+def delete_selected_annotations(model: MainModel):
+    n = len(model.spectrogram_model.annotation_table_model.annotations)
+    removed_annotations = set()
+    for i, annotation in enumerate(
+        model.spectrogram_model.annotation_table_model.annotations[::-1]
+    ):
+        id = n - i - 1
+        if annotation.checked:
+            model.spectrogram_model.annotation_table_model.removeRows(id)
+            removed_annotations.add(annotation)
 
-# def delete_selected_annotations(model: MainModel):
-#     new_annotations = []
-#     for annotation in model.spectrogram_model.annotations:
-#         if not annotation.checked:
-#             new_annotations.append(annotation)
-#
-#     new_visible_annotations = []
-#     for annotation in model.spectrogram_model.visible_annotations:
-#         if not annotation.checked:
-#             new_visible_annotations.append(annotation)
-#
-#     model.spectrogram_model.annotations = []
-#     model.spectrogram_model.annotations = new_annotations
-#     model.spectrogram_model.visible_annotations = new_visible_annotations
-#
-#     if len(model.spectrogram_model.annotations) == 0:
-#         model.spectrogram_model.annotations_column_names = [
-#             constants.COL_BEGIN_TIME,
-#             constants.COL_END_TIME,
-#             constants.COL_LOW_FREQ,
-#             constants.COL_HIGH_FREQ,
-#             constants.COL_USV_LABEL,
-#             constants.COL_DETECTION_METHOD,
-#         ]
-#
-#     model.spectrogram_model.annotation_table_model.checked_annotations_counter = 0
+    # This will signal the spectrogram as well.
+    model.spectrogram_model.visible_annotations = list(
+        set(model.spectrogram_model.visible_annotations) - removed_annotations)
+
+    if len(model.spectrogram_model.annotation_table_model.annotations) == 0:
+        model.spectrogram_model.annotations_column_names = [
+            constants.COL_BEGIN_TIME,
+            constants.COL_END_TIME,
+            constants.COL_LOW_FREQ,
+            constants.COL_HIGH_FREQ,
+            constants.COL_USV_LABEL,
+            constants.COL_DETECTION_METHOD,
+        ]
+
+    model.spectrogram_model.annotation_table_model.checked_annotations_counter = 0
 
 
 def delete_all_annotations(model: MainModel):
@@ -454,12 +451,11 @@ def filter_annotations(model: MainModel):
     annotations = model.spectrogram_model.annotation_table_model.annotations
     if model.settings_model.filtering_model.frequency_filter:
         threshold = model.settings_model.filtering_model.frequency_threshold
-        selected = []
         for i, annotation in enumerate(annotations):
             if 0.5 * (annotation.freq_start + annotation.freq_end) <= threshold:
-                selected.append(i)
-    # todo(werkaaa): Uncomment and fix when we support checkboxes
-    # model.spectrogram_model.select_annotations.emit(selected)
+                model.spectrogram_model.annotation_table_model.check_annotation(i, True)
+                model.spectrogram_model.annotation_table_model.update_selected_field(
+                    i, 0)
 
 
 def update_annotation_table_model(model: MainModel, view):

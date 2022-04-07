@@ -160,9 +160,6 @@ class SpectrogramModel(SerializableModel):
     spectrogram_data_changed = Signal(tuple)
     spectrogram_chunk_data_changed = Signal(SpectrogramData)
     visible_annotations_changed = Signal(tuple)
-    # annotations_info_signal = Signal(tuple) # todo(werkaaa): remove
-    # annotation_field_changed = Signal(tuple) # todo(werkaaa): remove
-
     progressbar_changed = Signal(tuple)
     detection_info_changed = Signal(tuple)
     detection_allowed_changed = Signal(bool)
@@ -182,7 +179,7 @@ class SpectrogramModel(SerializableModel):
         self._spectrogram_data: Optional[SpectrogramData] = None
 
         # Annotations
-        # This model is later overwritten in view
+        # This model is later overwritten in view.
         self._annotation_table_model = AnnotationTableModel(self)
 
         # Visualization parameters
@@ -327,31 +324,6 @@ class SpectrogramModel(SerializableModel):
     def slider_step_size(self):
         return self._slider_step_size
 
-    # @property
-    # def annotations(self):
-    #     return self._annotations
-
-    # @annotations.setter
-    # def annotations(self, annotations):
-    #     pass
-    # annotation_list = []
-    # for annotation in annotations:
-    #     annotation_list.append([
-    #         annotation.time_start,
-    #         annotation.time_end,
-    #         annotation.freq_start,
-    #         annotation.freq_end,
-    #         annotation.label])
-    # self.annotation_table_model._annotations = annotation_list
-    # self.annotation_table_model.tableView.reloadData()
-    # self._annotations = annotations
-    # self.annotations_info_signal.emit(
-    #     (self.annotations_column_names, self.annotations))
-
-    # def annotations_changed(self):
-    #     self.annotations_info_signal.emit(
-    #         (self.annotations_column_names, self.annotations))
-
     @property
     def annotation_table_model(self):
         return self._annotation_table_model
@@ -380,9 +352,6 @@ class SpectrogramModel(SerializableModel):
         self._visible_annotations += new_visible_annotations
         self.signal_visible_annotations()
 
-    # def signal_annotation_field_change(self, value, row_id, column_id):
-    #     self.annotation_field_changed.emit((row_id, column_id, value))
-
     def _value_to_dict(self, name, value):
         if isinstance(getattr(self, name), SerializableModel):
             return value.to_dict()
@@ -396,10 +365,6 @@ class SpectrogramModel(SerializableModel):
             return annotation_table_model
         else:
             return value
-
-    # def emit_all_setting_signals(self):
-    #     self.annotations_info_signal.emit(
-    #         (self.annotations_column_names, self.annotations))
 
 
 class ApplicationModel(QObject):

@@ -1,5 +1,11 @@
 import numpy as np
-from PySide6.QtCore import Qt, QAbstractTableModel, QModelIndex, Signal
+from PySide6.QtCore import (
+    Qt,
+    QAbstractTableModel,
+    QModelIndex,
+    QPersistentModelIndex,
+    Signal,
+)
 import warnings
 
 from mouseapp.model import constants
@@ -23,6 +29,7 @@ class AnnotationTableModel(QAbstractTableModel, SerializableModel):
             constants.COL_DETECTION_METHOD,
         ]
         self._checked_annotations_counter = 0
+        self.check_states = dict()
 
     def copy_with_view(self, new_view):
         """Create a copy of the object on which called but with new view."""
@@ -69,7 +76,7 @@ class AnnotationTableModel(QAbstractTableModel, SerializableModel):
         if not 0 <= index.row() < len(self._annotations):
             return None
 
-        if role == Qt.DisplayRole:
+        if role == Qt.DisplayRole or role == Qt.EditRole:
             c = index.column()
             if c <= 3:
                 return str(self.annotations[index.row()].table_data[
@@ -77,13 +84,18 @@ class AnnotationTableModel(QAbstractTableModel, SerializableModel):
             elif c < len(self.annotations_column_names):
                 return self.annotations[index.row()].table_data[
                     self.annotations_column_names[c]]
+        if role == Qt.CheckStateRole and index.column() == 0:
+            if self.annotations[index.row()].checked:
+                return Qt.CheckState.Checked
+            else:
+                return Qt.CheckState.Unchecked
 
         return None
 
     def setData(self, index, value, role):
-        column = self.annotations_column_names[index.column()]
+        annotation = self.annotations[index.row()]
         if role == Qt.EditRole:
-            annotation = self.annotations[index.row()]
+            column = self.annotations_column_names[index.column()]
             if column in [
                     constants.COL_BEGIN_TIME,
                     constants.COL_END_TIME,
@@ -124,6 +136,14 @@ class AnnotationTableModel(QAbstractTableModel, SerializableModel):
                 annotation.table_data[column] = value
 
             return True
+        if role == Qt.CheckStateRole:
+            if value == Qt.CheckState.Unchecked:
+                self.check_annotation(index.row(), False)
+            elif value == Qt.CheckState.Checked:
+                self.check_annotation(index.row(), True)
+
+            return True
+
         return False
 
     def headerData(self, section, orientation, role=Qt.DisplayRole):
@@ -144,7 +164,17 @@ class AnnotationTableModel(QAbstractTableModel, SerializableModel):
         return True
 
     def flags(self, index):
-        return Qt.ItemIsSelectable | Qt.ItemIsEnabled | Qt.ItemIsEditable
+        return (Qt.ItemIsSelectable | Qt.ItemIsEnabled | Qt.ItemIsEditable |
+                Qt.ItemIsUserCheckable)
+
+    def remove_rows_from_list(self, row_list):
+        row_list = list(set(row_list))
+        row_list.sort(reverse=True)
+        for row in row_list:
+            self.beginRemoveRows(QModelIndex(), row, row)
+            del self.annotations[row]
+            self.endRemoveRows()
+        return True
 
     @property
     def annotations(self):
@@ -169,6 +199,9 @@ class AnnotationTableModel(QAbstractTableModel, SerializableModel):
         self._annotations += data
         self.endInsertRows()
         return True
+
+    def update_selected_field(self, row, column):
+        self.dataChanged.emit(self.index(row, column), self.index(row, column))
 
     def update_all_displayed_data(self):
         self.dataChanged.emit(self.index(0, 0),
@@ -198,3 +231,11 @@ class AnnotationTableModel(QAbstractTableModel, SerializableModel):
         elif self.checked_annotations_counter > 0 and value == 0:
             self.delete_button_show.emit(False)
         self._checked_annotations_counter = value
+
+    def check_annotation(self, row, state):
+        if not self.annotations[row].checked == state:
+            self.annotations[row].checked = state
+            if state:
+                self.checked_annotations_counter += 1
+            else:
+                self.checked_annotations_counter -= 1
