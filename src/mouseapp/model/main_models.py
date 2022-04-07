@@ -160,8 +160,8 @@ class SpectrogramModel(SerializableModel):
     spectrogram_data_changed = Signal(tuple)
     spectrogram_chunk_data_changed = Signal(SpectrogramData)
     visible_annotations_changed = Signal(tuple)
-    # annotations_info_signal = Signal(tuple) # TODO: remove
-    # annotation_field_changed = Signal(tuple) # TODO: remove
+    # annotations_info_signal = Signal(tuple) # todo(werkaaa): remove
+    # annotation_field_changed = Signal(tuple) # todo(werkaaa): remove
 
     progressbar_changed = Signal(tuple)
     detection_info_changed = Signal(tuple)
@@ -384,14 +384,18 @@ class SpectrogramModel(SerializableModel):
     #     self.annotation_field_changed.emit((row_id, column_id, value))
 
     def _value_to_dict(self, name, value):
-        if name == "annotations":  # serialize annotations
-            return [annotation.to_dict() for annotation in value]
-        return value
+        if isinstance(getattr(self, name), SerializableModel):
+            return value.to_dict()
+        else:
+            return value
 
     def _value_from_dict(self, name, value):
-        if name == "annotations":
-            return [Annotation.from_dict(**annotation) for annotation in value]
-        return value
+        if name == "annotation_table_model":
+            annotation_table_model = AnnotationTableModel(self)
+            annotation_table_model.from_dict(value)
+            return annotation_table_model
+        else:
+            return value
 
     # def emit_all_setting_signals(self):
     #     self.annotations_info_signal.emit(

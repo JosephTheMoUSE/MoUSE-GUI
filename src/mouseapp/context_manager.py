@@ -152,7 +152,7 @@ def switch_projects(
     initialize_widget(MainWindow(model=next_model))
     next_model.project_model.emit_all_setting_signals()
     # todo(werkaaa): Uncomment when finished
-    # next_model.spectrogram_model.emit_all_setting_signals() #TODO: remove comment
+    # next_model.spectrogram_model.emit_all_setting_signals()
 
 
 def finalize_project_creation(

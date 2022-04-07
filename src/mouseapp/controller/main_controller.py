@@ -286,8 +286,7 @@ def load_annotations(model: MainModel, filename: Path):
                 table_data=table_data,
             ))
 
-    model.spectrogram_model.annotation_table_model.append_annotations(
-        annotations)
+    model.spectrogram_model.annotation_table_model.append_annotations(annotations)
     set_visible_annotations(model)
 
 
@@ -300,6 +299,7 @@ def _handle_change_in_check_state(model: MainModel, new_check_state: bool, row_i
         model.spectrogram_model.annotation_table_model.checked_annotations_counter -= 1
         model.spectrogram_model.annotation_table_model.annotations[
             row_id].checked = False
+
 
 def update_annotation(
     model: MainModel,
@@ -314,10 +314,8 @@ def update_annotation(
     time_pixel_end += offset
 
     spectrogram_data = model.spectrogram_model.spectrogram_data
-    time_start, time_end = spectrogram_data.times[[time_pixel_start,
-                                                   time_pixel_end]]
-    freq_start, freq_end = spectrogram_data.freqs[[freq_pixel_start,
-                                                   freq_pixel_end]]
+    time_start, time_end = spectrogram_data.times[[time_pixel_start, time_pixel_end]]
+    freq_start, freq_end = spectrogram_data.freqs[[freq_pixel_start, freq_pixel_end]]
 
     annotation.time_start = time_start
     annotation.time_end = time_end
@@ -358,8 +356,7 @@ def add_new_annotation(model: MainModel,
         table_data=table_data,
     )
     model.spectrogram_model.update_visible_annotations([annotation])
-    model.spectrogram_model.annotation_table_model.append_annotations(
-        [annotation])
+    model.spectrogram_model.annotation_table_model.append_annotations([annotation])
 
 
 def export_annotations(model: MainModel, filename: Path):
@@ -447,10 +444,8 @@ def delete_all_annotations(model: MainModel):
         constants.COL_USV_LABEL,
         constants.COL_DETECTION_METHOD,
     ]
-    annotation_number = len(
-        model.spectrogram_model.annotation_table_model.annotations)
-    model.spectrogram_model.annotation_table_model.removeRows(
-        0, annotation_number)
+    annotation_number = len(model.spectrogram_model.annotation_table_model.annotations)
+    model.spectrogram_model.annotation_table_model.removeRows(0, annotation_number)
     model.spectrogram_model.visible_annotations = []
     model.spectrogram_model.annotation_table_model.checked_annotations_counter = 0
 
@@ -468,11 +463,8 @@ def filter_annotations(model: MainModel):
 
 
 def update_annotation_table_model(model: MainModel, view):
-    """
-    Creates new annotation_table_model with new view.
-    """
+    """Create new annotation_table_model with new view."""
     saved_model = model.spectrogram_model.annotation_table_model
-    model.spectrogram_model.annotation_table_model = saved_model.copy_with_view(
-        view)
+    model.spectrogram_model.annotation_table_model = saved_model.copy_with_view(view)
     saved_model.deleteLater()
     return model.spectrogram_model.annotation_table_model
