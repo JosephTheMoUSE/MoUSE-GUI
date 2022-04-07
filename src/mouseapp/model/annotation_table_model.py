@@ -25,9 +25,7 @@ class AnnotationTableModel(QAbstractTableModel, SerializableModel):
         self._checked_annotations_counter = 0
 
     def copy_with_view(self, new_view):
-        """
-        Creates a copy of the object but with new view.
-        """
+        """Create a copy of the object on which called but with new view."""
         new_model = AnnotationTableModel(self._spectrogram_model, new_view)
         new_model.annotations = self.annotations
         new_model.annotations_column_names = self.annotations_column_names
@@ -35,16 +33,14 @@ class AnnotationTableModel(QAbstractTableModel, SerializableModel):
         return new_model
 
     def to_dict(self):
-        """
+        """Serialize in a custom way.
+
         This class inherits from some complicated class,
         so we don't use .to_dict() from serializable model, as it
         would iterate over all method fields.
         """
-        print("serializing annotation model")
         result = {
-            "annotations": [
-                annotation.to_dict() for annotation in self.annotations
-            ],
+            "annotations": [annotation.to_dict() for annotation in self.annotations],
             "annotations_column_names": self.annotations_column_names,
         }
         return result
@@ -54,8 +50,7 @@ class AnnotationTableModel(QAbstractTableModel, SerializableModel):
             Annotation.from_dict(**annotation)
             for annotation in property_dict["annotations"]
         ]
-        self.annotations_column_names = property_dict[
-            "annotations_column_names"]
+        self.annotations_column_names = property_dict["annotations_column_names"]
 
     def rowCount(self, parent=None):
         return len(self.annotations)
@@ -64,9 +59,9 @@ class AnnotationTableModel(QAbstractTableModel, SerializableModel):
         return len(self.annotations_column_names)
 
     def data(self, index, role=Qt.DisplayRole):
-        """Depending on the index and role given, return data. If not
-        returning data, return None (PySide equivalent of QT's
-        "invalid QVariant").
+        """Depending on the index and role given, return data.
+
+        This method is responsible for proper display in the view.
         """
         if not index.isValid():
             return None
@@ -106,29 +101,25 @@ class AnnotationTableModel(QAbstractTableModel, SerializableModel):
                     annotation.time_start = value
                     self._spectrogram_model.signal_visible_annotations()
                 else:
-                    warnings.warn(
-                        "Begin Time (s) should be smaller than End Time (s)")
+                    warnings.warn("Begin Time (s) should be smaller than End Time (s)")
             elif column == constants.COL_END_TIME:
                 if value > annotation.time_start:
                     annotation.time_end = value
                     self._spectrogram_model.signal_visible_annotations()
                 else:
-                    warnings.warn(
-                        "Begin Time (s) should be smaller than End Time (s)")
+                    warnings.warn("Begin Time (s) should be smaller than End Time (s)")
             elif column == constants.COL_HIGH_FREQ:
                 if value > annotation.freq_start:
                     annotation.freq_end = value
                     self._spectrogram_model.signal_visible_annotations()
                 else:
-                    warnings.warn(
-                        "Low Freq (Hz) should be smaller than High Freq (Hz)")
+                    warnings.warn("Low Freq (Hz) should be smaller than High Freq (Hz)")
             elif column == constants.COL_LOW_FREQ:
                 if value < annotation.freq_end:
                     annotation.freq_start = value
                     self._spectrogram_model.signal_visible_annotations()
                 else:
-                    warnings.warn(
-                        "Low Freq (Hz) should be smaller than High Freq (Hz)")
+                    warnings.warn("Low Freq (Hz) should be smaller than High Freq (Hz)")
             elif column not in [constants.COL_DETECTION_METHOD]:
                 annotation.table_data[column] = value
 
@@ -180,9 +171,8 @@ class AnnotationTableModel(QAbstractTableModel, SerializableModel):
         return True
 
     def update_all_displayed_data(self):
-        self.dataChanged.emit(
-            self.index(0, 0),
-            self.index(self.rowCount() - 1, self.columnCount() - 1))
+        self.dataChanged.emit(self.index(0, 0),
+                              self.index(self.rowCount() - 1, self.columnCount() - 1))
 
     @property
     def annotations_column_names(self):

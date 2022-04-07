@@ -22,8 +22,8 @@ def run_selected_classification(model: MainModel):
         def callback():
             process_qt_events(model.spectrogram_model.background_task.worker)
             num_progress = model.spectrogram_model.progressbar_count
-            model.spectrogram_model.progressbar_progress = int(
-                num_progress / annotation_count * 100)
+            model.spectrogram_model.progressbar_progress = int(num_progress /
+                                                               annotation_count * 100)
             model.spectrogram_model.progressbar_count += 1
 
         def classify_USVs():
