@@ -129,7 +129,7 @@
    <item>
     <layout class="QGridLayout" name="tableGridLayout">
      <item row="0" column="0">
-      <widget class="QTableWidget" name="squeakTable"/>
+      <widget class="QTableView" name="squeakTable"/>
      </item>
     </layout>
    </item>
