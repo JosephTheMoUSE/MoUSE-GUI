@@ -321,7 +321,7 @@ def update_annotation(
     annotation.time_end = time_end
     annotation.freq_start = freq_start
     annotation.freq_end = freq_end
-    # todo(werkaaa): Can it be done more efficiently?
+    # Next line is a potential place for efficiency improvement.
     model.spectrogram_model.annotation_table_model.update_all_displayed_data()
 
 
