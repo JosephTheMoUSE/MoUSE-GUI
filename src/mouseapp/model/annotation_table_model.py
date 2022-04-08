@@ -1,11 +1,5 @@
 import numpy as np
-from PySide6.QtCore import (
-    Qt,
-    QAbstractTableModel,
-    QModelIndex,
-    QPersistentModelIndex,
-    Signal,
-)
+from PySide6.QtCore import Qt, QAbstractTableModel, QModelIndex, Signal
 import warnings
 
 from mouseapp.model import constants
@@ -167,15 +161,6 @@ class AnnotationTableModel(QAbstractTableModel, SerializableModel):
         return (Qt.ItemIsSelectable | Qt.ItemIsEnabled | Qt.ItemIsEditable |
                 Qt.ItemIsUserCheckable)
 
-    def remove_rows_from_list(self, row_list):
-        row_list = list(set(row_list))
-        row_list.sort(reverse=True)
-        for row in row_list:
-            self.beginRemoveRows(QModelIndex(), row, row)
-            del self.annotations[row]
-            self.endRemoveRows()
-        return True
-
     @property
     def annotations(self):
         return self._annotations
@@ -202,6 +187,10 @@ class AnnotationTableModel(QAbstractTableModel, SerializableModel):
 
     def update_selected_field(self, row, column):
         self.dataChanged.emit(self.index(row, column), self.index(row, column))
+
+    def update_selected_column(self, column):
+        self.dataChanged.emit(self.index(0, column),
+                              self.index(self.rowCount(), column))
 
     def update_all_displayed_data(self):
         self.dataChanged.emit(self.index(0, 0),
