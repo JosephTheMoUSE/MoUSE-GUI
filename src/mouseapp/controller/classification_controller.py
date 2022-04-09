@@ -6,6 +6,7 @@ from mouse.rule_based_classifier.simple_classifier import classify_USVs
 
 from mouseapp.controller.utils import run_background_task, process_qt_events
 from mouseapp.model.main_models import MainModel
+from mouseapp.model import constants
 
 
 def run_selected_classification(model: MainModel):
@@ -55,10 +56,9 @@ def make_frequency_classification(model: MainModel, callback: Callable):
     high_label = model.settings_model.threshold_model.label_high
     spec_data = model.spectrogram_model.spectrogram_data
 
-    # We purposefully make shallow copy here. This way we can iterate over
-    # the same annotation list as we have at the beginning od classification
-    # even if the original list changes in the meantime. At the same time
-    # we are able to edit original annotation content.
+    # We purposefully make shallow copy here. This way we can iterate over the same
+    # annotation list as we have at the beginning of classification even if the original
+    # list changes. At the same time we are able to edit the original annotation.
     annotations = copy.copy(model.spectrogram_model.annotation_table_model.annotations)
     classified_squeaks = classify_USVs(
         spec=spec_data,
@@ -74,4 +74,5 @@ def make_frequency_classification(model: MainModel, callback: Callable):
     for annotation, squeak_box in zip(annotations, classified_squeaks):
         annotation.label = squeak_box.label
 
-    model.spectrogram_model.annotation_table_model.update_selected_column(4)  # USV TYPE
+    model.spectrogram_model.annotation_table_model.update_selected_column(
+        constants.COL_USV_LABEL_ID)

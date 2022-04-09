@@ -57,17 +57,16 @@ class SpectrogramTab(QtWidgets.QWidget, Ui_SpectrogramWindow):
         self._annotation_boxes: List[widgets.MovableAnnotationBox] = []
         self.table_index: int = 0
 
-        # Change squeakTable model to custom one
+        # Change squeakTable model to custom one.
         old_model = self.squeakTable.model()
         if old_model is not None:
-            self.table.setModel(None)
             old_model.deleteLater()
 
         new_model = main_controller.update_annotation_table_model(
             self.model, self.squeakTable)
         self.squeakTable.setModel(new_model)
 
-        # Change vertical header size so it is easy to click
+        # Change vertical header size, so it is easy to click.
         self.squeakTable.verticalHeader().setFixedWidth(
             view_constants.SQUEAK_TABLE_VERTICAL_HEADER_SIZE)
         # Change column width so it fits standard column names but doesn't grow
@@ -251,7 +250,6 @@ class SpectrogramTab(QtWidgets.QWidget, Ui_SpectrogramWindow):
         # cast annotation positions to relative spectrogram coordinates
         x_start = find_nearest(display_start_time, times)
         for annotation in visible_annotations:
-            # todo(werekaaa): How to do it efficiently?
             annotation_start_time = find_nearest(annotation.time_start, times)
             annotation_end_time = find_nearest(annotation.time_end, times)
             annotation_start_freq = find_nearest(annotation.freq_start, freqs)

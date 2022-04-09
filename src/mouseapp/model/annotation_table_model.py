@@ -1,5 +1,5 @@
 from PySide6.QtCore import Qt, QAbstractTableModel, QModelIndex, QObject, Signal
-from typing import Optional, Union
+from typing import Optional, Union, List
 import warnings
 
 from mouseapp.controller import utils
@@ -177,7 +177,7 @@ class AnnotationTableModel(QAbstractTableModel, SerializableModel):
                 Qt.ItemIsUserCheckable)
 
     @property
-    def annotations(self):
+    def annotations(self) -> List[Annotation]:
         return self._annotations
 
     @annotations.setter
@@ -228,16 +228,14 @@ class AnnotationTableModel(QAbstractTableModel, SerializableModel):
 
     def update_annotations_column_names(self, new_columns):
         # Make sure that column is not yet present.
-        actually_new_columns = []
-        for col_name in new_columns:
-            if col_name not in self.annotations_column_names:
-                actually_new_columns.append(col_name)
+        new_columns = list(
+            filter(lambda x: x not in self.annotations_column_names, new_columns))
         self.beginInsertColumns(
             QModelIndex(),
             len(self.annotations_column_names),
-            len(self.annotations_column_names) + len(actually_new_columns) - 1,
+            len(self.annotations_column_names) + len(new_columns) - 1,
         )
-        self._annotations_column_names += actually_new_columns
+        self._annotations_column_names += new_columns
         self.endInsertColumns()
 
     @property
