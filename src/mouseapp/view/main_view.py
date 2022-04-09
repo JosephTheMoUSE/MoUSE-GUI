@@ -1,5 +1,4 @@
 """Main Window of the application."""
-import copy
 import os
 from pathlib import Path
 from sys import platform
@@ -8,7 +7,6 @@ from typing import List, Optional, Tuple
 from PySide6 import QtGui
 from PySide6 import QtWidgets
 from PySide6.QtCore import Slot
-from PySide6.QtWidgets import QApplication
 
 import mouseapp.controller.classification_controller
 from mouseapp.model import constants
@@ -31,7 +29,6 @@ from mouseapp.controller import (  # yapf: disable
 )
 from mouseapp import context_manager
 from mouseapp.model.main_models import MainModel
-from mouseapp.model.annotation_table_model import AnnotationTableModel
 from mouseapp.view import utils
 from mouseapp.view import widgets
 from mouseapp.view import view_constants

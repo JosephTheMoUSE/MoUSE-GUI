@@ -1,7 +1,8 @@
-import numpy as np
-from PySide6.QtCore import Qt, QAbstractTableModel, QModelIndex, Signal
+from PySide6.QtCore import Qt, QAbstractTableModel, QModelIndex, QObject, Signal
+from typing import Optional, Union
 import warnings
 
+from mouseapp.controller import utils
 from mouseapp.model import constants
 from mouseapp.model.utils import Annotation, SerializableModel
 
@@ -10,7 +11,7 @@ class AnnotationTableModel(QAbstractTableModel, SerializableModel):
 
     delete_button_show = Signal(bool)
 
-    def __init__(self, spectrogram_model, parent=None):
+    def __init__(self, spectrogram_model, parent: QObject = None):
         super(AnnotationTableModel, self).__init__(parent)
         self._spectrogram_model = spectrogram_model
         self._annotations = []
@@ -54,15 +55,20 @@ class AnnotationTableModel(QAbstractTableModel, SerializableModel):
         self.annotations_column_names = property_dict["annotations_column_names"]
 
     def rowCount(self, parent=None):
+        """Used internally by Qt."""  # noqa
         return len(self.annotations)
 
     def columnCount(self, parent=None):
+        """Used internally by Qt."""  # noqa
         return len(self.annotations_column_names)
 
-    def data(self, index, role=Qt.DisplayRole):
+    def data(self,
+             index: QModelIndex,
+             role=Qt.DisplayRole) -> Optional[Union[str, Qt.CheckState]]:
         """Depending on the index and role given, return data.
 
-        This method is responsible for proper display in the view.
+        This method is responsible for proper display in the view and is used
+        internally by Qt.
         """
         if not index.isValid():
             return None
@@ -72,12 +78,9 @@ class AnnotationTableModel(QAbstractTableModel, SerializableModel):
 
         if role == Qt.DisplayRole or role == Qt.EditRole:
             c = index.column()
-            if c <= 3:
+            if c < len(self.annotations_column_names):
                 return str(self.annotations[index.row()].table_data[
                     self.annotations_column_names[c]])
-            elif c < len(self.annotations_column_names):
-                return self.annotations[index.row()].table_data[
-                    self.annotations_column_names[c]]
         if role == Qt.CheckStateRole and index.column() == 0:
             if self.annotations[index.row()].checked:
                 return Qt.CheckState.Checked
@@ -86,7 +89,12 @@ class AnnotationTableModel(QAbstractTableModel, SerializableModel):
 
         return None
 
-    def setData(self, index, value, role):
+    def setData(self, index: QModelIndex, value: Union[str, Qt.CheckState], role: int):
+        """Edit table data from GUI.
+
+        This method is responsible for handling user changes in GUI and is used
+        internally by Qt.
+        """
         annotation = self.annotations[index.row()]
         if role == Qt.EditRole:
             column = self.annotations_column_names[index.column()]
@@ -97,7 +105,7 @@ class AnnotationTableModel(QAbstractTableModel, SerializableModel):
                     constants.COL_HIGH_FREQ,
             ]:
                 try:
-                    value = np.float64(value)
+                    value = utils.float_convert(value)
                 except ValueError:
                     warnings.warn("Changed value should be a real number.")
                     return False
@@ -141,7 +149,10 @@ class AnnotationTableModel(QAbstractTableModel, SerializableModel):
         return False
 
     def headerData(self, section, orientation, role=Qt.DisplayRole):
-        """Set the headers to be displayed."""
+        """Set the headers to be displayed.
+
+        Used internally by Qt.
+        """
         if role != Qt.DisplayRole:
             return None
 
@@ -158,6 +169,10 @@ class AnnotationTableModel(QAbstractTableModel, SerializableModel):
         return True
 
     def flags(self, index):
+        """Define actions possible on the table.
+
+        Used internally by Qt.
+        """
         return (Qt.ItemIsSelectable | Qt.ItemIsEnabled | Qt.ItemIsEditable |
                 Qt.ItemIsUserCheckable)
 
