@@ -167,9 +167,9 @@ class AnnotationTableModel(QAbstractTableModel, SerializableModel):
 
     @annotations.setter
     def annotations(self, annotations):
-        if len(self._annotations) > 0:
+        if len(self.annotations) > 0:
             self.beginRemoveRows(QModelIndex(), 0, len(self.annotations) - 1)
-            del self._annotations[:]
+            del self.annotations[:]
             self.endRemoveRows()
 
         self.append_annotations(annotations)
@@ -178,8 +178,8 @@ class AnnotationTableModel(QAbstractTableModel, SerializableModel):
         """Append rows into the model."""
         self.beginInsertRows(
             QModelIndex(),
-            len(self._annotations),
-            len(self._annotations) + len(data) - 1,
+            len(self.annotations),
+            len(self.annotations) + len(data) - 1,
         )
         self._annotations += data
         self.endInsertRows()
@@ -202,12 +202,28 @@ class AnnotationTableModel(QAbstractTableModel, SerializableModel):
 
     @annotations_column_names.setter
     def annotations_column_names(self, annotations_column_names):
-        self._annotations_column_names = annotations_column_names
+        if len(self.annotations_column_names) > 0:
+            self.beginRemoveColumns(QModelIndex(),
+                                    0,
+                                    len(self.annotations_column_names) - 1)
+            del self._annotations_column_names[:]
+            self.endRemoveColumns()
+
+        self.update_annotations_column_names(annotations_column_names)
 
     def update_annotations_column_names(self, new_columns):
+        # Make sure that column is not yet present.
+        actually_new_columns = []
         for col_name in new_columns:
             if col_name not in self.annotations_column_names:
-                self.annotations_column_names.append(col_name)
+                actually_new_columns.append(col_name)
+        self.beginInsertColumns(
+            QModelIndex(),
+            len(self.annotations_column_names),
+            len(self.annotations_column_names) + len(actually_new_columns) - 1,
+        )
+        self._annotations_column_names += actually_new_columns
+        self.endInsertColumns()
 
     @property
     def checked_annotations_counter(self):
