@@ -1,7 +1,7 @@
 from typing import Union, Iterable
 
 import numpy as np
-from PySide6 import QtCore, QtWidgets
+from PySide6 import QtWidgets
 from matplotlib.patches import Rectangle
 
 

@@ -8,9 +8,8 @@ from torchaudio.transforms import Spectrogram
 from typing import Any, Dict, List, NamedTuple, Optional, Set, Tuple
 
 import appdirs
-from PySide6.QtCore import QDate, QObject, Signal, QMutex, QModelIndex
+from PySide6.QtCore import QDate, QObject, Signal, QMutex
 from mouse.utils.sound_util import SpectrogramData
-from mouseapp.model import constants
 from mouseapp.model.settings.settings_model import SettingsModel
 from mouseapp.model.utils import BackgroundTask, Annotation, SerializableModel
 from mouseapp.model.utils import MouseProject
