@@ -1,0 +1,4 @@
+"""Constants related to view."""
+
+SQUEAK_TABLE_VERTICAL_HEADER_SIZE = 25
+SQUEAK_TABLE_COLUMN_MAX_WIDTH = 180

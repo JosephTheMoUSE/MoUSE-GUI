@@ -34,6 +34,7 @@ from mouseapp.model.main_models import MainModel
 from mouseapp.model.annotation_table_model import AnnotationTableModel
 from mouseapp.view import utils
 from mouseapp.view import widgets
+from mouseapp.view import view_constants
 from mouseapp.view.generated.ui_mouse_main_window import Ui_MainWindow
 from mouseapp.view.generated.ui_project_tab import Ui_ProjectWindow
 from mouseapp.view.generated.ui_spectrogram_tab import Ui_SpectrogramWindow
@@ -68,6 +69,16 @@ class SpectrogramTab(QtWidgets.QWidget, Ui_SpectrogramWindow):
         new_model = main_controller.update_annotation_table_model(
             self.model, self.squeakTable)
         self.squeakTable.setModel(new_model)
+
+        # Change vertical header size so it is easy to click
+        self.squeakTable.verticalHeader().setFixedWidth(
+            view_constants.SQUEAK_TABLE_VERTICAL_HEADER_SIZE)
+        # Change column width so it fits standard column names but doesn't grow
+        # to big when there is a lot of content in the column.
+        self.squeakTable.horizontalHeader().setMaximumSectionSize(
+            view_constants.SQUEAK_TABLE_COLUMN_MAX_WIDTH)
+        self.squeakTable.horizontalHeader().setSectionResizeMode(
+            QtWidgets.QHeaderView.ResizeToContents)
 
         # Connect inputs
         self.spectrogramScrollBar.setSingleStep(

@@ -420,7 +420,7 @@ def delete_selected_annotations(model: MainModel):
         set(model.spectrogram_model.visible_annotations) - removed_annotations)
 
     if len(model.spectrogram_model.annotation_table_model.annotations) == 0:
-        model.spectrogram_model.annotations_column_names = [
+        model.spectrogram_model.annotation_table_model.annotations_column_names = [
             constants.COL_BEGIN_TIME,
             constants.COL_END_TIME,
             constants.COL_LOW_FREQ,
