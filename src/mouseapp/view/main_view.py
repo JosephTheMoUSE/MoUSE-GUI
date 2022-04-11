@@ -74,7 +74,8 @@ class SpectrogramTab(QtWidgets.QWidget, Ui_SpectrogramWindow):
         self.squeakTable.horizontalHeader().setMaximumSectionSize(
             view_constants.SQUEAK_TABLE_COLUMN_MAX_WIDTH)
         self.squeakTable.horizontalHeader().setSectionResizeMode(
-            QtWidgets.QHeaderView.ResizeToContents)
+            QtWidgets.QHeaderView.Interactive)
+        self.squeakTable.resizeColumnsToContents()
 
         # Connect inputs
         self.spectrogramScrollBar.setSingleStep(
