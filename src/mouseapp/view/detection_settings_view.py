@@ -336,10 +336,10 @@ class DetectionSettingsWindow(QtWidgets.QWidget, Ui_DetectionSettingsWidget):
 
     def _on_optimisation_results_signal(self, value: List[OptimisationResult]):
         if len(value) > 0:
-            last_results = [round(result.metric, 2) for result in value][-5:]
+            last_results = sorted([round(result.metric, 2) for result in value])[-5:]
             best = str(self.model.settings_model.gac_model.optimisation_best)
 
-            self.resultLabel.setText(f"Most recent results: {last_results}\n\n"
+            self.resultLabel.setText(f"Best results: {last_results}\n\n"
                                      f"Best result:\n{best}")
 
     def _on_optimisation_box_count_signal(self, value: int):
