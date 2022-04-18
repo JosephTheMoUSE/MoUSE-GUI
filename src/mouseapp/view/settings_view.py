@@ -22,7 +22,7 @@ class SettingsWindow(QtWidgets.QWidget, Ui_SettingsWidget):
 
         # Makes the new window stay on top of the application
         self.setWindowFlags(self.windowFlags() | QtCore.Qt.WindowStaysOnTopHint)
-        # enforce garbaga collection of this window
+        # enforce garbage collection of this window
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
 
         # Instantiate denoising settings widget

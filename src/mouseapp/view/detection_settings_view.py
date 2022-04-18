@@ -37,7 +37,7 @@ class DetectionSettingsWindow(QtWidgets.QWidget, Ui_DetectionSettingsWidget):
         self.was_gac_loaded = False
         self.progressbar: Optional[TaskProgressbar] = None
 
-        # enforce garbaga collection of this window
+        # enforce garbage collection of this window
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
 
         self.gac_preview = PreviewSettingsWindow(self.model)
@@ -45,37 +45,52 @@ class DetectionSettingsWindow(QtWidgets.QWidget, Ui_DetectionSettingsWidget):
         self.GACPreviewLayout.addWidget(self.gac_preview)
         self.nnPreviewLayout.addWidget(self.nn_preview)
 
-        # Change `QSlider` to `SliderWithEdit`
+        self.replace_slider_placeholders()
+
+        # connect inputs
+        self.detectionComboBox.currentTextChanged.connect(self.change_detection_page)
+        self._connect_nn_inputs()
+        self._connect_gac_inputs()
+        self._connect_optimisation_inputs()
+
+        # connect signals
+        self.model.settings_model.chosen_detection_method_signal.connect(
+            self.change_detection_method)
+        self._connect_nn_signals()
+        self._connect_gac_signals()
+        self._connect_optimisation_signals()
+
+        self.time_changed = False
+
+        logging.debug("[DetectionSettingsWindow] Finished initialization")
+
+    def replace_slider_placeholders(self):
+        """Change `QSlider` to `SliderWithEdit`."""
         self.floodLevelSlider = utils.initialize_widget(
             SliderWithEdit(minimum=0, maximum=1, resolution=100))
         self.gacGridLayout.replaceWidget(self.placeholderFloodLevelSlider,
                                          self.floodLevelSlider)
         self.placeholderFloodLevelSlider.deleteLater()
-        self.baloonSlider = utils.initialize_widget(
+        self.balloonSlider = utils.initialize_widget(
             SliderWithEdit(minimum=0, maximum=1, resolution=100))
-        self.gacGridLayout.replaceWidget(self.placeholderBaloonSlider,
-                                         self.baloonSlider)
-        self.placeholderBaloonSlider.deleteLater()
+        self.gacGridLayout.replaceWidget(self.placeholderBalloonSlider,
+                                         self.balloonSlider)
+        self.placeholderBalloonSlider.deleteLater()
 
-        # connect inputs
-        # # connect detection inputs
-        self.detectionComboBox.currentTextChanged.connect(self.change_detection_page)
+    def _connect_gac_inputs(self):
         self.gac_preview.runPreviewButton.clicked.connect(self._on_run_detection)
-        self.nn_preview.runPreviewButton.clicked.connect(self._on_run_detection)
-
-        # # connect GAC inputs
-        self.baloonComboBox.currentTextChanged.connect(self._on_baloon_combobox)
+        self.balloonComboBox.currentTextChanged.connect(self._on_balloon_combobox)
         self.iterationsLineEdit.editingFinished.connect(self._on_iterations_edit)
         self.smoothingLineEdit.editingFinished.connect(self._on_smoothing_edit)
         self.sigmaLineEdit.editingFinished.connect(self._on_sigma_edit)
         self.alphaLineEdit.editingFinished.connect(self._on_alpha_edit)
-        self.baloonSlider.modifications_finished.connect(self._on_threshold_edit)
+        self.balloonSlider.modifications_finished.connect(self._on_threshold_edit)
         self.floodLevelSlider.modifications_finished.connect(self._on_flood_changed)
         self.restoreGACButton.clicked.connect(self._on_gac_restore)
         self.gac_preview.previewButton.clicked.connect(self._on_preview_time)
         self.nn_preview.previewButton.clicked.connect(self._on_preview_time)
 
-        # # connect GAC optimisation inputs
+    def _connect_optimisation_inputs(self):
         self.runOptimisationPushButton.clicked.connect(self._on_gac_optimisation)
         self.automaticGACConfigurationButton.clicked.connect(self._on_autoconfigure_gac)
         self.timeStartLineEdit.editingFinished.connect(self._on_optimisation_time_start)
@@ -86,25 +101,11 @@ class DetectionSettingsWindow(QtWidgets.QWidget, Ui_DetectionSettingsWidget):
         self.betaLineEdit.editingFinished.connect(self._on_optimisation_beta)
         self.metricComboBox.currentTextChanged.connect(self._on_optimisation_metric)
 
-        # Neural Network inputs
+    def _connect_nn_inputs(self):
+        self.nn_preview.runPreviewButton.clicked.connect(self._on_run_detection)
         self.modelTypeComboBox.currentTextChanged.connect(self._model_name_changed)
         self.batchSizeSpinBox.valueChanged.connect(self._batch_size_changed)
         self.confidenceSpinBox.valueChanged.connect(self._confidence_value_changed)
-
-        # connect signals
-        self.model.settings_model.detection_spec_changed.connect(
-            self.gac_preview.draw_upper_spect)
-        self.model.settings_model.detection_spec_changed.connect(
-            self.nn_preview.draw_upper_spect)
-        self.model.settings_model.chosen_detection_method_signal.connect(
-            self.change_detection_method)
-        self._connect_nn_signals()
-        self._connect_gac_signals()
-        self._connect_optimisation_signals()
-
-        self.time_changed = False
-
-        logging.debug("[DetectionSettingsWindow] Finished initialization")
 
     def closeEvent(self, event):
         if self.detectionStackedWidget.currentWidget() == self.GACPage:
@@ -149,6 +150,8 @@ class DetectionSettingsWindow(QtWidgets.QWidget, Ui_DetectionSettingsWidget):
             set_detection_method(self.model, Detection.NN)
 
     def _connect_gac_signals(self):
+        self.model.settings_model.detection_spec_changed.connect(
+            self.gac_preview.draw_upper_spect)
         self.model.settings_model.gac_model.sigma_changed.connect(self._on_sigma_signal)
         self.model.settings_model.gac_model.alpha_changed.connect(self._on_alpha_signal)
         self.model.settings_model.gac_model.iterations_changed.connect(
@@ -158,7 +161,7 @@ class DetectionSettingsWindow(QtWidgets.QWidget, Ui_DetectionSettingsWidget):
         self.model.settings_model.gac_model.threshold_changed.connect(
             self._on_threshold_signal)
         self.model.settings_model.gac_model.balloon_changed.connect(
-            self._on_baloon_signal)
+            self._on_balloon_signal)
         self.model.settings_model.gac_model.flood_threshold_changed.connect(
             self._on_flood_signal)
         self.model.settings_model.gac_model.preview_model.preview_changed.connect(
@@ -192,6 +195,8 @@ class DetectionSettingsWindow(QtWidgets.QWidget, Ui_DetectionSettingsWidget):
             self._on_optimisation_allowed_changed)
 
     def _connect_nn_signals(self):
+        self.model.settings_model.detection_spec_changed.connect(
+            self.nn_preview.draw_upper_spect)
         self.model.settings_model.nn_model.model_batch_size_changed.connect(
             self._on_batch_signal)
         self.model.settings_model.nn_model.model_confidence_threshold_changed.connect(
@@ -204,8 +209,8 @@ class DetectionSettingsWindow(QtWidgets.QWidget, Ui_DetectionSettingsWidget):
         self.model.settings_model.nn_model.preview_model.method_allowed_changed.connect(
             self._on_method_allowed_signal)
 
-    def _on_baloon_combobox(self, text: str):
-        gac_settings_controller.set_baloon(model=self.model, value=text)
+    def _on_balloon_combobox(self, text: str):
+        gac_settings_controller.set_balloon(model=self.model, value=text)
 
     def _on_threshold_edit(self, value: int):
         gac_settings_controller.set_threshold(model=self.model, value=value)
@@ -285,13 +290,13 @@ class DetectionSettingsWindow(QtWidgets.QWidget, Ui_DetectionSettingsWidget):
         elif self.detectionStackedWidget.currentWidget() == self.nnPage:
             neural_settings_controller.run_preview_NN(self.model)
 
-    def _on_baloon_signal(self, value: float):
+    def _on_balloon_signal(self, value: float):
         if value > 0:
-            self.baloonComboBox.setCurrentText("positive")
+            self.balloonComboBox.setCurrentText("positive")
         elif value < 0:
-            self.baloonComboBox.setCurrentText("negative")
+            self.balloonComboBox.setCurrentText("negative")
         else:
-            self.baloonComboBox.setCurrentText("none")
+            self.balloonComboBox.setCurrentText("none")
 
     def _on_sigma_signal(self, value: float):
         gac_settings_controller.set_gac_preview(self.model)
@@ -308,7 +313,7 @@ class DetectionSettingsWindow(QtWidgets.QWidget, Ui_DetectionSettingsWidget):
         self.smoothingLineEdit.setText(str(value))
 
     def _on_threshold_signal(self, value: float):
-        self.baloonSlider.set_value(value)
+        self.balloonSlider.set_value(value)
 
     def _on_flood_signal(self, value: float):
         gac_settings_controller.set_gac_preview(self.model)

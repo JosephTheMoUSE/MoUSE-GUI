@@ -14,7 +14,7 @@ class FilteringSettingsWindow(QtWidgets.QWidget, Ui_FilteringSettingsWidget):
         self.setupUi(self)
         self.model = model
 
-        # enforce garbaga collection of this window
+        # enforce garbage collection of this window
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
         # inputs
         self.frequencyThresholdNameEdit.setEnabled(False)
