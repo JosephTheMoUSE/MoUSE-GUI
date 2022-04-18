@@ -13,7 +13,7 @@ from mouseapp.model.main_models import MainModel
 from mouseapp.model.utils import BackgroundTask
 
 
-def set_baloon(model: MainModel, value: str):
+def set_balloon(model: MainModel, value: str):
     text_to_number = {"positive": 1.0, "none": 0, "negative": -1}
     model.settings_model.gac_model.balloon = text_to_number[value.lower()]
 
