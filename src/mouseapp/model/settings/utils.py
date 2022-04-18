@@ -63,6 +63,7 @@ class OptimisationResult:
     box_count: int
     sigma: float
     iters: int
+    balloon: int
     threshold: float
     flood_threshold: float
     smoothing: int
@@ -81,5 +82,5 @@ class OptimisationResult:
         return (
             f"Trial score ({self.metric_name}): {self.metric:.3f} {optional_metrics}\n"
             f"Score was calculated based on {self.box_count} detections.\n"
-            f"Trial configuration:\n\tsigma = {self.sigma}\n\titers = {self.iters}\n\tthresold = {self.threshold}\n\tflood_threshold = {self.flood_threshold}\n\tsmoothing = {self.smoothing}"
+            f"Trial configuration:\n\tsigma = {self.sigma}\n\titers = {self.iters}\n\tballoon = {self.balloon}\n\tthresold = {self.threshold}\n\tflood_threshold = {self.flood_threshold}\n\tsmoothing = {self.smoothing}"
         )
