@@ -266,18 +266,18 @@ class DetectionSettingsWindow(QtWidgets.QWidget, Ui_DetectionSettingsWidget):
     def _on_preview_time(self):
 
         if self.detectionStackedWidget.currentWidget() == self.GACPage:
-            common_settings_controller.set_preview_start(
-                model=self.model, value=self.gac_preview.previewStartLineEdit.text())
-            common_settings_controller.set_preview_end(
-                model=self.model, value=self.gac_preview.previewEndLineEdit.text())
-            gac_settings_controller.set_gac_preview(self.model)
+            if common_settings_controller.set_preview_start_end(
+                    model=self.model,
+                    prev_start=self.gac_preview.previewStartLineEdit.text(),
+                    prev_end=self.gac_preview.previewEndLineEdit.text()):
+                gac_settings_controller.set_gac_preview(self.model)
         elif self.detectionStackedWidget.currentWidget() == self.nnPage:
             self.time_changed = True
-            common_settings_controller.set_preview_start(
-                model=self.model, value=self.nn_preview.previewStartLineEdit.text())
-            common_settings_controller.set_preview_end(
-                model=self.model, value=self.nn_preview.previewEndLineEdit.text())
-            neural_settings_controller.set_NN_preview(self.model)
+            if common_settings_controller.set_preview_start_end(
+                    model=self.model,
+                    prev_start=self.nn_preview.previewStartLineEdit.text(),
+                    prev_end=self.nn_preview.previewEndLineEdit.text()):
+                neural_settings_controller.set_NN_preview(self.model)
 
     def _on_run_detection(self):
         if self.detectionStackedWidget.currentWidget() == self.GACPage:
