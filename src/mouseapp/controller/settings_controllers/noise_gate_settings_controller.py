@@ -41,20 +41,16 @@ def set_noise_decrease(model: MainModel, value: float):
             model.settings_model.noise_gate_model.noise_decrease)
 
 
-def set_noise_start(model: MainModel, value: str):
+def set_noise_start_end(model: MainModel, noise_start: str, noise_end: str):
     if check_change_preconditions(model):
-        f_value = float_convert(value)
-        model.settings_model.noise_gate_model.noise_start = f_value
+        f_noise_start = float_convert(noise_start)
+        f_noise_end = float_convert(noise_end)
+        if f_noise_start < f_noise_end:
+            model.settings_model.noise_gate_model.noise_start = f_noise_start
+            model.settings_model.noise_gate_model.noise_end = f_noise_end
     else:
         model.settings_model.noise_gate_model.noise_start = (
             model.settings_model.noise_gate_model.noise_start)
-
-
-def set_noise_end(model: MainModel, value: str):
-    if check_change_preconditions(model):
-        f_value = float_convert(value)
-        model.settings_model.noise_gate_model.noise_end = f_value
-    else:
         model.settings_model.noise_gate_model.noise_end = (
             model.settings_model.noise_gate_model.noise_end)
 

@@ -67,8 +67,8 @@ class DenoisingSettingsWindow(QtWidgets.QWidget, Ui_DenoisingSettingsWidget):
         self.placeholderNoiseGateNoiseDecreaseSlider.deleteLater()
         self.noiseGateNoiseDecreaseSlider.modifications_finished.connect(
             self._on_noise_gate_noise_decrease_edit)
-        self.noiseStartLineEdit.editingFinished.connect(self._on_noise_start_edit)
-        self.noiseEndLineEdit.editingFinished.connect(self._on_noise_end_edit)
+        self.noiseStartLineEdit.editingFinished.connect(self._on_noise_start_end_edit)
+        self.noiseEndLineEdit.editingFinished.connect(self._on_noise_start_end_edit)
         self.restoreNoiseGateButton.clicked.connect(self._on_noise_gate_restore)
         self.noiseAudioCheckBox.setCheckState(QtCore.Qt.Checked)
         self.loadNoiseAudioButton.setEnabled(False)
@@ -162,10 +162,10 @@ class DenoisingSettingsWindow(QtWidgets.QWidget, Ui_DenoisingSettingsWidget):
             warnings.warn(f"Denoising method: {text.lower()} not supported")
 
     def _on_preview_time(self):
-        common_settings_controller.set_preview_start(
-            model=self.model, value=self.preview.previewStartLineEdit.text())
-        common_settings_controller.set_preview_end(
-            model=self.model, value=self.preview.previewEndLineEdit.text())
+        common_settings_controller.set_preview_start_end(
+            model=self.model,
+            prev_start=self.preview.previewStartLineEdit.text(),
+            prev_end=self.preview.previewEndLineEdit.text())
         if self.denoisingStackedWidget.currentWidget() == self.noFilterPage:
             no_filter_settings_controller.set_no_filter_preview(self.model)
         elif self.denoisingStackedWidget.currentWidget() == self.bilateralPage:
@@ -246,13 +246,11 @@ class DenoisingSettingsWindow(QtWidgets.QWidget, Ui_DenoisingSettingsWidget):
     def _on_noise_gate_noise_decrease_edit(self, value: float):
         noise_gate_settings_controller.set_noise_decrease(model=self.model, value=value)
 
-    def _on_noise_start_edit(self):
-        noise_gate_settings_controller.set_noise_start(
-            model=self.model, value=self.noiseStartLineEdit.text())
-
-    def _on_noise_end_edit(self):
-        noise_gate_settings_controller.set_noise_end(model=self.model,
-                                                     value=self.noiseEndLineEdit.text())
+    def _on_noise_start_end_edit(self):
+        noise_gate_settings_controller.set_noise_start_end(
+            model=self.model,
+            noise_start=self.noiseStartLineEdit.text(),
+            noise_end=self.noiseEndLineEdit.text())
 
     def _on_load_noise_audio(self):
         file = QtWidgets.QFileDialog.getOpenFileName(self,
