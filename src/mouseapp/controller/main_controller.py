@@ -44,6 +44,13 @@ def add_key_value_metadata(model: MainModel, key_value: tuple, value_type: str):
             lambda x: x if type(x) == str and len(x) == 0 else float_convert(str(x)),
     }
 
+    # Guarantees proper representation in GUI
+    string_repair_map = {
+        "Text": lambda x: x,
+        "Integer": lambda x: x.replace(',', '.').split('.')[0],
+        "Real": lambda x: x if '.' in x or ',' in x else x + '.0',
+    }
+
     if len(key_value[0]) == 0:
         warn_user(model, "Key cannot be empty")
         return
@@ -53,16 +60,14 @@ def add_key_value_metadata(model: MainModel, key_value: tuple, value_type: str):
         return
 
     try:
-        key_value_casted = (
-            key_value[0],
-            type_map[value_type](key_value[1]),
-            value_type,
-        )
+        # We check it here so we are sure it works during annotation exporting.
+        type_map[value_type](key_value[1])
     except ValueError:
         warn_user(model, f"Cannot interpret {key_value[1]} as {value_type}")
         return
 
-    model.project_model.add_project_metadata(key_value_casted)
+    model.project_model.add_project_metadata(
+        (key_value[0], string_repair_map[value_type](key_value[1]), value_type))
 
 
 def update_key_value_metadata(model: MainModel,
@@ -88,14 +93,22 @@ def update_key_value_metadata(model: MainModel,
             if type(x) in [str, np.str_] and len(x) == 0 else float_convert(str(x)),
     }
 
+    # Guarantees proper representation in GUI
+    string_repair_map = {
+        "Text": lambda x: x,
+        "Integer": lambda x: x.replace(',', '.').split('.')[0],
+        "Real": lambda x: x if '.' in x or ',' in x else x + '.0',
+    }
+
     try:
-        key_value_casted = (key, type_map[value_type[1]](value_type[0]), value_type[1])
+        # We check it here so we are sure it works during annotation exporting.
+        type_map[value_type[1]](value_type[0])
     except ValueError:
         warn_user(model, f"Cannot interpret {value_type[0]} as {value_type[1]}")
         value_type = model.project_model.project_metadata[key]
-        key_value_casted = (key, value_type[0], value_type[1])
 
-    model.project_model.update_project_metadata(key_value_casted)
+    model.project_model.update_project_metadata(
+        (key, string_repair_map[value_type[1]](value_type[0]), value_type[1]))
 
 
 def remove_key_value_metadata(model: MainModel, key: Union[str, int, float]):
@@ -388,6 +401,14 @@ def export_annotations(model: MainModel, filename: Path):
     columns_order += list(default_dict_key_set - set(columns_order))
     annotations_df = annotations_df.reindex(columns=columns_order)
 
+    type_map = {
+        "Integer":
+            lambda x: x if type(x) in [str, np.str_] and len(x) == 0 else int(
+                float_convert(str(x))),
+        "Real":
+            lambda x: x
+            if type(x) in [str, np.str_] and len(x) == 0 else float_convert(str(x)),
+    }
     with open(filename, "w") as f:
         f.write(f"# Project name: {project_model.project_name}\n")
         f.write(f"# Experiment date: {project_model.experiment_date}\n")
@@ -396,7 +417,7 @@ def export_annotations(model: MainModel, filename: Path):
             if v[1] == "Text":
                 f.write(f'# {k}: "{v[0]}"\n')
             else:
-                f.write(f"# {k}: {v[0]}\n")
+                f.write(f"# {k}: {type_map[v[1]](v[0])}\n")
         f.write(("# Audio files: "
                  f'{",".join([str(audio) for audio in project_model.audio_files])}'
                  "\n"))
