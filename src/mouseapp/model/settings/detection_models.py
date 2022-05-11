@@ -130,7 +130,7 @@ class GACModel(DetectionModel):
     smoothing_changed = Signal(int)
     threshold_changed = Signal(float)
     flood_threshold_changed = Signal(float)
-    balloon_changed = Signal(float)
+    balloon_changed = Signal(int)
     alpha_changed = Signal(float)
     sigma_changed = Signal(float)
 
@@ -175,7 +175,7 @@ class GACModel(DetectionModel):
         self._iterations: int = 0
         self._smoothing: int = 0
         self._threshold: float = 0.0
-        self._balloon: float = 0.0
+        self._balloon: int = 0
         self._alpha: float = 0.0
         self._sigma: int = 0
         self._flood_threshold: float = 0.95
@@ -233,11 +233,11 @@ class GACModel(DetectionModel):
         self.threshold_changed.emit(value)
 
     @property
-    def balloon(self):
+    def balloon(self) -> int:
         return self._balloon
 
     @balloon.setter
-    def balloon(self, value: bool):
+    def balloon(self, value: int):
         self._balloon = value
         self.balloon_changed.emit(value)
 

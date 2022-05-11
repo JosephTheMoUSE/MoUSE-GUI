@@ -1,8 +1,6 @@
 import os
-import signal
 import warnings
 
-import numpy as np
 import ray
 from ray import tune
 
@@ -35,6 +33,13 @@ class _OptimisationCallback(tune.Callback):
         self.model.settings_model.gac_model.progressbar_iter = int(
             self.last_iter / self.total_iters * 100)
 
+        threshold = round(
+            mouse.segmentation.threshold_from_latent(
+                result["config"]["_balloon_latent"]),
+            3)
+        balloon = round(
+            mouse.segmentation.balloon_from_latent(result["config"]["_balloon_latent"]),
+            3)
         optimisation_result = OptimisationResult(
             metric_name=self.metric_name,
             metric=result["score"],
@@ -43,7 +48,8 @@ class _OptimisationCallback(tune.Callback):
             box_count=result["box_count"],
             sigma=round(result["config"]["sigma"], 3),
             iters=int(result["config"]["iterations"]),
-            threshold=round(result["config"]["threshold"], 3),
+            balloon=balloon,
+            threshold=round(threshold, 3),
             flood_threshold=round(result["config"]["flood_threshold"], 3),
             smoothing=int(result["config"]["smoothing"]),
         )
@@ -79,7 +85,10 @@ def run_optimisation(model: MainModel):
         ))
 
     spec, ground_truth = data_util.clip_spec_and_boxes(
-        spec=spectrogram_data, boxes=spectrogram_boxes, t_start=0.6, t_end=10
+        spec=spectrogram_data,
+        boxes=spectrogram_boxes,
+        t_start=gac_model.start_time,
+        t_end=gac_model.end_time
     )
     gac_model.optimisation_box_count = len(ground_truth)
 
@@ -103,7 +112,6 @@ def run_optimisation(model: MainModel):
                 max_concurrent=gac_model.max_concurrent,
                 alpha=gac_model.alpha,
                 beta=gac_model.beta,
-                balloon=gac_model.balloon,
                 callbacks=[
                     _OptimisationCallback(model=model),
                     _OptimisationQtCallback(model=model),
@@ -127,6 +135,7 @@ def autoconfigure_gac(model: MainModel):
     gac_model.smoothing = gac_model.optimisation_best.smoothing
     gac_model.iterations = gac_model.optimisation_best.iters
     gac_model.flood_threshold = gac_model.optimisation_best.flood_threshold
+    gac_model.balloon = gac_model.optimisation_best.balloon
     gac_model.threshold = gac_model.optimisation_best.threshold
     gac_model.sigma = gac_model.optimisation_best.sigma
 

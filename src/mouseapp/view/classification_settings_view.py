@@ -16,7 +16,7 @@ class ClassificationSettingsWindow(QtWidgets.QWidget, Ui_ClassificationSettingsW
         self.setupUi(self)
         self.model = model
 
-        # enforce garbaga collection of this window
+        # enforce garbage collection of this window
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
 
         # Connect inputs

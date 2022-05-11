@@ -57,7 +57,7 @@
       <bool>true</bool>
      </property>
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="GACPage">
       <layout class="QGridLayout" name="gacGridLayout">
@@ -121,7 +121,7 @@
         </widget>
        </item>
        <item row="1" column="4">
-        <widget class="QComboBox" name="baloonComboBox">
+        <widget class="QComboBox" name="balloonComboBox">
          <item>
           <property name="text">
            <string>negative</string>
@@ -147,7 +147,7 @@
         </widget>
        </item>
        <item row="3" column="4">
-        <widget class="QSlider" name="placeholderBaloonSlider">
+        <widget class="QSlider" name="placeholderBalloonSlider">
          <property name="maximum">
           <number>100</number>
          </property>
@@ -157,7 +157,7 @@
         </widget>
        </item>
        <item row="1" column="3">
-        <widget class="QLabel" name="baloonLabel">
+        <widget class="QLabel" name="balloonLabel">
          <property name="text">
           <string>Balloon</string>
          </property>
