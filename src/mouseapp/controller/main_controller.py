@@ -468,17 +468,6 @@ def delete_all_annotations(model: MainModel):
     model.spectrogram_model.annotation_table_model.checked_annotations_counter = 0
 
 
-def filter_annotations(model: MainModel):
-    annotations = model.spectrogram_model.annotation_table_model.annotations
-    if model.settings_model.filtering_model.frequency_filter:
-        threshold = model.settings_model.filtering_model.frequency_threshold
-        for i, annotation in enumerate(annotations):
-            if 0.5 * (annotation.freq_start + annotation.freq_end) <= threshold:
-                model.spectrogram_model.annotation_table_model.check_annotation(i, True)
-                model.spectrogram_model.annotation_table_model.update_selected_field(
-                    i, 0)
-
-
 def update_annotation_table_model(model: MainModel, view):
     """Create new annotation_table_model with new view."""
     saved_model = model.spectrogram_model.annotation_table_model
