@@ -25,6 +25,7 @@ from mouseapp.view.settings_view import SettingsWindow
 from mouseapp.controller import (  # yapf: disable
     persistency_controller,
     main_controller,
+    filtering_controller,
     detection_controller,  # yapf: disable
 )
 from mouseapp import context_manager
@@ -92,7 +93,7 @@ class SpectrogramTab(QtWidgets.QWidget, Ui_SpectrogramWindow):
             lambda: main_controller.delete_selected_annotations(self.model))
         self.deleteAllButton.clicked.connect(self._on_delete_all_clicked)
         self.filterButton.clicked.connect(
-            lambda: main_controller.filter_annotations(self.model))
+            lambda: filtering_controller.filter_annotations(self.model))
 
         # Connect signals
         self.spectrogramScrollBar.valueChanged.connect(

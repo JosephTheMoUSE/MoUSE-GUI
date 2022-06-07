@@ -210,6 +210,7 @@ class SpectrogramModel(SerializableModel):
             "spectrogram_data",
             "visible_annotations",
             "detection_mutex",
+            "filtering_mutex",
             "progressbar_primary_text",
             "progressbar_secondary_text",
             "progressbar_count",
