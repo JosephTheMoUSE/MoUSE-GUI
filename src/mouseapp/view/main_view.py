@@ -113,6 +113,10 @@ class SpectrogramTab(QtWidgets.QWidget, Ui_SpectrogramWindow):
             self._handle_select_annotations)
         self.model.spectrogram_model.detection_allowed_changed.connect(
             self.detectButton.setEnabled)
+        self.model.spectrogram_model.classification_allowed_changed.connect(
+            self.classifyButton.setEnabled)
+        self.model.spectrogram_model.filtering_allowed_changed.connect(
+            self.filterButton.setEnabled)
         self.model.spectrogram_model.annotation_table_model.delete_button_show.connect(
             self._handle_delete_button_show)
         self.squeakTable.verticalHeader().sectionClicked.connect(
