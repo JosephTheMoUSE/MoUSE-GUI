@@ -10,10 +10,22 @@ from mouseapp.controller.utils import process_qt_events, run_background_task, wa
 from mouseapp.model.settings.utils import Denoising
 
 
-def _run_NN_filtering(model: MainModel,
-                      spectrogram: SpectrogramData,
-                      annotations: List[Annotation],
-                      callback: Callable):
+def _run_NN_filtering(model: MainModel):
+    spectrogram = model.spectrogram_model.spectrogram_data
+    if spectrogram is None:
+        warn_user(model, "There is no audio to run annotation filtering on!")
+        return
+    chosen_denoising = model.settings_model.chosen_denoising_method
+    if chosen_denoising != Denoising.NO_FILTER:
+        denoised_spectrogram = apply_denoising(model, spectrogram)
+    else:
+        denoised_spectrogram = spectrogram
+
+    annotations = model.spectrogram_model.annotation_table_model.annotations
+
+    def _callback(_):
+        process_qt_events(model.spectrogram_model.background_task.worker)
+
     try:
         model.spectrogram_model.progressbar_exists = True
         model.spectrogram_model.progressbar_primary_text = "CNN progress:"
@@ -27,11 +39,11 @@ def _run_NN_filtering(model: MainModel,
             if num_progress == total:
                 model.spectrogram_model.progressbar_progress = None
                 model.spectrogram_model.progressbar_secondary_text = "Checking annotations..."
-            callback(None)
+            _callback(None)
 
         squeak_boxes = [a.to_squeak_box(spectrogram) for a in annotations]
         squeak_boxes = cnn_classifier.classify_USVs(
-            spectrogram,
+            denoised_spectrogram,
             squeak_boxes,
             model_name=model.settings_model.filtering_model.model_name,
             batch_size=model.settings_model.filtering_model.batch_size,
@@ -55,48 +67,34 @@ def _run_NN_filtering(model: MainModel,
         model.spectrogram_model.background_task = None
 
 
+def _run_frequency_filtering(model: MainModel):
+    annotations = model.spectrogram_model.annotation_table_model.annotations
+    threshold = model.settings_model.filtering_model.frequency_threshold
+    for i, annotation in enumerate(annotations):
+        if 0.5 * (annotation.freq_start + annotation.freq_end) <= threshold:
+            model.spectrogram_model.annotation_table_model.check_annotation(i, True)
+            model.spectrogram_model.annotation_table_model.update_selected_field(i, 0)
+
+
 def filter_annotations(model: MainModel):
-    detection_mutex = model.spectrogram_model.detection_mutex
+    detection_mutex = model.spectrogram_model.main_spectrogram_mutex
     logging.debug("Trying to acquire detection mutex...")
     if detection_mutex.tryLock():
         logging.debug("Detection mutex acquired.")
         model.spectrogram_model.detection_allowed = False
+        model.spectrogram_model.classification_allowed = False
+        model.spectrogram_model.filtering_allowed = False
 
         def _filter_annotations():
             try:
-                annotations = model.spectrogram_model.annotation_table_model.annotations
                 if model.settings_model.filtering_model.frequency_filter:
-                    threshold = model.settings_model.filtering_model.frequency_threshold
-                    for i, annotation in enumerate(annotations):
-                        if 0.5 * (annotation.freq_start +
-                                  annotation.freq_end) <= threshold:
-                            model.spectrogram_model.annotation_table_model.check_annotation(
-                                i, True)
-                            model.spectrogram_model.annotation_table_model.update_selected_field(
-                                i, 0)
+                    _run_frequency_filtering
                 if model.settings_model.filtering_model.neural_network_filter:
-                    spectrogram = model.spectrogram_model.spectrogram_data
-                    if spectrogram is None:
-                        warn_user(model,
-                                  "There is no audio to run annotation filtering on!")
-                        detection_mutex.unlock()
-                        return
-                    chosen_denoising = model.settings_model.chosen_denoising_method
-                    if chosen_denoising != Denoising.NO_FILTER:
-                        denoised_spectrogram = apply_denoising(model, spectrogram)
-                    else:
-                        denoised_spectrogram = spectrogram
-
-                    def _callback(_):
-                        process_qt_events(
-                            model.spectrogram_model.background_task.worker)
-
-                    _run_NN_filtering(model,
-                                      spectrogram=denoised_spectrogram,
-                                      annotations=annotations,
-                                      callback=_callback)
+                    _run_NN_filtering(model)
             finally:
                 model.spectrogram_model.detection_allowed = True
+                model.spectrogram_model.classification_allowed = True
+                model.spectrogram_model.filtering_allowed = True
                 detection_mutex.unlock()
 
         task = run_background_task(main_model=model,

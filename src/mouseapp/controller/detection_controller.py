@@ -141,18 +141,19 @@ def run_detection(model: MainModel, spectrogram: SpectrogramData):
 
 
 def process_spectrogram(model: MainModel):
-    detection_mutex = model.spectrogram_model.detection_mutex
+    detection_mutex = model.spectrogram_model.main_spectrogram_mutex
     logging.debug("Trying to acquire detection mutex...")
     if detection_mutex.tryLock():
         logging.debug("Detection mutex acquired.")
         model.spectrogram_model.detection_allowed = False
+        model.spectrogram_model.classification_allowed = False
+        model.spectrogram_model.filtering_allowed = False
 
         def _process_spectrogram():
             try:
                 spectrogram = model.spectrogram_model.spectrogram_data
                 if spectrogram is None:
                     warn_user(model, "There is no audio to run detection on!")
-                    detection_mutex.unlock()
                     return
 
                 chosen_denoising = model.settings_model.chosen_denoising_method
@@ -164,6 +165,8 @@ def process_spectrogram(model: MainModel):
                 run_detection(model, denoised_spectrogram)
             finally:
                 model.spectrogram_model.detection_allowed = True
+                model.spectrogram_model.classification_allowed = True
+                model.spectrogram_model.filtering_allowed = True
                 detection_mutex.unlock()
                 set_visible_annotations(model)
 

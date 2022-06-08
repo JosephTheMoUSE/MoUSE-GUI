@@ -10,11 +10,13 @@ from mouseapp.model import constants
 
 
 def run_selected_classification(model: MainModel):
-    detection_mutex = model.spectrogram_model.detection_mutex
+    detection_mutex = model.spectrogram_model.main_spectrogram_mutex
     logging.debug("Trying to acquire detection mutex...")
     if detection_mutex.tryLock():
         logging.debug("Detection mutex acquired.")
         model.spectrogram_model.detection_allowed = False
+        model.spectrogram_model.classification_allowed = False
+        model.spectrogram_model.filtering_allowed = False
 
         annotation_count = len(
             model.spectrogram_model.annotation_table_model.annotations)
@@ -37,6 +39,8 @@ def run_selected_classification(model: MainModel):
                 make_frequency_classification(model, callback)
             finally:
                 model.spectrogram_model.detection_allowed = True
+                model.spectrogram_model.classification_allowed = True
+                model.spectrogram_model.filtering_allowed = True
                 model.spectrogram_model.progressbar_exists = False
                 model.spectrogram_model.progressbar_primary_text = None
                 model.spectrogram_model.progressbar_count = None

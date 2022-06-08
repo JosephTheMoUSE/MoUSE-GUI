@@ -163,6 +163,8 @@ class SpectrogramModel(SerializableModel):
     detection_info_changed = Signal(tuple)
     detection_allowed_changed = Signal(bool)
     select_annotations = Signal(list)
+    classification_allowed_changed = Signal(bool)
+    filtering_allowed_changed = Signal(bool)
 
     def __init__(self):
         super().__init__()
@@ -190,7 +192,7 @@ class SpectrogramModel(SerializableModel):
         self.time_mask = None
 
         # Parameters related to long spectrogram operations
-        self.detection_mutex = QMutex()
+        self.main_spectrogram_mutex = QMutex()
         self.background_task: Optional[BackgroundTask] = None
         self._progressbar_exists: bool = False
         self._progressbar_primary_text: Optional[str] = None
@@ -198,6 +200,8 @@ class SpectrogramModel(SerializableModel):
         self._progressbar_count: Optional[int] = None
         self._progressbar_progress: Optional[int] = None
         self._detection_allowed: bool = True
+        self._classification_allowed: bool = True
+        self._filtering_allowed: bool = True
 
         # SerializableModel setup
         self._dict_denylist.update([
@@ -209,7 +213,7 @@ class SpectrogramModel(SerializableModel):
             "current_spectrogram_chunk_data",
             "spectrogram_data",
             "visible_annotations",
-            "detection_mutex",
+            "main_spectrogram_mutex",
             "progressbar_primary_text",
             "progressbar_secondary_text",
             "progressbar_count",
@@ -233,6 +237,24 @@ class SpectrogramModel(SerializableModel):
     def detection_allowed(self, value: bool):
         self._detection_allowed = value
         self.detection_allowed_changed.emit(value)
+
+    @property
+    def classification_allowed(self) -> bool:
+        return self._classification_allowed
+
+    @classification_allowed.setter
+    def classification_allowed(self, value: bool):
+        self._classification_allowed = value
+        self.classification_allowed_changed.emit(value)
+
+    @property
+    def filtering_allowed(self) -> bool:
+        return self._filtering_allowed
+
+    @filtering_allowed.setter
+    def filtering_allowed(self, value: bool):
+        self._filtering_allowed = value
+        self.filtering_allowed_changed.emit(value)
 
     @property
     def progressbar_progress(self) -> Optional[int]:

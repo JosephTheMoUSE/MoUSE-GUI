@@ -28,7 +28,7 @@ class FilteringModel(SerializableModel):
             "_neural_network_filter":
                 False,
             "_model_name":
-                "cnn-binary-v1-custom",
+                next(iter(PRETRAINED_MODELS_CHECKPOINTS)),
             "_batch_size":
                 1,
             "_confidence_threshold":
