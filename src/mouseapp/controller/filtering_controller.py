@@ -88,7 +88,7 @@ def filter_annotations(model: MainModel):
         def _filter_annotations():
             try:
                 if model.settings_model.filtering_model.frequency_filter:
-                    _run_frequency_filtering
+                    _run_frequency_filtering(model)
                 if model.settings_model.filtering_model.neural_network_filter:
                     _run_NN_filtering(model)
             finally:
