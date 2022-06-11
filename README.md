@@ -1,8 +1,8 @@
 # MoUSE Desktop App
 This repository contains MoUSE Desktop App. To install it follow the steps 
 outlined below. If you are looking for a MoUSE Desktop App usage tutorial,
-see [MoUSE wiki page](https://github.com/JosephTheMoUSE/MoUSE-docs/wiki). If 
-you only want to install MoUSE Backend see 
+see [MoUSE wiki page](https://github.com/JosephTheMoUSE/MoUSE-docs/wiki). If you
+want to install only the backend of MoUSE see 
 [main MoUSE repository](https://github.com/JosephTheMoUSE/MoUSE#mouse).
 
 ## Installing MoUSE Desktop App
@@ -28,11 +28,11 @@ instructions how to do it in
    writing in the console: `deactivate`.
 
 ## Running MoUSE Desktop App
-We assume that you installed MoUSE Desktop App according to above instructions.
+We assume that you installed MoUSE Desktop App according to the above instructions.
 1. Make sure that you are in the directory containing MoUSE Desktop App code 
-   and that virtual environment is activated.
-2. Run following command: `python3 ./src/mouseapp/main.py`. You should see the 
+   and that the virtual environment is activated.
+2. Run the following command: `python3 ./src/mouseapp/main.py`. You should see the 
    MoUSE Desktop App window - you can now use MoUSE Desktop App.
-3. When you finish using MoUSE Desktop App, deactivate virtual environment with 
+3. When you finish using MoUSE Desktop App, deactivate virtual environment with the 
 `deactivate` command.
    
