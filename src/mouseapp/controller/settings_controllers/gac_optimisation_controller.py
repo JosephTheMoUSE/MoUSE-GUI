@@ -99,11 +99,10 @@ def run_optimisation(model: MainModel):
     else:
         denoised_spec = spec
 
-    max_concurrent = gac_model.max_concurrent
+    use_ray = True
     if 'win' in sys.platform:
-        # On Windows only one optimising thread is possible. Additional threads open
-        # their own versions of the app and the whole application freezes.
-        max_concurrent = 1.
+        # When the app is packaged ray can't be used due to multithreading problems.
+        use_ray = False
 
     def optimise():
         try:
@@ -116,13 +115,14 @@ def run_optimisation(model: MainModel):
                 num_samples=gac_model.optimisation_iters +
                 gac_model.optimisation_random_iters,
                 random_search_steps=gac_model.optimisation_random_iters,
-                max_concurrent=max_concurrent,
+                max_concurrent=gac_model.max_concurrent,
                 alpha=gac_model.alpha,
                 beta=gac_model.beta,
                 callbacks=[
                     _OptimisationCallback(model=model),
                     _OptimisationQtCallback(model=model),
                 ],
+                use_ray=use_ray,
             )
         finally:
             gac_model.optimisation_mutex.unlock()
