@@ -121,7 +121,8 @@ class SpectrogramTab(QtWidgets.QWidget, Ui_SpectrogramWindow):
             self.filterButton.setEnabled)
         self.model.spectrogram_model.annotation_table_model.delete_button_show.connect(
             self._handle_delete_button_show)
-        self.model.spectrogram_model.annotation_table_model.highlight_row.connect(self._on_highlight_annotation)
+        self.model.spectrogram_model.annotation_table_model.highlight_row.connect(
+            self._on_highlight_annotation)
 
         # Handle canvas
         self.canvas = widgets.Canvas()
