@@ -10,6 +10,7 @@ from mouseapp.model.utils import Annotation, SerializableModel
 class AnnotationTableModel(QAbstractTableModel, SerializableModel):
 
     delete_button_show = Signal(bool)
+    highlight_row = Signal(int)
 
     def __init__(self, spectrogram_model, parent: QObject = None):
         super(AnnotationTableModel, self).__init__(parent)
