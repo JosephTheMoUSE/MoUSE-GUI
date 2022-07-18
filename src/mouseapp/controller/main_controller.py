@@ -372,6 +372,13 @@ def add_new_annotation(model: MainModel,
     model.spectrogram_model.annotation_table_model.append_annotations([annotation])
 
 
+def highlight_annotation(model: MainModel, annotation: Annotation):
+    annotations = model.spectrogram_model.annotation_table_model.annotations
+    for row_id, a in enumerate(annotations):
+        if a == annotation:
+            model.spectrogram_model.annotation_table_model.highlight_row.emit(row_id)
+
+
 def export_annotations(model: MainModel, filename: Path):
     annotations = model.spectrogram_model.annotation_table_model.annotations
     project_model = model.project_model

@@ -94,6 +94,8 @@ class SpectrogramTab(QtWidgets.QWidget, Ui_SpectrogramWindow):
         self.deleteAllButton.clicked.connect(self._on_delete_all_clicked)
         self.filterButton.clicked.connect(
             lambda: filtering_controller.filter_annotations(self.model))
+        self.squeakTable.verticalHeader().sectionClicked.connect(
+            self._show_annotation_on_spec)
 
         # Connect signals
         self.spectrogramScrollBar.valueChanged.connect(
@@ -119,8 +121,8 @@ class SpectrogramTab(QtWidgets.QWidget, Ui_SpectrogramWindow):
             self.filterButton.setEnabled)
         self.model.spectrogram_model.annotation_table_model.delete_button_show.connect(
             self._handle_delete_button_show)
-        self.squeakTable.verticalHeader().sectionClicked.connect(
-            self._show_annotation_on_spec)
+        self.model.spectrogram_model.annotation_table_model.highlight_row.connect(
+            self._on_highlight_annotation)
 
         # Handle canvas
         self.canvas = widgets.Canvas()
@@ -142,12 +144,15 @@ class SpectrogramTab(QtWidgets.QWidget, Ui_SpectrogramWindow):
         self.overlapSlider.hide()
 
     def _on_button_pressed_event(self, event):
-        if event.button is not MouseButton.LEFT:
+        if event.button not in [MouseButton.LEFT, MouseButton.RIGHT]:
             return
 
         if widgets.MovableAnnotationBox.rect_near_cursor is not None:
             for mab in self._annotation_boxes:
                 mab.on_press(event)
+            return
+
+        if event.button is not MouseButton.LEFT:
             return
 
         self.current_annotation = Rectangle(
@@ -276,12 +281,16 @@ class SpectrogramTab(QtWidgets.QWidget, Ui_SpectrogramWindow):
             mab = widgets.MovableAnnotationBox(
                 rect,
                 annotation,
+                self.model,
                 on_transition_finished=lambda *x: main_controller.update_annotation(
                     self.model, *x),
             )
 
             self._annotation_boxes.append(mab)
         self.canvas.draw_idle()
+
+    def _on_highlight_annotation(self, row_id):
+        self.squeakTable.selectRow(row_id)
 
     def _on_delete_all_clicked(self):
         msgBox = QtWidgets.QMessageBox()

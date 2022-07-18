@@ -14,6 +14,7 @@ from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.patches import Rectangle
 
 from mouseapp.controller import main_controller
+from mouseapp.model.main_models import MainModel
 from mouseapp.model.utils import Annotation
 from mouseapp.view import utils
 from mouseapp.view.generated.init_project.ui_project_entry import Ui_ProjectEntry
@@ -253,6 +254,7 @@ class MovableAnnotationBox:
         self,
         rect: Rectangle,
         annotation: Annotation,
+        model: MainModel,
         threshold: Real = 1,
         on_annotation_changed: Callable = None,
         on_transition_finished: Callable = None,
@@ -265,6 +267,7 @@ class MovableAnnotationBox:
         self.cid_press = None
         self.cid_release = None
         self.cid_drag = None
+        self.model = model
 
     def connect(self):
         self.cid_press = self.rect.figure.canvas.mpl_connect("button_press_event",
@@ -278,18 +281,20 @@ class MovableAnnotationBox:
         if self.lock is not None:
             return
 
-        if event.button is not MouseButton.LEFT:
-            return
-
-        contains, attributes = self._contains(event, threshold=self.threshold)
-        if contains or attributes["on_side"]:
-            MovableAnnotationBox.motion_type = attributes["side"]
-            MovableAnnotationBox.lock = self
-            MovableAnnotationBox.initial_event = event
-            MovableAnnotationBox.initial_rect_position = self.rect.xy, (
-                self.rect.get_width(),
-                self.rect.get_height(),
-            )
+        if event.button is MouseButton.RIGHT:
+            contains, attributes = self._contains(event, threshold=self.threshold)
+            if contains or attributes["on_side"]:
+                main_controller.highlight_annotation(self.model, self.annotation)
+        elif event.button is MouseButton.LEFT:
+            contains, attributes = self._contains(event, threshold=self.threshold)
+            if contains or attributes["on_side"]:
+                MovableAnnotationBox.motion_type = attributes["side"]
+                MovableAnnotationBox.lock = self
+                MovableAnnotationBox.initial_event = event
+                MovableAnnotationBox.initial_rect_position = self.rect.xy, (
+                    self.rect.get_width(),
+                    self.rect.get_height(),
+                )
 
     def on_release(self, event):
         if MovableAnnotationBox.lock is not self:
