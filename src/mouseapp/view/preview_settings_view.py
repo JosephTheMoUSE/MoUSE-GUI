@@ -33,16 +33,20 @@ class PreviewSettingsWindow(QtWidgets.QWidget, Ui_PreviewSettingsWidget):
         self.model.settings_model.time_start_changed.connect(self._on_start_signal)
         self.model.settings_model.time_end_changed.connect(self._on_end_signal)
 
-    def draw_upper_spect(self, value: Optional[SpectrogramData]):
+    def draw_upper_spect(self, value: Optional[SpectrogramData], y_label_prefix=""):
         self.upper_axis.clear()
         visualization.draw_spectrogram(spec=value, ax=self.upper_axis)
+        if len(y_label_prefix) > 0:
+            self.upper_axis.set_ylabel(f"{y_label_prefix}\n{self.upper_axis.get_ylabel()}")
         if not self.use_only_upper:
             self.upper_axis.set_xlabel(None)
         self.canvas.draw()
 
-    def draw_lower_spect(self, value: Optional[SpectrogramData]):
+    def draw_lower_spect(self, value: Optional[SpectrogramData], y_label_prefix: str = ""):
         self.lower_axis.clear()
         visualization.draw_spectrogram(spec=value, ax=self.lower_axis)
+        if len(y_label_prefix) > 0:
+            self.lower_axis.set_ylabel(f"{y_label_prefix}\n{self.lower_axis.get_ylabel()}")
         self.canvas.draw()
 
     def _on_start_signal(self, value: float):

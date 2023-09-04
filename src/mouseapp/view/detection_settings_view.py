@@ -334,6 +334,7 @@ class DetectionSettingsWindow(QtWidgets.QWidget, Ui_DetectionSettingsWidget):
                                        ax=self.gac_preview.lower_axis,
                                        vmin=0.0,
                                        vmax=1.0)
+        self.gac_preview.lower_axis.set_ylabel(f"~GAC steps~\n{self.gac_preview.lower_axis.get_ylabel()}")
         if level_set is not None:
             img = np.ma.array(data=level_set, mask=level_set)
             self.gac_preview.lower_axis.pcolormesh(img, cmap="gray")

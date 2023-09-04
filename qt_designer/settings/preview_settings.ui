@@ -19,7 +19,7 @@
      <item>
       <widget class="QLabel" name="previewStartLabel">
        <property name="text">
-        <string>Prevew start [s]</string>
+        <string>Preview start [s]</string>
        </property>
       </widget>
      </item>
@@ -33,7 +33,7 @@
      <item>
       <widget class="QLabel" name="previewEndLabel">
        <property name="text">
-        <string>Prevew end [s]</string>
+        <string>Preview end [s]</string>
        </property>
       </widget>
      </item>

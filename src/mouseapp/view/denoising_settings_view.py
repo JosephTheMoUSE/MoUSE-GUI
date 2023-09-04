@@ -1,5 +1,6 @@
 import logging
 import warnings
+from functools import partial
 from pathlib import Path
 
 from PySide6 import QtWidgets, QtCore
@@ -78,15 +79,15 @@ class DenoisingSettingsWindow(QtWidgets.QWidget, Ui_DenoisingSettingsWidget):
 
         # signals
         self.model.settings_model.denoising_spec_changed.connect(
-            self.preview.draw_upper_spect)
+            partial(self.preview.draw_upper_spect, y_label_prefix="~Before~"))
         self.model.settings_model.chosen_denoising_method_signal.connect(
             self.change_denoising_method)
         # no filter
         self.model.settings_model.no_filter_model.preview_model.preview_changed.connect(
-            self.preview.draw_lower_spect)
+            partial(self.preview.draw_lower_spect, y_label_prefix="~After~"))
         # bilateral
         self.model.settings_model.bilateral_model.preview_model.preview_changed.connect(
-            self.preview.draw_lower_spect)
+            partial(self.preview.draw_lower_spect, y_label_prefix="~After~"))
         self.model.settings_model.bilateral_model.sigma_color_changed.connect(
             self._on_sigma_color_signal)
         self.model.settings_model.bilateral_model.sigma_space_changed.connect(
@@ -94,13 +95,13 @@ class DenoisingSettingsWindow(QtWidgets.QWidget, Ui_DenoisingSettingsWidget):
         self.model.settings_model.bilateral_model.d_changed.connect(self._on_d_signal)
         # SDTS
         self.model.settings_model.sdts_model.preview_model.preview_changed.connect(
-            self.preview.draw_lower_spect)
+            partial(self.preview.draw_lower_spect, y_label_prefix="~After~"))
         self.model.settings_model.sdts_model.m_changed.connect(self._on_m_signal)
         self.model.settings_model.sdts_model.noise_decrease_changed.connect(
             self._on_sdts_noise_decrease_signal)
         # noise gate
         self.model.settings_model.noise_gate_model.preview_model.preview_changed.connect(
-            self.preview.draw_lower_spect)
+            partial(self.preview.draw_lower_spect, y_label_prefix="~After~"))
         self.model.settings_model.noise_gate_model.n_grad_freq_changed.connect(
             self._on_n_grad_freq_signal)
         self.model.settings_model.noise_gate_model.n_grad_time_changed.connect(
