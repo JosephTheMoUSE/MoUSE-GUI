@@ -116,7 +116,7 @@ class DetectionSettingsWindow(QtWidgets.QWidget, Ui_DetectionSettingsWidget):
     def change_detection_method(self, text: str):
         text_map = {
             Detection.GAC: 0,
-            Detection.NN: 1,
+            Detection.NN: 2,
         }
         self.detectionComboBox.setCurrentIndex(text_map[text])
         self.change_detection_page(text)
