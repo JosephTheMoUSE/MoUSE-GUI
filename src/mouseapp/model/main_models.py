@@ -410,7 +410,7 @@ class ApplicationModel(QObject):
         self.user_projects: Set[MouseProject] = set()
         self.recent_project: Optional[MouseProject] = None
         self.min_time_between_warnings: datetime.timedelta = datetime.timedelta(
-            seconds=1)
+            seconds=10)
         self.warning_to_time: Dict[str, datetime.datetime] = dict()
 
         if self.app_config_file.exists():
