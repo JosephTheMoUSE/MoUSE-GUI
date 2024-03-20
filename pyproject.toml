@@ -1,0 +1,29 @@
+[tool.poetry]
+name = "mouse-gui"
+version = "0.1.0"
+description = ""
+authors = ["wiktorwalczak <wikwalczak@student.agh.edu.pl>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "3.11.8"
+scikit-image = "^0.22.0"
+numpy = "^1.26.4"
+matplotlib = "^3.8.3"
+mouse = { path = "/Users/wiktorwalczak/Desktop/inzynierka/poetry/MoUSE", develop = true }
+ray = "^2.9.3"
+torch = "^2.2.1"
+PySide6 = "^6.6.2"
+torchaudio = "^2.2.1"
+pandas = "^2.2.1"
+appdirs = "^1.4.4"
+pytest-qt = "^4.4.0"
+pytest = "^8.1.1"
+flake8 = "^7.0.0"
+flake8-docstrings = "^1.7.0"
+yapf = "^0.40.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
