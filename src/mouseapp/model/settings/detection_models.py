@@ -114,8 +114,10 @@ class DetectionModel(SerializableModel):
             setattr(self, key, val)
 
     def get_kwargs(self):
-        return {(key if key[0] != "_" else key[1:]): getattr(self, key)
-                for key in self._default_values.keys()}
+        return {
+            (key if key[0] != "_" else key[1:]): getattr(self, key)
+            for key in self._default_values.keys()
+        }
 
     def _value_to_dict(self, name, value):
         return value
