@@ -1,6 +1,6 @@
 #!/bin/bash
 
-pip install PySide6==6.6.2
+#pip install PySide6==6.6.2
 
 mkdir -p ./src/mouseapp/view/generated/init_project
 mkdir -p ./src/mouseapp/view/generated/key_value_metadata
