@@ -2083,6 +2083,20 @@ files = [
 diagrams = ["jinja2", "railroad-diagrams"]
 
 [[package]]
+name = "pyproject-flake8"
+version = "7.0.0"
+description = "pyproject-flake8 (`pflake8`), a monkey patching wrapper to connect flake8 with pyproject.toml configuration"
+optional = false
+python-versions = ">=3.8.1"
+files = [
+    {file = "pyproject_flake8-7.0.0-py3-none-any.whl", hash = "sha256:611e91b49916e6d0685f88423ad4baff490888278a258975403c0dee6eb6072e"},
+    {file = "pyproject_flake8-7.0.0.tar.gz", hash = "sha256:5b953592336bc04d86e8942fdca1014256044a3445c8b6ca9467d08636749158"},
+]
+
+[package.dependencies]
+flake8 = "7.0.0"
+
+[[package]]
 name = "pyside6"
 version = "6.7.0"
 description = "Python bindings for the Qt cross-platform application and UI framework"
@@ -3235,4 +3249,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.11,<3.13"
-content-hash = "0ea5668a83ceb51e7c0ddd836dbc8192c97235bd0757a55e2332ee60f095bd12"
+content-hash = "918ba8b3845997b244b5d128f7e06edf35a619c5b494e10c79b94f521c60d5ad"
