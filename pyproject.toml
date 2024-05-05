@@ -38,7 +38,7 @@ exclude = [
 [tool.yapf]
 based_on_style = "google"
 split_all_top_level_comma_separated_values = true
-column_limit = 88
+column_limit = 120
 
 [tool.poetry.dev-dependencies]
 flake8 = "7.0.0"
