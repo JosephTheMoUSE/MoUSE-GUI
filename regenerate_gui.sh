@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#pip install PySide6==6.6.2
+poetry update
 poetry install
 
 mkdir -p ./src/mouseapp/view/generated/init_project
