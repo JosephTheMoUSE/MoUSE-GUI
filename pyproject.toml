@@ -47,4 +47,3 @@ yapf = "0.40.2"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
-package-mode = false
