@@ -43,6 +43,7 @@ column_limit = 120
 
 [tool.poetry.dev-dependencies]
 flake8 = "7.0.0"
+pyproject-flake8 = "7.0.0"
 yapf = "0.40.2"
 
 [build-system]
