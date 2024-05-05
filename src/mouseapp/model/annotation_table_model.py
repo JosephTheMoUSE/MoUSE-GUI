@@ -14,7 +14,6 @@ class AnnotationTableModel(QAbstractTableModel): #, SerializableModel
     highlight_row = Signal(int)
 
     def __init__(self, spectrogram_model, parent: QObject = None):
-        print('witaj')
         super(AnnotationTableModel, self).__init__(parent)
         self._spectrogram_model = spectrogram_model
         self._annotations = []
@@ -29,13 +28,13 @@ class AnnotationTableModel(QAbstractTableModel): #, SerializableModel
         self._checked_annotations_counter = 0
         self.check_states = dict()
 
-    # def copy_with_view(self, new_view):
-    #     """Create a copy of the object on which called but with new view."""
-    #     new_model = AnnotationTableModel(self._spectrogram_model, new_view)
-    #     new_model.annotations = self.annotations
-    #     new_model.annotations_column_names = self.annotations_column_names
-    #     new_model.checked_annotations_counter = self.checked_annotations_counter
-    #     return new_model
+    def copy_with_view(self, new_view):
+        """Create a copy of the object on which called but with new view."""
+        new_model = AnnotationTableModel(self._spectrogram_model, new_view)
+        new_model.annotations = self.annotations
+        new_model.annotations_column_names = self.annotations_column_names
+        new_model.checked_annotations_counter = self.checked_annotations_counter
+        return new_model
 
     def to_dict(self):
         """Serialize in a custom way.

@@ -26,7 +26,7 @@ def initialize_application():
     if not initialize_from_existing():
         initialize_new()
 
-    sys.exit(application.exec_())
+    sys.exit(application.exec()) #_exec()
 
 
 def initialize_from_existing() -> bool:

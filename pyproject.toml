@@ -98,7 +98,7 @@ pickleshare = "0.7.5"
 Pillow = "10.3.0"
 pip-search = "0.0.12"
 platformdirs = "4.2.0"
-pluggy = "1.4.0"
+pluggy = "1.5.0"
 pooch = "1.8.1"
 prometheus-client = "0.20.0"
 prompt-toolkit = "3.0.43"
@@ -120,7 +120,7 @@ pyparsing = "3.1.2"
 pyrsistent = "0.20.0"
 PySide6 = "6.7.0"
 PySocks = "1.7.1"
-pytest = "8.1.1"
+pytest = "8.2.0"
 pytest-qt = "4.4.0"
 python-dateutil = "2.9.0.post0"
 pytorch-lightning = "2.2.2"
@@ -179,6 +179,23 @@ widgetsnbextension = "4.0.10"
 wrapt = "1.16.0"
 yarl = "1.9.4"
 zipp = "3.18.1"
+
+[tool.flake8]
+docstring-convention = "numpy"
+ignore = ["W", "E", "F", "D100", "D101", "D102", "D103", "D104", "D105"]
+exclude = [
+    "./src/mouseapp/view/generated",
+    "./experimental/"
+]
+
+[tool.yapf]
+based_on_style = "google"
+split_all_top_level_comma_separated_values = true
+column_limit = 88
+
+[tool.poetry.dev-dependencies]
+flake8 = "7.0.0"
+yapf = "0.40.2"
 
 [build-system]
 requires = ["poetry-core"]
