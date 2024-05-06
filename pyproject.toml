@@ -16,25 +16,13 @@ MoUSE = { git = "https://github.com/JosephTheMoUSE/MoUSE.git", branch = "python3
 numpy = "1.26.4"
 pandas = "2.2.2"
 PySide6 = "6.7.0"
-pytest = "8.2.0"
-pytest-qt = "4.4.0"
 pytorch-lightning = "2.2.2"
 ray = { version = "2.10.0", extras = ["tune"] }
-Rtree = "1.2.0"
 scikit-image = "0.23.1"
 scipy = "1.13.0" # teoretycznie niepotrzebne
 torch = "2.2.2"
 torchaudio = "2.2.2"
 torchvision = "0.17.2"
-
-[tool.flake8]
-docstring-convention = "numpy"
-ignore = ["W", "E", "F", "D100", "D101", "D102", "D103", "D104", "D105"]
-exclude = [
-    "./src/mouseapp/view/generated",
-    "./experimental/"
-]
-max-line-length = 99
 
 [tool.yapf]
 based_on_style = "google"
@@ -42,9 +30,9 @@ split_all_top_level_comma_separated_values = true
 column_limit = 120
 
 [tool.poetry.dev-dependencies]
-flake8 = "7.0.0"
-pyproject-flake8 = "7.0.0"
 yapf = "0.40.2"
+pytest = "8.2.0"
+pytest-qt = "4.4.0"
 
 [build-system]
 requires = ["poetry-core"]
