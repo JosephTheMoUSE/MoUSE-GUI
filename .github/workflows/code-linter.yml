@@ -5,33 +5,35 @@ on:
 
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
+        os: [macos-latest]
         python-version: [3.11.8]
     steps:
-      - uses: actions/checkout@v2
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: ${{ matrix.python-version }}
-      - name: Install Poetry
-        run: |
-          curl -sSL https://install.python-poetry.org | python3 -
-          echo 'export PATH="$HOME/.local/bin:$PATH"' >> $GITHUB_ENV
-      - name: Display Poetry version
-        run: |
-          echo "$HOME/.local/bin" >> $GITHUB_PATH
-          poetry --version
-      - name: Display Python version
-        run: python -c "import sys; print(sys.version)"
-      - name: Update lock file
-        run: |
-          poetry lock --no-update
-      - name: Install dependencies
-        run: |
-          poetry install
-      - name: Run YAPF
-        run: |
-          cd $GITHUB_WORKSPACE
-          poetry run yapf -i -r .
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies on Ubuntu
+      if: runner.os == 'Linux'
+      run: sudo apt-get update && sudo apt-get install -y libhdf5-dev
+    - name: Install dependencies on macOS
+      if: runner.os == 'macOS'
+      run: brew install hdf5
+    - name: Set HDF5_DIR for macOS
+      if: runner.os == 'macOS'
+      run: echo "HDF5_DIR=$(brew --prefix hdf5)" >> $GITHUB_ENV
+    - name: Display Python version
+      run: python -c "import sys; print(sys.version)"
+    - name: Install Poetry
+      run: |
+        curl -sSL https://install.python-poetry.org | python3 -
+        echo "$HOME/.local/bin" >> $GITHUB_PATH
+    - name: Install dependencies
+      run: poetry install
+    - name: Check yapf
+      run: |
+        CHECK=$(poetry run yapf --diff --recursive ./src | grep ".*(reformatted)" | wc -l)
+        if (($CHECK>0)); then exit 1; else exit 0; fi;
