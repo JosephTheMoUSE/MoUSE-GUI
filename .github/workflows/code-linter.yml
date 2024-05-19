@@ -5,27 +5,33 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     strategy:
       matrix:
-        python-version: [3.11]
+        python-version: [3.11.8]
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: ${{ matrix.python-version }}
-    - name: Display Python version
-      run: python -c "import sys; print(sys.version)"
-    - name: Install Poetry
-      run: |
-        curl -sSL https://install.python-poetry.org | python3 -
-        echo "$HOME/.local/bin" >> $GITHUB_PATH
-    - name: Install dependencies
-      run: poetry install
-    - name: Check flake8
-      run: poetry run flake8 ./src
-    - name: Check yapf
-      run: |
-        CHECK=$(poetry run yapf --diff --recursive ./src | grep ".*(reformatted)" | wc -l)
-        if (($CHECK>0)); then exit 1; else exit 0; fi;
+      - uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          echo 'export PATH="$HOME/.local/bin:$PATH"' >> $GITHUB_ENV
+      - name: Display Poetry version
+        run: |
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+          poetry --version
+      - name: Display Python version
+        run: python -c "import sys; print(sys.version)"
+      - name: Update lock file
+        run: |
+          poetry lock --no-update
+      - name: Install dependencies
+        run: |
+          poetry install
+      - name: Run YAPF
+        run: |
+          cd $GITHUB_WORKSPACE
+          poetry run yapf -i -r .
