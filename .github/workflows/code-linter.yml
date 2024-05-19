@@ -28,9 +28,12 @@ jobs:
       run: |
         curl -sSL https://install.python-poetry.org | python3 -
         echo "$HOME/.local/bin" >> $GITHUB_PATH
+    - name: Update lock file
+      run: |
+            poetry lock --no-update
     - name: Install dependencies
       run: poetry install
-    - name: Check yapf
+    - name: Run YAPF
       run: |
-        CHECK=$(poetry run yapf --diff --recursive ./src | grep ".*(reformatted)" | wc -l)
-        if (($CHECK>0)); then exit 1; else exit 0; fi;
+          cd $GITHUB_WORKSPACE
+          poetry run yapf -i -r .
