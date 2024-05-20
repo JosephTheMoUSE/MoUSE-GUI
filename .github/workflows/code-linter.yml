@@ -60,5 +60,5 @@ jobs:
       if: matrix.os == 'windows-latest'
       run: |
           cd %GITHUB_WORKSPACE%
-          pytest
+          poetry run yapf -i -r .
       shell: cmd
