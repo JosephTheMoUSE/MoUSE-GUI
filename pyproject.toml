@@ -2,15 +2,15 @@
 name = "MoUSE-GUI"
 version = "0.1.0"
 description = ""
-authors = ["Your Name <you@example.com>"]
+authors = ["JosephTheMoUSE/developers"]
 readme = "README.md"
+license = "MIT"
 
 [tool.poetry.dependencies]
 python = ">=3.11,<3.13"
 appdirs = "1.4.4"
 deepdish = "0.3.7"
 environ-config = "23.2.0"
-#librosa = "0.10.1"
 matplotlib = "3.8.4"
 MoUSE = { git = "https://github.com/JosephTheMoUSE/MoUSE.git", branch = "python3.11-adjustment" }
 numpy = "1.26.4"
@@ -18,11 +18,6 @@ pandas = "2.2.2"
 PySide6 = "6.7.0"
 pytorch-lightning = "2.2.2"
 ray = { version = "2.10.0", extras = ["tune"] }
-#scikit-image = "0.23.1"
-scipy = "1.13.0" # teoretycznie niepotrzebne
-#torch = "2.2.2"
-#torchaudio = "2.2.2"
-#torchvision = "0.17.2"
 
 [tool.yapf]
 based_on_style = "google"
