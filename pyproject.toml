@@ -2,7 +2,7 @@
 name = "MoUSE-GUI"
 version = "0.1.0"
 description = ""
-authors = ["JosephTheMoUSE/developers"]
+authors = ["JosephTheMoUSE/developers <>"]
 readme = "README.md"
 license = "MIT"
 
