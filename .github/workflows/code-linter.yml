@@ -48,5 +48,5 @@ jobs:
       run: poetry install
     - name: Run YAPF
       run: |
-          cd $GITHUB_WORKSPACE
+#          cd $GITHUB_WORKSPACE
           poetry run yapf -i -r .
