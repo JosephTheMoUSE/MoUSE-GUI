@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "MoUSE-GUI"
-version = "0.1.1"
+version = "1.0.1"
 description = ""
 authors = ["JosephTheMoUSEdevelopers <JosephTheMoUSEdevelopers@example.com>"]
 readme = "README.md"
