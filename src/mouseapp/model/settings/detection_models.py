@@ -128,7 +128,7 @@ class DetectionModel(SerializableModel):
 
 class GACModel(DetectionModel):
     # signals
-    iterations_changed = Signal(int)
+    num_iter_changed = Signal(int)
     smoothing_changed = Signal(int)
     threshold_changed = Signal(float)
     flood_threshold_changed = Signal(float)
@@ -166,7 +166,7 @@ class GACModel(DetectionModel):
         self._preview_model: GACPreviewModel = GACPreviewModel()
 
         self._default_values = {
-            "_iterations": 15,
+            "_num_iter": 15,
             "_smoothing": 3,
             "_threshold": 0.8,
             "_balloon": -1,
@@ -174,7 +174,7 @@ class GACModel(DetectionModel):
             "_sigma": 7,
             "_flood_threshold": 0.75,
         }
-        self._iterations: int = 0
+        self._num_iter: int = 0
         self._smoothing: int = 0
         self._threshold: float = 0.0
         self._balloon: int = 0
@@ -203,7 +203,7 @@ class GACModel(DetectionModel):
         self._optimisation_allowed = True
 
     def __repr__(self):
-        return (f"GAC:iterations={self.iterations},"
+        return (f"GAC:num_iter={self.num_iter},"
                 f"smoothing={self.smoothing},"
                 f"threshold={self.threshold},"
                 f"balloon={self.smoothing},"
@@ -217,13 +217,13 @@ class GACModel(DetectionModel):
         return value
 
     @property
-    def iterations(self):
-        return self._iterations
+    def num_iter(self):
+        return self._num_iter
 
-    @iterations.setter
-    def iterations(self, value: int):
-        self._iterations = value
-        self.iterations_changed.emit(value)
+    @num_iter.setter
+    def num_iter(self, value: int):
+        self._num_iter = value
+        self.num_iter_changed.emit(value)
 
     @property
     def threshold(self):
@@ -438,7 +438,7 @@ class GACModel(DetectionModel):
         return kwargs
 
     def emit_all_setting_signals(self):
-        self.iterations = self._iterations
+        self.num_iter = self._num_iter
         self.smoothing = self._smoothing
         self.threshold = self._threshold
         self.balloon = self._balloon
