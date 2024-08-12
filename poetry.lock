@@ -1239,7 +1239,7 @@ torchvision = "^0.18.0"
 type = "git"
 url = "https://github.com/JosephTheMoUSE/MoUSE.git"
 reference = "python3.11-adjustment"
-resolved_reference = "cf689f911e321eb9290c047d97d72aebe5517fac"
+resolved_reference = "4bec34d649137e60ebcd7119b248f8e2402196a8"
 
 [[package]]
 name = "mpmath"
