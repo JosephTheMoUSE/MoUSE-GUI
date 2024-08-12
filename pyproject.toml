@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "MoUSE-GUI"
-version = "0.1.0"
+version = "1.0.1"
 description = ""
 authors = ["JosephTheMoUSEdevelopers <josephthemouse@googlegroups.com>"]
 readme = "README.md"
@@ -11,18 +11,13 @@ python = ">=3.11,<3.13"
 appdirs = "1.4.4"
 environ-config = "23.2.0"
 kaleido = "0.2.1"
-matplotlib = "3.9.1"
+matplotlib = "3.8.4"
 MoUSE = { git = "https://github.com/JosephTheMoUSE/MoUSE.git", branch = "python3.11-adjustment" }
 numpy = "1.26.4"
 pandas = "1.5.3"
 PySide6 = "6.7.0"
 pytorch-lightning = "2.2.2"
 ray = { version = "2.10.0", extras = ["tune"] }
-Rtree = "1.2.0"
-
-torchaudio = "2.4.0"
-torch = "^2.4.0"
-torchvision = "^0.19.0"
 
 [tool.yapf]
 based_on_style = "google"
