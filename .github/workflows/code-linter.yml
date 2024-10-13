@@ -17,21 +17,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: ${{ matrix.python-version }}
-    - name: Install hdf5 conf on macOS
-      if: matrix.os == 'macos-latest'
-      run: brew install hdf5
-    - name: Install hdf5 conf on Ubuntu
-      if: matrix.os == 'ubuntu-latest'
-      run: sudo apt-get update && sudo apt-get install -y libhdf5-dev
-    - name: Set up Vcpkg on Windows
-      if: matrix.os == 'windows-latest'
-      run: |
-          git clone https://github.com/microsoft/vcpkg.git
-          .\vcpkg\bootstrap-vcpkg.bat
-    - name: Install HDF5 on Windows using Vcpkg
-      if: matrix.os == 'windows-latest'
-      run: .\vcpkg\vcpkg.exe install hdf5
+        python-version: ${{ matrix.python-version }
     - name: Display Python version
       run: python -c "import sys; print(sys.version)"
     - name: Install Poetry
