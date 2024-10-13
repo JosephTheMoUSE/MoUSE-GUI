@@ -1,8 +1,8 @@
 [tool.poetry]
 name = "MoUSE-GUI"
-version = "1.0.1"
-description = ""
-authors = ["JosephTheMoUSEdevelopers <josephthemouse@googlegroups.com>"]
+version = "1.0.0"
+description = "Joseph the MoUSE: Application for rodent ultrasonic identification - frontend. Described in: Kania, Adam, et al. \"Joseph the MoUSE—Mouse Ultrasonic Sound Explorer.\" SoftwareX 25 (2024): 101606."
+authors = ["JosephTheMoUSE <josephthemouse@googlegroups.com>"]
 readme = "README.md"
 license = "MIT"
 
@@ -12,22 +12,22 @@ appdirs = "1.4.4"
 environ-config = "23.2.0"
 kaleido = "0.2.1"
 matplotlib = "3.8.4"
-MoUSE = { git = "https://github.com/JosephTheMoUSE/MoUSE.git", branch = "python3.11-adjustment" }
+MoUSE = { git = "https://github.com/JosephTheMoUSE/MoUSE.git", branch = "main" }
 numpy = "1.26.4"
 pandas = "1.5.3"
 PySide6 = "6.7.0"
 pytorch-lightning = "2.2.2"
 ray = { version = "2.10.0", extras = ["tune"] }
 
+[tool.poetry.group.dev.dependencies]
+yapf = "0.40.2"
+pytest = "8.2.0"
+pytest-qt = "4.4.0"
+
 [tool.yapf]
 based_on_style = "google"
 split_all_top_level_comma_separated_values = true
 column_limit = 120
-
-[tool.poetry.dev-dependencies]
-yapf = "0.40.2"
-pytest = "8.2.0"
-pytest-qt = "4.4.0"
 
 [build-system]
 requires = ["poetry-core"]
