@@ -32,8 +32,8 @@ def _run_GAC(model: MainModel, callback: Callable, spectrogram: SpectrogramData)
         def iter_callback(level_set: np.ndarray):
             num_progress = model.spectrogram_model.progressbar_count
             model.spectrogram_model.progressbar_progress = int(
-                num_progress / kwargs["iterations"] * 100)
-            if num_progress == kwargs["iterations"]:
+                num_progress / kwargs["num_iter"] * 100)
+            if num_progress == kwargs["num_iter"]:
                 model.spectrogram_model.progressbar_progress = None
                 model.spectrogram_model.progressbar_secondary_text = (
                     "level set to USVs conversion...")

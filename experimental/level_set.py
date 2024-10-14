@@ -47,7 +47,7 @@ def callback(ls):
 res = segmentation. \
     morphological_geodesic_active_contour(img,
                                           init_level_set=level_set,
-                                          iterations=20,
+                                          num_iter=20,
                                           balloon=-1,
                                           smoothing=3,
                                           iter_callback=callback)

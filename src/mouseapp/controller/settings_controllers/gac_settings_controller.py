@@ -25,11 +25,11 @@ def set_threshold(model: MainModel, value: float):
         model.settings_model.gac_model.threshold = value
 
 
-def set_iterations(model: MainModel, value: int):
+def set_num_iter(model: MainModel, value: int):
     if 0 >= value:
-        warn_user(model=model, message="Iterations must be positive!")
+        warn_user(model=model, message="num_iter must be positive!")
     else:
-        model.settings_model.gac_model.iterations = value
+        model.settings_model.gac_model.num_iter = value
 
 
 def set_smoothing(model: MainModel, value: int):

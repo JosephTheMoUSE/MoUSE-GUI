@@ -4,6 +4,7 @@ import warnings
 from datetime import datetime
 from pathlib import Path
 from typing import Optional
+import pickle
 
 from mouseapp.controller.utils import warn_user
 from mouseapp.model.main_models import (
@@ -17,14 +18,12 @@ from mouseapp.model.utils import MouseProject
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 warnings.filterwarnings("ignore", category=RuntimeWarning)
-import deepdish as dd  # noqa
-
 warnings.resetwarnings()
 
 
 def _add_project_data_filename(project_path: Path):
     """Add a filename under which general model data is stored."""
-    return project_path.joinpath("project_data.h5")
+    return project_path.joinpath("project_data.pkl")
 
 
 def _add_mouse_identifier_filename(project_path: Path):
@@ -59,7 +58,8 @@ def save_project(model: MainModel):
 
     # save project's data
     model_dict = model.to_dict()
-    dd.io.save(project_save_path, model_dict)
+    with open(project_save_path, 'wb') as file:
+        pickle.dump(model_dict, file)
 
     # Update recent project if needed
     if (model.application_model.recent_project is None or
@@ -84,11 +84,12 @@ def load_project(app_model: ApplicationModel,
 
     project_save_path = _add_project_data_filename(project_path)
     try:
-        model_dict = dd.io.load(project_save_path)
+        with open(project_save_path, 'rb') as file:
+            model_dict = pickle.load(file)
         model.from_dict(model_dict)
         return model
     except Exception as e:
-        logging.warning(f"Project couldn't be loaded from {project_save_path}"
+        logging.warning(f"Project couldn't be loaded from {project_save_path}. "
                         f"Exception raised: {e}")
         return None
 
@@ -97,8 +98,6 @@ def save_config(app_model: ApplicationModel):
     """Save app configuration into a file."""
     app_config_path = app_model.app_config_file
     if not app_config_path.parent.exists():
-        # todo (#45): manage situations when the path already exists, but is not
-        #           correct (e.g. folder instead of file)
         app_config_path.parent.mkdir(parents=True)
 
     config = configparser.ConfigParser()
