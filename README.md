@@ -64,7 +64,7 @@ You should now see the MoUSE Desktop App window, and you’re ready to use the a
 
 When you’re done using the MoUSE Desktop App, deactivate the virtual environment by typing:
 ```bash
-exit
+deactivate
 ```
 
 ---
