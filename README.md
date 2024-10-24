@@ -1,6 +1,8 @@
 # MoUSE Desktop App Installation Guide
 
-This guide will help you install and run the MoUSE Desktop App on your computer. You do not need to open any files from GitHub manually – simply copy and paste the commands given below into your terminal.
+This guide will help you install and run the MoUSE Desktop App on your computer. Before that, you should have installed MoUSE backend from the repo [MoUSE backend](https://github.com/JosephTheMoUSE/MoUSE). You do not need to open any files from GitHub manually – simply copy and paste the commands given below into your terminal. We assume (for the current moment of the developing this project) that you have already installed Python 3.11 and the compatible version of Poetry (for dependency management) on your computer. If that's not the case, you will find 
+instructions how to do it in [Beginner's Guide to Python](https://wiki.python.org/moin/BeginnersGuide) and [Beginner's Guide to Poetry](https://python-poetry.org/docs/). If you are looking for a MoUSE Desktop App usage tutorial, see the page [MoUSE wiki page](https://github.com/JosephTheMoUSE/MoUSE-docs/wiki).
+
 
 ### Step 1: Download the MoUSE Desktop App
 
@@ -21,32 +23,11 @@ This guide will help you install and run the MoUSE Desktop App on your computer.
 
 ### Step 2: Install Python and Poetry
 
-Ensure you have Python 3.11 and Poetry installed on your computer using commands:
-```bash
-python --version (python3 --version)
-poetry --version
-```
-If you have Python in version 3.11 or newer and Poetry in version 1.2 or newer, you can skip the rest of the instructions in this step and go to step number 3. Else you should:
-
-- **Windows users**:  
-   - [Install Python](https://www.python.org/downloads/windows/) if you don’t already have it.
-   - Install Poetry using:
-     ```bash
-     curl -sSL https://install.python-poetry.org | python3 -
-     ```
-- **Mac/Linux users**:  
-   - Install Python via Homebrew (if not already installed):
-     ```bash
-     brew install python@3.11
-     ```
-   - Install Poetry with the command:
-     ```bash
-     curl -sSL https://install.python-poetry.org | python3 -
-     ```
+Ensure you have Python 3.11 (or newer) and the compatible version of Poetry installed on your computer.
 
 ### Step 3: Set Up the Virtual Environment and Dependencies
 
-Now, set up a virtual environment and install the necessary dependencies using Poetry:
+Now in the main project folder, set up a virtual environment and install the necessary dependencies using Poetry:
 
 1. **Create the virtual environment** and install dependencies:
    ```bash
@@ -57,6 +38,7 @@ Now, set up a virtual environment and install the necessary dependencies using P
 2. **Generate GUI components**:
    - **Windows users**:
    ```bash
+   Set-ExecutionPolicy Unrestricted -Scope CurrentUser
    ./regenerate_gui.ps1
    ```
    - **Mac/Linux users**:  
@@ -89,4 +71,4 @@ exit
 
 ### Notes:
 - This guide works for **Windows**, **Mac**, and **Linux** users. Simply follow the steps, and you’ll be up and running.
-- If you encounter any issues, make sure you have the latest version of Python and Poetry installed.
+- If you encounter any issues, do not hesitate to contact us on our JosephTheMoUSE Github profile.
