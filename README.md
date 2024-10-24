@@ -51,10 +51,16 @@ Now, set up a virtual environment and install the necessary dependencies using P
 
 1. **Create the virtual environment** and install dependencies:
    ```bash
+   poetry update
    poetry install
    ```
    
 2. **Generate GUI components**:
+   - **Windows users**:
+   ```bash
+   ./regenrate_gui.ps1
+   ```
+   - **Mac/Linux users**:  
    ```bash
    ./regenrate_gui.sh
    ```
@@ -68,7 +74,7 @@ Now, set up a virtual environment and install the necessary dependencies using P
 
 2. **Start the MoUSE Desktop App**:
    ```bash
-   python ./src/mouseapp/main.py
+   python3 ./src/mouseapp/main.py
    ```
 
 You should now see the MoUSE Desktop App window, and you’re ready to use the application!
