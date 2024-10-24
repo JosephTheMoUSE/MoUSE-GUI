@@ -1,6 +1,6 @@
 # MoUSE Desktop App Installation Guide
 
-This guide will help you install and run the MoUSE Desktop App on your computer. Before that, you should have installed MoUSE backend from the repo [MoUSE backend](https://github.com/JosephTheMoUSE/MoUSE). You do not need to open any files from GitHub manually – simply copy and paste the commands given below into your terminal. We assume (for the current moment of the developing this project) that you have already installed Python 3.11 and the compatible version of Poetry (for dependency management) on your computer. If that's not the case, you will find 
+This guide will help you install and run the MoUSE Desktop App on your computer. Before that, you should have installed MoUSE backend from the repo [MoUSE backend](https://github.com/JosephTheMoUSE/MoUSE). You do not need to open any files from GitHub manually – simply copy and paste the commands given below into your terminal. We assume (for the current moment of the process of developing this project) that you have already installed Python 3.11 and the compatible version of Poetry (for dependency management) on your computer. If that's not the case, you will find 
 instructions how to do it in [Beginner's Guide to Python](https://wiki.python.org/moin/BeginnersGuide) and [Beginner's Guide to Poetry](https://python-poetry.org/docs/). If you are looking for a MoUSE Desktop App usage tutorial, see the page [MoUSE wiki page](https://github.com/JosephTheMoUSE/MoUSE-docs/wiki).
 
 
