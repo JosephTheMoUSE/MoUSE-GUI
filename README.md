@@ -4,30 +4,29 @@ This guide will help you install and run the MoUSE Desktop App on your computer.
 
 ### Step 1: Download the MoUSE Desktop App
 
-1. If you know how to use GitHub, **clone the repository** using the command (in the folder, in which you want to have this project):
+1. If you know how to use GitHub, **clone the repository** using the commands below in the terminal/command prompt:
    ```bash
+   cd path_to_the_folder_for_this_project
+
    git clone https://github.com/JosephTheMoUSE/MoUSE-GUI.git
    ```
 2. If you're not familiar with GitHub:
    - Click the green **Code** button at the top of this page.
    - Select **Download ZIP** and save the file to your computer.
    - Once downloaded, **extract** the contents of the ZIP file.
+   - Use the terminal to go to the folder where you extracted the files:
+   ```bash
+   cd path_to_your_extracted_folder
+   ```
 
-### Step 2: Open the Terminal/Command Prompt
+### Step 2: Install Python and Poetry
 
-- **Windows users**: Open the **Command Prompt** by typing "cmd" into the search bar and pressing Enter.
-- **Mac/Linux users**: Open the **Terminal** from the Applications menu.
-
-### Step 3: Navigate to the Project Folder
-
-Use the terminal to go to the folder where you extracted the files. For example:
+Ensure you have Python 3.11 and Poetry installed on your computer using commands:
 ```bash
-cd path_to_your_extracted_folder
+python --version (python3 --version)
+poetry --version
 ```
-
-### Step 4: Install Python and Poetry
-
-Ensure you have Python 3.11 and Poetry installed on your computer.
+If you have Python in version 3.11 or newer and Poetry in version 1.2 or newer, you can skip the rest of the instructions in this step and go to step number 3. Else you should:
 
 - **Windows users**:  
    - [Install Python](https://www.python.org/downloads/windows/) if you don’t already have it.
@@ -45,7 +44,7 @@ Ensure you have Python 3.11 and Poetry installed on your computer.
      curl -sSL https://install.python-poetry.org | python3 -
      ```
 
-### Step 5: Set Up the Virtual Environment and Dependencies
+### Step 3: Set Up the Virtual Environment and Dependencies
 
 Now, set up a virtual environment and install the necessary dependencies using Poetry:
 
@@ -58,14 +57,14 @@ Now, set up a virtual environment and install the necessary dependencies using P
 2. **Generate GUI components**:
    - **Windows users**:
    ```bash
-   ./regenrate_gui.ps1
+   ./regenerate_gui.ps1
    ```
    - **Mac/Linux users**:  
    ```bash
-   ./regenrate_gui.sh
+   ./regenerate_gui.sh
    ```
 
-### Step 6: Running MoUSE Desktop App
+### Step 4: Running MoUSE Desktop App
 
 1. **Activate the virtual environment**:
    ```bash
@@ -79,7 +78,7 @@ Now, set up a virtual environment and install the necessary dependencies using P
 
 You should now see the MoUSE Desktop App window, and you’re ready to use the application!
 
-### Step 7: Deactivating the Virtual Environment
+### Step 5: Deactivating the Virtual Environment
 
 When you’re done using the MoUSE Desktop App, deactivate the virtual environment by typing:
 ```bash
