@@ -1,9 +1,5 @@
 # PowerShell script for Windows to replace Bash script
 
-# Update and install dependencies using Poetry
-poetry update
-poetry install
-
 # Create directories if they do not exist
 New-Item -ItemType Directory -Force -Path ./src/mouseapp/view/generated/init_project
 New-Item -ItemType Directory -Force -Path ./src/mouseapp/view/generated/key_value_metadata
