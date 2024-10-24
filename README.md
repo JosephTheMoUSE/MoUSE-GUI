@@ -4,7 +4,7 @@ This guide will help you install and run the MoUSE Desktop App on your computer.
 
 ### Step 1: Download the MoUSE Desktop App
 
-1. If you know how to use GitHub, **clone the repository** using the command:
+1. If you know how to use GitHub, **clone the repository** using the command (in the folder, in which you want to have this project):
    ```bash
    git clone https://github.com/JosephTheMoUSE/MoUSE-GUI.git
    ```
