@@ -1,0 +1,31 @@
+cff-version: 1.2.0
+title: "Joseph the MoUSE: Application for rodent ultrasonic identification - frontend. Described in: Kania, Adam, et al. 'Joseph the MoUSE—Mouse Ultrasonic Sound Explorer.' SoftwareX 25 (2024): 101606."
+message: >-
+  Thank you for using Joseph the MoUSE. If you use this software in your
+  research, please cite the corresponding article:
+  Kania, Adam, et al. "Joseph the MoUSE—Mouse Ultrasonic Sound Explorer."
+  SoftwareX 25 (2024): 101606.
+type: software
+authors:
+  - given-names: Leszek
+    family-names: Grzanka
+    affiliation: 'Institute of Nuclear Physics: Krakow, PL'
+    orcid: 'https://orcid.org/0000-0002-3599-854X'
+  - given-names: Diana
+    family-names: Piotrowska
+    affiliation: 'Sahlgrenska Akademin: Göteborg, SE'
+    orcid: 'https://orcid.org/0000-0001-7132-0691'
+  - given-names: Andrzej
+    family-names: Siódmok
+    affiliation: 'Jagiellonian University: Krakow, PL'
+    orcid: 'https://orcid.org/0000-0001-9614-7856'
+  - given-names: Weronika
+    family-names: Ormaniec
+    orcid: 'https://orcid.org/0009-0007-8868-1363'
+  - given-names: Adam
+    family-names: Kania
+    orcid: 'https://orcid.org/0000-0002-0364-4907'
+  - given-names: Dmytro
+    family-names: Zhylko
+    orcid: 'https://orcid.org/0009-0001-7218-4772'
+license: MIT
