@@ -27,6 +27,7 @@ def initialize_application():
         initialize_new()
 
     sys.exit(application.exec()) #_exec()
+    #above, we used the newest version of running the main window of the app (using PySide6)
 
 
 def initialize_from_existing() -> bool:
