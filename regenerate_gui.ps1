@@ -28,5 +28,5 @@ pyside6-uic ./qt_designer/settings/settings.ui > ./src/mouseapp/view/generated/s
 pyside6-uic ./qt_designer/settings/detection_settings.ui > ./src/mouseapp/view/generated/settings/ui_detection_settings.py
 pyside6-uic ./qt_designer/settings/denoising_settings.ui > ./src/mouseapp/view/generated/settings/ui_denoising_settings.py
 pyside6-uic ./qt_designer/settings/preview_settings.ui > ./src/mouseapp/view/generated/settings/ui_preview_settings.py
-pyside6-uic ./qt_designer/settings/classification_settings.ui > ./src/mouseapp/view/generated/settings/ui_classification_settings.py
+pyside6-uic ./qt_designer/settings/classification_settings.ui -o ./src/mouseapp/view/generated/settings/ui_classification_settings.py
 pyside6-uic ./qt_designer/settings/filtering_settings.ui > ./src/mouseapp/view/generated/settings/ui_filtering_settings.py
