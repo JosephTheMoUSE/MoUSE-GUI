@@ -45,8 +45,7 @@ instructions how to do it in [Beginner's Guide to Python](https://wiki.python.or
 
 ### Step 2: Install Python and Poetry
 
-Ensure you have Python 3.11 (or newer) and the compatible version of Poetry installed on your computer.
-
+Ensure you have Python 3.11 (or newer): 
 ```bash
    python3 --version
 ```
@@ -54,7 +53,7 @@ or
 ```bash
    python --version
 ```
-
+and the compatible version of Poetry installed on your computer.
 ```bash
    poetry --version
 ```
