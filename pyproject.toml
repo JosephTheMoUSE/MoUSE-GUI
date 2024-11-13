@@ -5,7 +5,7 @@ description = "Joseph the MoUSE: Application for rodent ultrasonic identificatio
 authors = ["JosephTheMoUSE <josephthemouse@googlegroups.com>"]
 readme = "README.md"
 license = "MIT"
-packages = [{include = "mouseapp"}]
+packages = [{include = "src.mouseapp"}]
 
 [tool.poetry.dependencies]
 python = ">=3.11,<3.13"
