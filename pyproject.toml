@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "MoUSE-GUI"
+name = "mouseapp"
 version = "1.0.0"
 description = "Joseph the MoUSE: Application for rodent ultrasonic identification - frontend. Described in: Kania, Adam, et al. \"Joseph the MoUSE—Mouse Ultrasonic Sound Explorer.\" SoftwareX 25 (2024): 101606."
 authors = ["JosephTheMoUSE <josephthemouse@googlegroups.com>"]
