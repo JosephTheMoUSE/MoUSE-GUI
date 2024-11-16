@@ -64,9 +64,6 @@ Now in the main project folder, set up a virtual environment and install the nec
 
 1. **Create the virtual environment** and install dependencies:
    ```bash
-   poetry shell
-   ```
-   ```bash
    poetry install
    ```
    
