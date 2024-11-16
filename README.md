@@ -70,7 +70,7 @@ Now in the main project folder, set up a virtual environment and install the nec
 1. **Generate GUI components**:
    - **Windows users**:
    ```bash
-   .\regenerate_gui.ps1
+poetry run powershell .\regenerate_gui.ps1
    ```
    If this command does not work on Windows, please read this article about execution policy:
    https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_execution_policies?view=powershell-7.4
