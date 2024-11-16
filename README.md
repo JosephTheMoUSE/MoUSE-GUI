@@ -77,7 +77,7 @@ poetry run powershell .\regenerate_gui.ps1
    
    - **Mac/Linux users**:  
    ```bash
-   ./regenerate_gui.sh
+poetry run bash ./regenerate_gui.sh
    ```
 
 ### Step 4: Running MoUSE Desktop App
