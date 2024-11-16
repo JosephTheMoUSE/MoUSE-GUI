@@ -93,12 +93,12 @@ Now in the main project folder, set up a virtual environment and install the nec
 2. **Start the MoUSE Desktop App**:
    - **Windows users**:
    ```bash
-   poetry run .\src\mouseapp\main.py
+   poetry run python .\src\mouseapp\main.py
    ```
 
    - **Mac/Linux users**:
    ```bash
-   poetry run ./src/mouseapp/main.py
+   poetry run python ./src/mouseapp/main.py
    ```
 
 You should now see the MoUSE Desktop App window, and you’re ready to use the application!
