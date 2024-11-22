@@ -28,7 +28,7 @@ class _OptimisationCallback(tune.Callback):
                             model.settings_model.gac_model.optimisation_iters)
         self.model.settings_model.gac_model.progressbar_iter = 0
 
-    def on_trial_result(self, iteration, trials, trial, result, **info):
+    def on_trial_result(self, num_iter, trials, trial, result, **info):
         gac_model = self.model.settings_model.gac_model
         self.last_iter += 1
         self.model.settings_model.gac_model.progressbar_iter = int(
@@ -48,7 +48,7 @@ class _OptimisationCallback(tune.Callback):
             recall=result["recall"],
             box_count=result["box_count"],
             sigma=round(result["config"]["sigma"], 3),
-            iters=int(result["config"]["iterations"]),
+            iters=int(result["config"]["num_iter"]),
             balloon=balloon,
             threshold=round(threshold, 3),
             flood_threshold=round(result["config"]["flood_threshold"], 3),
@@ -68,7 +68,7 @@ class _OptimisationQtCallback(tune.Callback):
     def __init__(self, model: MainModel):
         self.model = model
 
-    def on_trial_result(self, iteration, trials, trial, result, **info):
+    def on_trial_result(self, num_iter, trials, trial, result, **info):
         process_qt_events(self.model.settings_model.gac_model.background_task.worker)
 
 
@@ -140,7 +140,7 @@ def autoconfigure_gac(model: MainModel):
     gac_model = model.settings_model.gac_model
 
     gac_model.smoothing = gac_model.optimisation_best.smoothing
-    gac_model.iterations = gac_model.optimisation_best.iters
+    gac_model.num_iter = gac_model.optimisation_best.iters
     gac_model.flood_threshold = gac_model.optimisation_best.flood_threshold
     gac_model.balloon = gac_model.optimisation_best.balloon
     gac_model.threshold = gac_model.optimisation_best.threshold

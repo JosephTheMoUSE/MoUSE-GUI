@@ -1,38 +1,118 @@
-# MoUSE Desktop App
-This repository contains MoUSE Desktop App. To install it follow the steps 
-outlined below. If you are looking for a MoUSE Desktop App usage tutorial,
-see [MoUSE wiki page](https://github.com/JosephTheMoUSE/MoUSE-docs/wiki). If you
-want to install only the backend of MoUSE see 
-[main MoUSE repository](https://github.com/JosephTheMoUSE/MoUSE#mouse).
+# MoUSE Desktop App Installation Guide
 
-## Installing MoUSE Desktop App
-We assume that you are using Linux operating system and that you have already 
-installed Python 3.8 on your computer. If that's not the case, you will find 
-instructions how to do it in
-[Beginner's Guide to Python](https://wiki.python.org/moin/BeginnersGuide).
+This guide will help you install and run the MoUSE Desktop App on your computer. Before that, you should have installed MoUSE backend from the repo [MoUSE backend](https://github.com/JosephTheMoUSE/MoUSE). You do not need to open any files from GitHub manually – simply copy and paste the commands given below into your terminal. We assume (for the current moment of the process of developing this project) that you have already installed Python 3.11 (or newer) and the compatible version of Poetry (for dependency management) on your computer. If that's not the case, you will find 
+instructions how to do it in [Beginner's Guide to Python](https://wiki.python.org/moin/BeginnersGuide) and [Beginner's Guide to Poetry](https://python-poetry.org/docs/). If you are looking for a MoUSE Desktop App usage tutorial, see the page [MoUSE wiki page](https://github.com/JosephTheMoUSE/MoUSE-docs/wiki).
 
-1. Download the code from this repository.
-   1. If you are familiar with git and GitHub just clone this repository to 
-      your computer.
-   2. If you are not familiar with git and GitHub, click green `Code` button 
-      on the top of this page and then click `Download ZIP` button. When the 
-      file is downloaded extract its contents. 
-2. Open terminal and navigate to the directory with extracted files. 
-3. Create Python virtual environment with following command: 
-   `python3 -m venv .venv`.
-4. Activate virtual environment: `source .venv/bin/activate`.
-5. Generate GUI components with following command: `source regenerate_gui.sh`.
-6. Install required packages: `pip install .`.
-7. If you want to run MoUSE Desktop App, follow instructions in the next section.
-   If you don't wish to continue, just deactivate the virtual environment, by 
-   writing in the console: `deactivate`.
 
-## Running MoUSE Desktop App
-We assume that you installed MoUSE Desktop App according to the above instructions.
-1. Make sure that you are in the directory containing MoUSE Desktop App code 
-   and that the virtual environment is activated.
-2. Run the following command: `python3 ./src/mouseapp/main.py`. You should see the 
-   MoUSE Desktop App window - you can now use MoUSE Desktop App.
-3. When you finish using MoUSE Desktop App, deactivate virtual environment with the 
-`deactivate` command.
+### Step 1: Download the MoUSE Desktop App
+
+1. If you know how to use GitHub, **clone the repository** using the commands below in the terminal/command prompt:
+   - **Windows users**:
+   ```bash
+   cd \path\to\your\folder
+   ```
+   where \path\to\your\folder is path to the folder, where you want to install this project
+
+   - **Mac/Linux users**:
+   ```bash
+   cd /path/to/your/folder
+   ```
+   where /path/to/your/folder is path to the folder, where you want to install this project
    
+   ```bash
+   git clone https://github.com/JosephTheMoUSE/MoUSE-GUI.git
+   ```
+
+   ```bash
+   cd MoUSE-GUI
+   ```
+1. If you're not familiar with GitHub:
+   - Click the green **Code** button at the top of this page.
+   - Select **Download ZIP** and save the file to your computer.
+   - Once downloaded, **extract** the contents of the ZIP file.
+   - Use the terminal to go to the folder where you extracted the files:
+   - **Windows users**:
+   ```bash
+   cd \path\to\your\folder
+   ```
+   where \path\to\your\folder is path to the folder, where you want to install this project
+
+   - **Mac/Linux users**:
+   ```bash
+   cd /path/to/your/folder
+   ```
+   where /path/to/your/folder is path to the folder, where you want to install this project
+
+   ```bash
+   cd MoUSE-GUI
+   ```
+
+### Step 2: Install Python and Poetry
+
+Ensure you have Python 3.11 (or newer): 
+```bash
+   python3 --version
+```
+or
+```bash
+   python --version
+```
+and the compatible version of Poetry installed on your computer.
+```bash
+   poetry --version
+```
+
+### Step 3: Set Up the Virtual Environment and Dependencies
+
+Now in the main project folder, set up a virtual environment and install the necessary dependencies using Poetry:
+
+1. **Create the virtual environment** and install dependencies:
+   ```bash
+   poetry install
+   ```
+   
+1. **Generate GUI components**:
+   - **Windows users**:
+   ```bash
+   poetry run powershell .\regenerate_gui.ps1
+   ```
+   If this command does not work on Windows, please read this article about execution policy:
+   https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_execution_policies?view=powershell-7.4
+   
+   - **Mac/Linux users**:  
+   ```bash
+   poetry run bash ./regenerate_gui.sh
+   ```
+
+### Step 4: Running MoUSE Desktop App
+
+1. **Activate the virtual environment (if not activated yet)**:
+   ```bash
+   poetry shell
+   ```
+
+2. **Start the MoUSE Desktop App**:
+   - **Windows users**:
+   ```bash
+   poetry run python .\src\mouseapp\main.py
+   ```
+
+   - **Mac/Linux users**:
+   ```bash
+   poetry run python ./src/mouseapp/main.py
+   ```
+
+You should now see the MoUSE Desktop App window, and you’re ready to use the application!
+
+### Step 5: Deactivating the Virtual Environment
+
+When you’re done using the MoUSE Desktop App, deactivate the virtual environment by typing:
+```bash
+deactivate
+```
+
+---
+
+### Notes:
+- This guide works for **Windows**, **Mac**, and **Linux** users. Simply follow the steps, and you’ll be up and running.
+- If you encounter any issues, do not hesitate to contact us on our JosephTheMoUSE Github profile.

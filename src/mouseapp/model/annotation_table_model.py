@@ -7,7 +7,8 @@ from mouseapp.model import constants
 from mouseapp.model.utils import Annotation, SerializableModel
 
 
-class AnnotationTableModel(QAbstractTableModel, SerializableModel):
+class AnnotationTableModel(QAbstractTableModel): #, SerializableModel
+    #issue -> make sure that removing Serializable Model is correct
 
     delete_button_show = Signal(bool)
     highlight_row = Signal(int)

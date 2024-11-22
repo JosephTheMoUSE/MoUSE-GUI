@@ -80,7 +80,7 @@ class DetectionSettingsWindow(QtWidgets.QWidget, Ui_DetectionSettingsWidget):
     def _connect_gac_inputs(self):
         self.gac_preview.runPreviewButton.clicked.connect(self._on_run_detection)
         self.balloonComboBox.currentTextChanged.connect(self._on_balloon_combobox)
-        self.iterationsLineEdit.editingFinished.connect(self._on_iterations_edit)
+        self.num_iterLineEdit.editingFinished.connect(self._on_num_iter_edit)
         self.smoothingLineEdit.editingFinished.connect(self._on_smoothing_edit)
         self.sigmaLineEdit.editingFinished.connect(self._on_sigma_edit)
         self.alphaLineEdit.editingFinished.connect(self._on_alpha_edit)
@@ -154,8 +154,8 @@ class DetectionSettingsWindow(QtWidgets.QWidget, Ui_DetectionSettingsWidget):
             self.gac_preview.draw_upper_spect)
         self.model.settings_model.gac_model.sigma_changed.connect(self._on_sigma_signal)
         self.model.settings_model.gac_model.alpha_changed.connect(self._on_alpha_signal)
-        self.model.settings_model.gac_model.iterations_changed.connect(
-            self._on_iterations_signal)
+        self.model.settings_model.gac_model.num_iter_changed.connect(
+            self._on_num_iter_signal)
         self.model.settings_model.gac_model.smoothing_changed.connect(
             self._on_smoothing_signal)
         self.model.settings_model.gac_model.threshold_changed.connect(
@@ -230,10 +230,10 @@ class DetectionSettingsWindow(QtWidgets.QWidget, Ui_DetectionSettingsWidget):
     def _on_flood_changed(self, value: int):
         gac_settings_controller.set_flood_threshold(model=self.model, value=value)
 
-    def _on_iterations_edit(self):
-        gac_settings_controller.set_iterations(model=self.model,
+    def _on_num_iter_edit(self):
+        gac_settings_controller.set_num_iter(model=self.model,
                                                value=int(
-                                                   self.iterationsLineEdit.text()))
+                                                   self.num_iterLineEdit.text()))
 
     def _on_gac_restore(self):
         gac_settings_controller.restore_default_gac_values(self.model)
@@ -306,8 +306,8 @@ class DetectionSettingsWindow(QtWidgets.QWidget, Ui_DetectionSettingsWidget):
         gac_settings_controller.set_gac_preview(self.model)
         self.alphaLineEdit.setText(str(value))
 
-    def _on_iterations_signal(self, value: int):
-        self.iterationsLineEdit.setText(str(value))
+    def _on_num_iter_signal(self, value: int):
+        self.num_iterLineEdit.setText(str(value))
 
     def _on_smoothing_signal(self, value: int):
         self.smoothingLineEdit.setText(str(value))

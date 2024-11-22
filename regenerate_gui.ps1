@@ -1,14 +1,17 @@
-#!/bin/bash
+# PowerShell script for Windows to replace Bash script
 
-mkdir -p ./src/mouseapp/view/generated/init_project
-mkdir -p ./src/mouseapp/view/generated/key_value_metadata
-mkdir -p ./src/mouseapp/view/generated/settings
+# Create directories if they do not exist
+New-Item -ItemType Directory -Force -Path ./src/mouseapp/view/generated/init_project
+New-Item -ItemType Directory -Force -Path ./src/mouseapp/view/generated/key_value_metadata
+New-Item -ItemType Directory -Force -Path ./src/mouseapp/view/generated/settings
 
-touch ./src/mouseapp/view/generated/__init__.py
-touch ./src/mouseapp/view/generated/init_project/__init__.py
-touch ./src/mouseapp/view/generated/key_value_metadata/__init__.py
-touch ./src/mouseapp/view/generated/settings/__init__.py
+# Create __init__.py files in the directories
+New-Item -ItemType File -Force -Path ./src/mouseapp/view/generated/__init__.py
+New-Item -ItemType File -Force -Path ./src/mouseapp/view/generated/init_project/__init__.py
+New-Item -ItemType File -Force -Path ./src/mouseapp/view/generated/key_value_metadata/__init__.py
+New-Item -ItemType File -Force -Path ./src/mouseapp/view/generated/settings/__init__.py
 
+# Generate Python files from .ui files using pyside6-uic
 pyside6-uic ./qt_designer/init_project/main_window.ui -o ./src/mouseapp/view/generated/init_project/ui_main_window.py
 pyside6-uic ./qt_designer/init_project/select_project.ui -o ./src/mouseapp/view/generated/init_project/ui_select_project.py
 pyside6-uic ./qt_designer/init_project/project_entry.ui -o ./src/mouseapp/view/generated/init_project/ui_project_entry.py
