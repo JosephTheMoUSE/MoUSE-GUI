@@ -43,6 +43,10 @@ instructions how to do it in [Beginner's Guide to Python](https://wiki.python.or
    ```
    where /path/to/your/folder is path to the folder, where you want to install this project
 
+   ```bash
+   cd MoUSE-GUI
+   ```
+
 ### Step 2: Install Python and Poetry
 
 Ensure you have Python 3.11 (or newer): 
@@ -70,14 +74,14 @@ Now in the main project folder, set up a virtual environment and install the nec
 1. **Generate GUI components**:
    - **Windows users**:
    ```bash
-poetry run powershell .\regenerate_gui.ps1
+   poetry run powershell .\regenerate_gui.ps1
    ```
    If this command does not work on Windows, please read this article about execution policy:
    https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_execution_policies?view=powershell-7.4
    
    - **Mac/Linux users**:  
    ```bash
-poetry run bash ./regenerate_gui.sh
+   poetry run bash ./regenerate_gui.sh
    ```
 
 ### Step 4: Running MoUSE Desktop App
