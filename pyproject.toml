@@ -23,7 +23,7 @@ ray = { version = "2.10.0", extras = ["tune"] }
 
 [tool.poetry.group.dev.dependencies]
 yapf = "0.43.0"
-pytest = "8.3.3"
+pytest = "8.3.4"
 pytest-qt = "4.4.0"
 
 [tool.yapf]
