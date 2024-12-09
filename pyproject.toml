@@ -19,7 +19,7 @@ numpy = "1.26.4"
 pandas = "1.5.3"
 PySide6 = "6.7.0"
 pytorch-lightning = "2.2.2"
-ray = { version = "2.10.0", extras = ["tune"] }
+ray = { version = "2.40.0", extras = ["tune"] }
 
 [tool.poetry.group.dev.dependencies]
 yapf = "0.43.0"
