@@ -12,7 +12,7 @@ packages = [{ include = "mouseapp", from = "src" }]
 python = ">=3.11,<3.13"
 appdirs = "1.4.4"
 environ-config = "23.2.0"
-kaleido = "0.2.1"
+kaleido = ">=0.2.0,<0.2.1.post0" #"0.2.1.post1"
 matplotlib = "3.8.4"
 MoUSE = { git = "https://github.com/JosephTheMoUSE/MoUSE.git", branch = "main" }
 numpy = "1.26.4"
